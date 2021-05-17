@@ -55,24 +55,24 @@ export type Teams = Array<Team>
 
 
 ### What does this do?
-This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on their columns, mutators, and relationships.  You can then pipe hte output into your preferred `?.d.ts`
+This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships.  You can then pipe hte output into your preferred `?.d.ts`
 
 ### Requirements
 Starting support is for Laravel v8+ and PHP v8+ 
 
 1. You must have a return type for your model relationships
 ```php
-    public function providers(): HasMany
-    {
-        return $this->hasMany(Provider::class);
-    }
+public function providers(): HasMany // <- this
+{
+    return $this->hasMany(Provider::class);
+}
 ```
 2. You must have a return type for your model mutations
 ```php
-    public function getFirstNameAttribute(): string
-    {
-        return explode(' ', $this->name)[0];
-    }
+public function getFirstNameAttribute(): string // <- this
+{
+    return explode(' ', $this->name)[0];
+}
 ```
 
 
