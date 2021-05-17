@@ -13,6 +13,7 @@
 [![Total Downloads](https://poser.pugx.org/fumeapp/modeltyper/d/total.png)](https://packagist.org/packages/fumeapp/modeltyper)
 
 ```bash
+composer require --dev fumeapp/modeltyper
 php artisan model:typer
 ```
 

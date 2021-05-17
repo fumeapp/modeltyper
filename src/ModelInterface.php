@@ -27,6 +27,7 @@ class ModelInterface
         'datetime' => 'Date',
         'bool' => 'boolean',
         'boolean' => 'boolean',
+        'json' => 'array',
     ];
 
     /**
