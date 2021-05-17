@@ -60,14 +60,14 @@ This command will go through all of your models and make [TypeScript Interfaces]
 ### Requirements
 Starting support is for Laravel v8+ and PHP v8+ 
 
-1. You must have a return type for your model relationships
+1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model relationships
 ```php
 public function providers(): HasMany // <- this
 {
     return $this->hasMany(Provider::class);
 }
 ```
-2. You must have a return type for your model mutations
+2. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model mutations
 ```php
 public function getFirstNameAttribute(): string // <- this
 {
