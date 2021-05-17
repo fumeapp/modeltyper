@@ -26,7 +26,6 @@ export interface User {
   id: number
   email: string
   name: string
-  is_sub: boolean
   created_at: Date
   updated_at: Date
   // mutators
@@ -56,7 +55,7 @@ export type Teams = Array<Team>
 
 
 ### What does this do?
-This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships.  You can then pipe hte output into your preferred `?.d.ts`
+This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships.  You can then pipe the output into your preferred `???.d.ts`
 
 ### Requirements
 Starting support is for Laravel v8+ and PHP v8+ 
