@@ -1,0 +1,28 @@
+{
+    "name": "fumeapp/modeltyper",
+    "description": "Generate TypeScript interfaces from Laravel Models",
+    "type": "library",
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "8.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kevin olson",
+            "email": "acidjazz@gmail.com"
+        }
+    ],
+  "autoload": {
+      "psr-4": {
+          "ModelTyper\\": "src/"
+      }
+  },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "fumeapp\\ModelTyperProvider"
+            ]
+        }
+    }
+}
