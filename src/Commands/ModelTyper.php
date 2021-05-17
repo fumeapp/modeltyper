@@ -12,7 +12,7 @@ class ModelTyper extends Command
      *
      * @var string
      */
-    protected $signature = 'model:type';
+    protected $signature = 'model:typer';
 
     /**
      * The console command description.
