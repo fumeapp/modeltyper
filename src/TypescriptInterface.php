@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ModelTyper;
+namespace FumeApp\ModelTyper;
 
 class TypescriptInterface
 {

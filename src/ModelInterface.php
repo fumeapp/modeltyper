@@ -1,7 +1,7 @@
 <?php
 
 
-namespace fumeapp\ModelTyper;
+namespace FumeApp\ModelTyper;
 
 
 use Exception;
@@ -110,7 +110,7 @@ class ModelInterface
                     $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
                     preg_match('/\((.*?)::class/', $code, $matches);
                     if ($matches[1]) {
-                        $relations[$method] = $matches[1] . 's';
+                        $relations[$method] = Str::plural($matches[1]);
                     }
                 }
             }

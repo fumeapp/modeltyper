@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Console\Commands;
+namespace FumeApp\ModelTyper\Commands;
 
-use App\ModelTyper\ModelInterface;
+use FumeApp\ModelTyper\ModelInterface;
 use Illuminate\Console\Command;
 
 class ModelTyper extends Command
