@@ -1,4 +1,10 @@
 
+<p align="center">
+  <a href="https://laravel.com"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Laravel.svg/1200px-Laravel.svg.png" width="92" height="92" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="92" height="92" /></a>
+</p>
+
+
 # Model Typer
 > Generate TypeScript interfaces from Laravel Models
 
