@@ -29,6 +29,11 @@ class ModelInterface
         'boolean' => 'boolean',
     ];
 
+    /**
+     * Combine all instances together
+     * @return string
+     * @throws ReflectionException
+     */
     public function generate(): string
     {
         $allCode = '';
@@ -41,9 +46,12 @@ class ModelInterface
     }
 
     /**
+     * Build an interface from a model
+     * @param Model $model
+     * @return TypescriptInterface
      * @throws ReflectionException
      */
-    public function getInterface(Model $model): TypescriptInterface
+    private function getInterface(Model $model): TypescriptInterface
     {
         $columns = $this->getColumns($model);
         $mutators = $this->getMutators($model);
@@ -56,7 +64,12 @@ class ModelInterface
         );
     }
 
-    public function getCode(TypescriptInterface $interface): string
+    /**
+     * Build TS code from an interface
+     * @param TypescriptInterface $interface
+     * @return string
+     */
+    private function getCode(TypescriptInterface $interface): string
     {
         $code = "export interface {$interface->name} {\r\n";
         if (count($interface->columns) > 0) {
@@ -85,6 +98,10 @@ class ModelInterface
 
 
     /**
+     * Find and map relationships
+     *
+     * @param Model $model
+     * @return array
      * @throws ReflectionException
      */
     public function getRelations(Model $model): array
@@ -119,6 +136,9 @@ class ModelInterface
     }
 
     /**
+     * Find and map our get mutators
+     * @param Model $model
+     * @return array
      * @throws ReflectionException
      */
     public function getMutators(Model $model): array
@@ -138,6 +158,11 @@ class ModelInterface
         return $mutations;
     }
 
+    /**
+     * Properly map a return type
+     * @param $returnType
+     * @return string
+     */
     private function mapReturnType($returnType): string
     {
         if ($returnType[0] === '?') {
@@ -149,13 +174,19 @@ class ModelInterface
         return $this->mappings[$returnType];
     }
 
-    public function getColumns(Model $model): array
+    /**
+     * Get columns with their mappings
+     * @param Model $model
+     * @return array
+     * @throws Exception
+     */
+    private function getColumns(Model $model): array
     {
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
             $column = $this->getColumn($model, $columnName);
             if (!isset($this->mappings[$column->getType()->getName()])) {
-                ray($column->getType()->getName());
+                throw new Exception('Unknown type found: ' . $column->getType()->getName());
             } else {
                 $columns[$columnName] = $this->mappings[ $column->getType()->getName() ];
             }
@@ -163,12 +194,23 @@ class ModelInterface
         return $columns;
     }
 
-    public function getColumnList(Model $model): array
+    /**
+     * Get an array of columns
+     * @param Model $model
+     * @return array
+     */
+    private function getColumnList(Model $model): array
     {
         return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
     }
 
-    public function getColumn(Model $model, string $column): Column
+    /**
+     * Get column details
+     * @param Model $model
+     * @param string $column
+     * @return Column
+     */
+    private function getColumn(Model $model, string $column): Column
     {
         return $model->getConnection()->getDoctrineColumn($model->getTable(), $column);
     }
@@ -177,7 +219,7 @@ class ModelInterface
      * Get a list of all models
      * @return Collection
      */
-    public function getModels(): Collection
+    private function getModels(): Collection
     {
         $models = collect(File::allFiles(app_path()))
             ->map(function ($item) {
