@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "FumeApp\\ModelTyper\\ModelTyperProvider"
+                "FumeApp\\ModelTyper\\ModelTyperServiceProvider"
             ]
         }
     }
