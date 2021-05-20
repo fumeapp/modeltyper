@@ -51,6 +51,7 @@ class ModelInterface
      * @param Model $model
      * @return TypescriptInterface
      * @throws ReflectionException
+     * @throws Exception
      */
     private function getInterface(Model $model): TypescriptInterface
     {
