@@ -72,28 +72,28 @@ class ModelInterface
      */
     private function getCode(TypescriptInterface $interface): string
     {
-        $code = "export interface {$interface->name} {\r\n";
+        $code = "export interface {$interface->name} {\n";
         if (count($interface->columns) > 0) {
-            $code .= "  // columns\r\n";
+            $code .= "  // columns\n";
             foreach ($interface->columns as $key => $value) {
-                $code .= "  {$key}: {$value}\r\n";
+                $code .= "  {$key}: {$value}\n";
             }
         }
         if (count($interface->mutators) > 0) {
-            $code .= "  // mutators\r\n";
+            $code .= "  // mutators\n";
             foreach ($interface->mutators as $key => $value) {
-                $code .= "  {$key}: {$value}\r\n";
+                $code .= "  {$key}: {$value}\n";
             }
         }
         if (count($interface->relations) > 0) {
-            $code .= "  // relations\r\n";
+            $code .= "  // relations\n";
             foreach ($interface->relations as $key => $value) {
-                $code .= "  {$key}: {$value}\r\n";
+                $code .= "  {$key}: {$value}\n";
             }
         }
-        $code .= "} \r\n";
+        $code .= "}\n";
         $plural = Str::plural($interface->name);
-        $code .= "export type $plural = Array<{$interface->name}> \r\n\r\n";
+        $code .= "export type $plural = Array<{$interface->name}>\n\n";
         return $code;
     }
 
