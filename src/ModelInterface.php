@@ -190,6 +190,12 @@ class ModelInterface
      */
     private function getColumns(Model $model): array
     {
+        if (get_class($model) === 'App\Models\FunctionalRole') {
+            $id = $this->getColumn($model, 'id');
+            $added = $this->getColumn($model, 'added_by');
+            ray($id->getNotnull());
+            ray($added->getNotnull());
+        }
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
             $column = $this->getColumn($model, $columnName);
@@ -197,7 +203,11 @@ class ModelInterface
             if (!isset($this->mappings[$column->getType()->getName()])) {
                 throw new Exception('Unknown type found: ' . $column->getType()->getName());
             } else {
-                $columns[$columnName] = $this->mappings[ $column->getType()->getName() ];
+                if ($column->getNotnull()) {
+                    $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
+                } else {
+                    $columns[ $columnName . '?' ] = $this->mappings[ $column->getType()->getName() ];
+                }
             }
         }
         return $columns;
