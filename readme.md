@@ -26,8 +26,8 @@ export interface User {
   id: number
   email: string
   name: string
-  created_at: Date
-  updated_at: Date
+  created_at?: Date
+  updated_at?: Date
   // mutators
   first_name: string
   initials: string
@@ -41,8 +41,8 @@ export interface Team {
   id: number
   name: string
   logo: string
-  created_at: Date
-  updated_at: Date
+  created_at?: Date
+  updated_at?: Date
   // mutators
   initials: string
   slug: string
