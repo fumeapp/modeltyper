@@ -190,12 +190,6 @@ class ModelInterface
      */
     private function getColumns(Model $model): array
     {
-        if (get_class($model) === 'App\Models\FunctionalRole') {
-            $id = $this->getColumn($model, 'id');
-            $added = $this->getColumn($model, 'added_by');
-            ray($id->getNotnull());
-            ray($added->getNotnull());
-        }
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
             $column = $this->getColumn($model, $columnName);
