@@ -114,22 +114,28 @@ class ModelInterface
             $reflection = new ReflectionMethod($model, $method);
             if ($reflection->hasReturnType()) {
                 $type = (string) $reflection->getReturnType();
-                if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
-                    $type === 'Illuminate\Database\Eloquent\Relations\HasOne'
-                ) {
-                    $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
-                    preg_match('/\((.*?)::class/', $code, $matches);
-                    if ($matches[1]) {
-                        $relations[$method] = $matches[1];
+                $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
+                preg_match('/\((.*?)::class/', $code, $matches);
+                if ($matches && $matches[1]) {
+
+                    if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
+                        $type === 'Illuminate\Database\Eloquent\Relations\HasOne'
+                    ) { $relations[$method] = $matches[1]; }
+
+                    if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsTo' ||
+                        $type === '?Illuminate\Database\Eloquent\Relations\HasOne'
+                    ) { $relations[$method . '?'] = $matches[1]; }
+
+                    if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
+                        $type === 'Illuminate\Database\Eloquent\Relations\HasMany'
+                    ) {
+                        if ($matches[1]) { $relations[$method] = Str::plural($matches[1]); }
                     }
-                }
-                if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
-                    $type === 'Illuminate\Database\Eloquent\Relations\HasMany'
-                ) {
-                    $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
-                    preg_match('/\((.*?)::class/', $code, $matches);
-                    if ($matches[1]) {
-                        $relations[$method] = Str::plural($matches[1]);
+
+                    if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
+                        $type === '?Illuminate\Database\Eloquent\Relations\HasMany'
+                    ) {
+                        if ($matches[1]) { $relations[$method . '?'] = Str::plural($matches[1]); }
                     }
                 }
             }
@@ -187,6 +193,7 @@ class ModelInterface
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
             $column = $this->getColumn($model, $columnName);
+
             if (!isset($this->mappings[$column->getType()->getName()])) {
                 throw new Exception('Unknown type found: ' . $column->getType()->getName());
             } else {

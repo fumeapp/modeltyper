@@ -24,5 +24,8 @@
                 "FumeApp\\ModelTyper\\ModelTyperServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "spatie/laravel-ray": "^1.17"
     }
 }
