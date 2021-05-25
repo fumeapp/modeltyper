@@ -119,11 +119,13 @@ class ModelInterface
                 if ($matches && $matches[1]) {
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
-                        $type === 'Illuminate\Database\Eloquent\Relations\HasOne'
+                        $type === 'Illuminate\Database\Eloquent\Relations\HasOne'    ||
+                        $type === 'Illuminate\Database\Eloquent\Relations\MorphOne'
                     ) { $relations[$method] = $matches[1]; }
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsTo' ||
-                        $type === '?Illuminate\Database\Eloquent\Relations\HasOne'
+                        $type === '?Illuminate\Database\Eloquent\Relations\HasOne'    ||
+                        $type === '?Illuminate\Database\Eloquent\Relations\MorphOne'
                     ) { $relations[$method . '?'] = $matches[1]; }
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
