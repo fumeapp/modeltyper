@@ -129,13 +129,15 @@ class ModelInterface
                     ) { $relations[$method . '?'] = $matches[1]; }
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
-                        $type === 'Illuminate\Database\Eloquent\Relations\HasMany'
+                        $type === 'Illuminate\Database\Eloquent\Relations\HasMany'       ||
+                        $type === 'Illuminate\Database\Eloquent\Relations\MorphToMany'
                     ) {
                         if ($matches[1]) { $relations[$method] = Str::plural($matches[1]); }
                     }
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
-                        $type === '?Illuminate\Database\Eloquent\Relations\HasMany'
+                        $type === '?Illuminate\Database\Eloquent\Relations\HasMany'       ||
+                        $type === '?Illuminate\Database\Eloquent\Relations\MorphToMany'
                     ) {
                         if ($matches[1]) { $relations[$method . '?'] = Str::plural($matches[1]); }
                     }
