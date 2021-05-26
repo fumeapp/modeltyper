@@ -25,8 +25,8 @@ class ModelInterface
         'text' => 'string',
         'string' => 'string',
         'datetime' => 'Date',
-        'bool' => 'boolean',
-        'boolean' => 'boolean',
+        'bool' => '0|1',
+        'boolean' => '0|1',
         'json' => '[]',
     ];
 
@@ -121,25 +121,33 @@ class ModelInterface
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\HasOne' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\MorphOne'
-                    ) { $relations[$method] = $matches[1]; }
+                    ) {
+                        $relations[Str::snake($method)] = $matches[1];
+                    }
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsTo' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\HasOne' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\MorphOne'
-                    ) { $relations[$method . '?'] = $matches[1]; }
+                    ) {
+                        $relations[Str::snake($method) . '?'] = $matches[1];
+                    }
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\HasMany' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\MorphToMany'
                     ) {
-                        if ($matches[1]) { $relations[$method] = Str::plural($matches[1]); }
+                        if ($matches[1]) {
+                            $relations[Str::snake($method)] = Str::plural($matches[1]);
+                        }
                     }
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\HasMany' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\MorphToMany'
                     ) {
-                        if ($matches[1]) { $relations[$method . '?'] = Str::plural($matches[1]); }
+                        if ($matches[1]) {
+                            $relations[Str::snake($method) . '?'] = Str::plural($matches[1]);
+                        }
                     }
                 }
             }
