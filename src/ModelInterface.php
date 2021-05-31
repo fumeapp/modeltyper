@@ -134,7 +134,8 @@ class ModelInterface
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\HasMany' ||
-                        $type === 'Illuminate\Database\Eloquent\Relations\MorphToMany'
+                        $type === 'Illuminate\Database\Eloquent\Relations\MorphToMany' ||
+                        $type === 'Illuminate\Database\Eloquent\Relations\MorphMany'
                     ) {
                         if ($matches[1]) {
                             $relations[Str::snake($method)] = Str::plural($matches[1]);
@@ -143,7 +144,8 @@ class ModelInterface
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\HasMany' ||
-                        $type === '?Illuminate\Database\Eloquent\Relations\MorphToMany'
+                        $type === '?Illuminate\Database\Eloquent\Relations\MorphToMany' ||
+                        $type === '?Illuminate\Database\Eloquent\Relations\MorphMany'
                     ) {
                         if ($matches[1]) {
                             $relations[Str::snake($method) . '?'] = Str::plural($matches[1]);
@@ -186,7 +188,7 @@ class ModelInterface
     private function mapReturnType($returnType): string
     {
         if ($returnType[0] === '?') {
-            return $this->mappings[str_replace('?', '', $returnType)]  . ' | null';
+            return $this->mappings[str_replace('?', '', $returnType)]  . '|null';
         }
         if (!isset($this->mappings[$returnType])) {
             return $returnType;
