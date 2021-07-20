@@ -25,8 +25,8 @@ class ModelInterface
         'text' => 'string',
         'string' => 'string',
         'datetime' => 'Date',
-        'bool' => '0|1',
-        'boolean' => '0|1',
+        'bool' => 'boolean',
+        'boolean' => 'boolean',
         'json' => '[]',
     ];
 
@@ -116,6 +116,7 @@ class ModelInterface
                 $type = (string) $reflection->getReturnType();
                 $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
                 preg_match('/\((.*?)::class/', $code, $matches);
+                if (strstr($type, 'or')) ray($type);
                 if ($matches && $matches[1]) {
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
