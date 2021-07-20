@@ -207,17 +207,22 @@ class ModelInterface
     {
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
-            $column = $this->getColumn($model, $columnName);
+            try {
+                $column = $this->getColumn($model, $columnName);
 
-            if (!isset($this->mappings[$column->getType()->getName()])) {
-                throw new Exception('Unknown type found: ' . $column->getType()->getName());
-            } else {
-                if ($column->getNotnull()) {
-                    $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
+                if (!isset($this->mappings[$column->getType()->getName()])) {
+                    throw new Exception('Unknown type found: ' . $column->getType()->getName());
                 } else {
-                    $columns[ $columnName . '?' ] = $this->mappings[ $column->getType()->getName() ];
+                    if ($column->getNotnull()) {
+                        $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
+                    } else {
+                        $columns[ $columnName . '?' ] = $this->mappings[ $column->getType()->getName() ];
+                    }
                 }
+            } catch (Exception $exception) {
             }
+
+
         }
         return $columns;
     }
