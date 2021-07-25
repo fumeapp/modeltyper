@@ -5,6 +5,7 @@ namespace FumeApp\ModelTyper;
 
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
@@ -17,7 +18,6 @@ use Illuminate\Support\Facades\File;
 
 class ModelInterface
 {
-
     public array $mappings = [
         'bigint' => 'number',
         'int' => 'number',
@@ -28,7 +28,15 @@ class ModelInterface
         'bool' => 'boolean',
         'boolean' => 'boolean',
         'json' => '[]',
+        'point' =>  'Point',
     ];
+
+
+    public function __construct()
+    {
+        DB::getDoctrineSchemaManager()
+            ->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
+    }
 
     /**
      * Combine all instances together
