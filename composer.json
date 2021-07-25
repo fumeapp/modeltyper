@@ -4,7 +4,8 @@
     "type": "library",
     "require": {
         "php": "^8.0",
-        "illuminate/support": "8.*"
+        "illuminate/support": "8.*",
+        "vinyvicente/doctrine-point-type": "^2.3"
     },
     "license": "MIT",
     "authors": [

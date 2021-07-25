@@ -11,10 +11,12 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Viny\PointType;
 
 class ModelInterface
 {
@@ -34,6 +36,7 @@ class ModelInterface
 
     public function __construct()
     {
+        Type::addType('point', PointType::class);
         DB::getDoctrineSchemaManager()
             ->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
     }
