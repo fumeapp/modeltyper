@@ -26,6 +26,7 @@ class ModelInterface
         'integer' => 'number',
         'text' => 'string',
         'string' => 'string',
+        'decimal' => 'number',
         'datetime' => 'Date',
         'bool' => 'boolean',
         'boolean' => 'boolean',
