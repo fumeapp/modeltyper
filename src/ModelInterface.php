@@ -242,10 +242,7 @@ class ModelInterface
      */
     private function getColumnList(Model $model): array
     {
-        try {
-            return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
-        } catch (Exception $exception) {
-        }
+        return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
     }
 
 /**
