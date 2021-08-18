@@ -99,3 +99,5 @@ export interface Location {
   coordinate: Point
 }
 ```
+
+This will override all columns or mutators
