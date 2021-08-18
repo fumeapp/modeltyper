@@ -75,5 +75,27 @@ public function getFirstNameAttribute(): string // <- this
 }
 ```
 
+### Custom Interfaces
+If you have custom interfaces you are using for your models you can specify them in a reserved `interfaces` array
 
+For example for a custom `Point` interface in a `Location` model you can put this in the model
 
+```php
+public array $interfaces = [
+    'coordinate' => [
+        'name' => 'Point',
+        'import' => "@/types/api",
+    ],
+];
+```
+
+And it should generate:
+
+```ts
+import { Point } from '@/types/api'
+
+export interface Location {
+  // columns
+  coordinate: Point
+}
+```

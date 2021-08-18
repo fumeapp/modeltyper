@@ -34,6 +34,8 @@ class ModelInterface
         'point' =>  'Point',
     ];
 
+    public array $imports = [];
+
 
     public function __construct()
     {
@@ -49,13 +51,34 @@ class ModelInterface
      */
     public function generate(): string
     {
-        $allCode = '';
         $models = $this->getModels();
+        $allCode = $this->getImports($models);
         foreach ($models as $model) {
             $interface = $this->getInterface(new $model());
             $allCode .= $this->getCode($interface);
         }
         return $allCode;
+    }
+
+    /**
+     * Generate a list of imports from specified interfaces
+     * @param Collection $models
+     * @return string
+     */
+    private function getImports(Collection $models): string {
+        $code = '';
+        $imports = [];
+        foreach ($models as $model) {
+            if ($interfaces = (new $model())->interfaces) {
+                foreach ($interfaces as $interface) {
+                    $imports[$interface['import']][] = $interface['name'];
+                }
+            }
+        }
+        foreach ($imports as $import=>$names) {
+            $code .= "import { ". join(', ', array_unique($names)) . " } from '$import'\n";
+        }
+        return $code;
     }
 
     /**
@@ -128,7 +151,6 @@ class ModelInterface
                 $type = (string) $reflection->getReturnType();
                 $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
                 preg_match('/\((.*?)::class/', $code, $matches);
-                if (strstr($type, 'or')) ray($type);
                 if ($matches && $matches[1]) {
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
@@ -181,6 +203,12 @@ class ModelInterface
         $mutations = [];
         $mutators = $model->getMutatedAttributes();
         foreach ($mutators as $mutator) {
+
+            if (isset($model->interfaces) && isset($model->interfaces[$mutator])) {
+                $mutations[$mutator] = $model->interfaces[$mutator]['name'];
+                continue;
+            }
+
             $method = 'get' . $this->camelize($mutator) . 'Attribute';
             $reflection = new ReflectionMethod($model, $method);
             if (!$reflection->hasReturnType()) {
@@ -219,10 +247,17 @@ class ModelInterface
     {
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
+
             try {
                 $column = $this->getColumn($model, $columnName);
 
-                if (!isset($this->mappings[$column->getType()->getName()])) {
+                if ($model->interfaces && $model->interfaces[$columnName]) {
+                    if ($column->getNotnull()) {
+                        $columns [ $columnName ] = $model->interfaces[ $columnName ][ 'name' ];
+                    } else {
+                        $columns [ $columnName . '?' ] = $model->interfaces[ $columnName ][ 'name' ];
+                    }
+                } else if (!isset($this->mappings[$column->getType()->getName()])) {
                     throw new Exception('Unknown type found: ' . $column->getType()->getName());
                 } else {
                     if ($column->getNotnull()) {
