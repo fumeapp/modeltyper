@@ -250,15 +250,16 @@ class ModelInterface
 
             try {
                 $column = $this->getColumn($model, $columnName);
-
-                if ($model->interfaces && $model->interfaces[$columnName]) {
+                if (isset($model->interfaces) && isset($model->interfaces[$columnName])) {
                     if ($column->getNotnull()) {
                         $columns [ $columnName ] = $model->interfaces[ $columnName ][ 'name' ];
                     } else {
                         $columns [ $columnName . '?' ] = $model->interfaces[ $columnName ][ 'name' ];
                     }
-                } else if (!isset($this->mappings[$column->getType()->getName()])) {
-                    throw new Exception('Unknown type found: ' . $column->getType()->getName());
+                    continue;
+                }
+                if (!isset($this->mappings[$column->getType()->getName()])) {
+                  throw new Exception('Unknown type found: ' . $column->getType()->getName());
                 } else {
                     if ($column->getNotnull()) {
                         $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
