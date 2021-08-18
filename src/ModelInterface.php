@@ -57,7 +57,7 @@ class ModelInterface
             $interface = $this->getInterface(new $model());
             $allCode .= $this->getCode($interface);
         }
-        return $allCode;
+        return substr($allCode, 0, strrpos($allCode, "\n"));
     }
 
     /**
@@ -112,19 +112,19 @@ class ModelInterface
         if (count($interface->columns) > 0) {
             $code .= "  // columns\n";
             foreach ($interface->columns as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "  $key: $value\n";
             }
         }
         if (count($interface->mutators) > 0) {
             $code .= "  // mutators\n";
             foreach ($interface->mutators as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "  $key: $value\n";
             }
         }
         if (count($interface->relations) > 0) {
             $code .= "  // relations\n";
             foreach ($interface->relations as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "  $key: $value\n";
             }
         }
         $code .= "}\n";
