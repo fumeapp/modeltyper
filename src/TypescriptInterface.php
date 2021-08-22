@@ -9,6 +9,7 @@ class TypescriptInterface
         public array $columns,
         public array $mutators,
         public array $relations,
+        public array $interfaces,
     ) {
     }
 }

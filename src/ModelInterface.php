@@ -31,6 +31,7 @@ class ModelInterface
         'bool' => 'boolean',
         'boolean' => 'boolean',
         'json' => '[]',
+        'array' => 'string[]',
         'point' =>  'Point',
     ];
 
@@ -93,13 +94,16 @@ class ModelInterface
         $columns = $this->getColumns($model);
         $mutators = $this->getMutators($model);
         $relations = $this->getRelations($model);
+        $interfaces = $this->getInterfaces($model, $columns, $mutators, $relations);
         return new TypescriptInterface(
             name: (new ReflectionClass($model))->getShortName(),
             columns: $columns,
             mutators: $mutators,
             relations: $relations,
+            interfaces: $interfaces,
         );
     }
+
 
     /**
      * Build TS code from an interface
@@ -124,6 +128,12 @@ class ModelInterface
         if (count($interface->relations) > 0) {
             $code .= "  // relations\n";
             foreach ($interface->relations as $key => $value) {
+                $code .= "  $key: $value\n";
+            }
+        }
+        if (count($interface->interfaces) > 0) {
+            $code .= "  // interfaces\n";
+            foreach ($interface->interfaces as $key => $value) {
                 $code .= "  $key: $value\n";
             }
         }
@@ -191,6 +201,37 @@ class ModelInterface
         }
         return $relations;
     }
+
+    /**
+     * Return any other remaining interfaces
+     *
+     * @param Model $model
+     * @param array $columns
+     * @param array $mutators
+     * @param array $relations
+     * @return array
+     */
+    private function getInterfaces(Model $model, array $columns, array $mutators, array $relations): array
+    {
+        if (!isset($model->interfaces)) {
+            return [];
+        }
+        $interfaces = [];
+        foreach ($model->interfaces as $key=>$interface) {
+            if (array_key_exists($key, $columns)) {
+                continue;
+            }
+            if (array_key_exists($key, $mutators)) {
+                continue;
+            }
+            if (array_key_exists($key, $relations)) {
+                continue;
+            }
+            $interfaces[$key] = $interface['name'];
+        }
+        return $interfaces;
+    }
+
 
     /**
      * Find and map our get mutators
@@ -285,8 +326,8 @@ class ModelInterface
         return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
     }
 
-/**
- * Get column details
+    /**
+     * Get column details
      * @param Model $model
      * @param string $column
      * @return Column
