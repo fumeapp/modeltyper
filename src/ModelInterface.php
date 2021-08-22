@@ -218,13 +218,13 @@ class ModelInterface
         }
         $interfaces = [];
         foreach ($model->interfaces as $key=>$interface) {
-            if (array_key_exists($key, $columns)) {
+            if (array_key_exists($key, $columns) || array_key_exists($key . '?', $columns)) {
                 continue;
             }
-            if (array_key_exists($key, $mutators)) {
+            if (array_key_exists($key, $mutators) || array_key_exists($key . '?', $mutators)) {
                 continue;
             }
-            if (array_key_exists($key, $relations)) {
+                if (array_key_exists($key, $relations) || array_key_exists($key . '?', $relations)) {
                 continue;
             }
             $interfaces[$key] = $interface['name'];
