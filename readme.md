@@ -100,4 +100,16 @@ export interface Location {
 }
 ```
 
-This will override all columns or mutators
+This will override all columns, mutators and relationships
+
+You can also specify an interface is nullable:
+
+```php
+    public array $interfaces = [
+        'choices' => [
+            'name' => 'ChoicesWithPivot',
+            'import' => '@/types/api',
+            'nullable' => true,
+        ],
+    ];
+```
