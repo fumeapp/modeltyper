@@ -158,6 +158,18 @@ class ModelInterface
         foreach ($methods as $method) {
             $reflection = new ReflectionMethod($model, $method);
             if ($reflection->hasReturnType()) {
+                if ($model->interfaces) {
+                    foreach ($model->interfaces as $key => $value) {
+                        if ($key === $method) {
+                            if (isset($value['nullable']) && $value['nullable'] === true) {
+                                $relations[ $key . '?' ] = $value[ 'name' ];
+                            } else {
+                                $relations[ $key ] = $value[ 'name' ];
+                            }
+                            continue 2;
+                        }
+                    }
+                }
                 $type = (string) $reflection->getReturnType();
                 $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
                 preg_match('/\((.*?)::class/', $code, $matches);
