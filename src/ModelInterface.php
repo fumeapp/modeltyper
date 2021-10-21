@@ -37,8 +37,12 @@ class ModelInterface
 
     public array $imports = [];
 
+    private string $space = '';
 
-    public function __construct()
+
+    public function __construct(
+        private bool $global = false,
+    )
     {
         Type::addType('point', PointType::class);
         DB::getDoctrineSchemaManager()
@@ -52,11 +56,19 @@ class ModelInterface
      */
     public function generate(): string
     {
+        $allCode = '';
+        if ($this->global) {
+            $allCode = "export {}\ndeclare global {\n  export namespace models {\n\n";
+            $this->space = '    ';
+        }
         $models = $this->getModels();
-        $allCode = $this->getImports($models);
+        $allCode .= $this->getImports($models);
         foreach ($models as $model) {
             $interface = $this->getInterface(new $model());
             $allCode .= $this->getCode($interface);
+        }
+        if ($this->global) {
+            $allCode .= "  }\n}";
         }
         return substr($allCode, 0, strrpos($allCode, "\n"));
     }
@@ -72,12 +84,14 @@ class ModelInterface
         foreach ($models as $model) {
             if ($interfaces = (new $model())->interfaces) {
                 foreach ($interfaces as $interface) {
-                    $imports[$interface['import']][] = $interface['name'];
+                    if (isset($interfaces['import'])) {
+                        $imports[ $interface[ 'import' ] ][] = $interface[ 'name' ];
+                    }
                 }
             }
         }
         foreach ($imports as $import=>$names) {
-            $code .= "import { ". join(', ', array_unique($names)) . " } from '$import'\n";
+            $code .= "{$this->space}import { " . join(', ', array_unique($names)) . " } from '$import'\n";
         }
         return $code;
     }
@@ -112,34 +126,34 @@ class ModelInterface
      */
     private function getCode(TypescriptInterface $interface): string
     {
-        $code = "export interface {$interface->name} {\n";
+        $code = "{$this->space}export interface {$interface->name} {\n";
         if (count($interface->columns) > 0) {
-            $code .= "  // columns\n";
+            $code .= "{$this->space}  // columns\n";
             foreach ($interface->columns as $key => $value) {
-                $code .= "  $key: $value\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
         if (count($interface->mutators) > 0) {
-            $code .= "  // mutators\n";
+            $code .= "{$this->space}  // mutators\n";
             foreach ($interface->mutators as $key => $value) {
-                $code .= "  $key: $value\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
         if (count($interface->relations) > 0) {
-            $code .= "  // relations\n";
+            $code .= "{$this->space}  // relations\n";
             foreach ($interface->relations as $key => $value) {
-                $code .= "  $key: $value\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
         if (count($interface->interfaces) > 0) {
-            $code .= "  // interfaces\n";
+            $code .= "{$this->space}  // interfaces\n";
             foreach ($interface->interfaces as $key => $value) {
-                $code .= "  $key: $value\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
-        $code .= "}\n";
+        $code .= "{$this->space}}\n";
         $plural = Str::plural($interface->name);
-        $code .= "export type $plural = Array<{$interface->name}>\n\n";
+        $code .= "{$this->space}export type $plural = Array<{$interface->name}>\n\n";
         return $code;
     }
 
