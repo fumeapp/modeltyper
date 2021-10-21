@@ -113,3 +113,23 @@ You can also specify an interface is nullable:
         ],
     ];
 ```
+
+
+### Declare global
+Generate your interfaces in a global namespace named `model`
+```bash
+artisn model:typer --global
+```
+
+```ts
+export {}
+declare global {
+  export namespace models {
+
+    export interface Provider {
+      // columns
+      id: number
+      user_id: number
+      avatar?: string
+...
+```

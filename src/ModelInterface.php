@@ -56,13 +56,14 @@ class ModelInterface
      */
     public function generate(): string
     {
-        $allCode = '';
+        $models = $this->getModels();
+        $allCode = $this->getImports($models);
+
         if ($this->global) {
-            $allCode = "export {}\ndeclare global {\n  export namespace models {\n\n";
+            $allCode .= "export {}\ndeclare global {\n  export namespace models {\n\n";
             $this->space = '    ';
         }
-        $models = $this->getModels();
-        $allCode .= $this->getImports($models);
+
         foreach ($models as $model) {
             $interface = $this->getInterface(new $model());
             $allCode .= $this->getCode($interface);
@@ -84,14 +85,14 @@ class ModelInterface
         foreach ($models as $model) {
             if ($interfaces = (new $model())->interfaces) {
                 foreach ($interfaces as $interface) {
-                    if (isset($interfaces['import'])) {
+                    if (isset($interface['import'])) {
                         $imports[ $interface[ 'import' ] ][] = $interface[ 'name' ];
                     }
                 }
             }
         }
         foreach ($imports as $import=>$names) {
-            $code .= "{$this->space}import { " . join(', ', array_unique($names)) . " } from '$import'\n";
+            $code .= "import { " . join(', ', array_unique($names)) . " } from '$import'\n";
         }
         return $code;
     }

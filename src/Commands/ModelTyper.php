@@ -40,7 +40,7 @@ class ModelTyper extends Command
      */
     public function handle()
     {
-        echo  (new ModelInterface($this->option('global') !== null))->generate();
+        echo  (new ModelInterface($this->option('global')))->generate();
         return 0;
     }
 }
