@@ -69,7 +69,7 @@ class ModelInterface
             $allCode .= $this->getCode($interface);
         }
         if ($this->global) {
-            $allCode .= "  }\n}";
+            $allCode .= "  }\n}\n\n";
         }
         return substr($allCode, 0, strrpos($allCode, "\n"));
     }
