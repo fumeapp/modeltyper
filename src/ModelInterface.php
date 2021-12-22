@@ -28,6 +28,7 @@ class ModelInterface
         'string' => 'string',
         'decimal' => 'number',
         'datetime' => 'Date',
+        'date' => 'Date',
         'bool' => 'boolean',
         'boolean' => 'boolean',
         'json' => '[]',
