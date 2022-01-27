@@ -272,22 +272,63 @@ class ModelInterface
         $mutations = [];
         $mutators = $model->getMutatedAttributes();
         foreach ($mutators as $mutator) {
+            $reflection = $this->determineAccessorType($model, $mutator);
+            $returnType = (string) $reflection->getReturnType();
 
-            if (isset($model->interfaces) && isset($model->interfaces[$mutator])) {
-                $mutations[$mutator] = $model->interfaces[$mutator]['name'];
-                continue;
-            }
-
-            $method = 'get' . $this->camelize($mutator) . 'Attribute';
-            $reflection = new ReflectionMethod($model, $method);
-            if (!$reflection->hasReturnType()) {
+            // If Model is using Laravel's new Accessors https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
+            if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
+                // Check to see if the Model has Custom interfaces & has the mutator set with its type
+                if (isset($model->mutations) && isset($model->mutations[$mutator])) {
+                    $mutations[$mutator] = $model->mutations[$mutator];
+                    continue;
+                }
                 throw new Exception(
-                    "Model for table {$model->getTable()} has no return type for mutator: {$mutator}"
+                    "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models interfaces array"
                 );
+            }else {
+                if (isset($model->mutations) && isset($model->mutations[$mutator])) {
+                    $mutations[$mutator] = $model->mutations[$mutator];
+                    continue;
+                }
+
+                $method = 'get' . $this->camelize($mutator) . 'Attribute';
+                $reflection = new ReflectionMethod($model, $method);
+                if (!$returnType) {
+                    throw new Exception(
+                        "Model for table {$model->getTable()} has no return type for mutator: {$mutator}"
+                    );
+                }
+                $mutations[$mutator] = $this->mapReturnType((string) $returnType);
             }
-            $mutations[$mutator] = $this->mapReturnType((string) $reflection->getReturnType());
         }
         return $mutations;
+    }
+
+    /**
+     * Determine which Laravel Accessor type is used
+     *
+     * @see https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
+     * @param Model $model
+     * @param string $mutator
+     * @return ReflectionMethod
+     * @throws Exception
+     */
+    private function determineAccessorType($model, $mutator): ReflectionMethod
+    {
+        // Try traditional
+        try {
+            $method = 'get' . $this->camelize($mutator) . 'Attribute';
+            return new ReflectionMethod($model, $method);
+        } catch (Exception $e) {}
+
+        // Try new
+        try {
+            $method = $this->camelize($mutator);
+            return new ReflectionMethod($model, $method);
+
+        } catch (Exception $e) {}
+
+        throw new Exception('Accessor method for ' . $mutator . ' on model '. get_class($model) . ' does not exist');
     }
 
     /**
