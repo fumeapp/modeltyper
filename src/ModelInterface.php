@@ -275,7 +275,7 @@ class ModelInterface
             $reflection = $this->determineAccessorType($model, $mutator);
             $returnType = (string) $reflection->getReturnType();
 
-            // If Model is using Laravel's new Accessors https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
+            // If Model is using Laravel's new Accessors
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
                 if (isset($model->mutations) && isset($model->mutations[$mutator])) {
@@ -283,7 +283,7 @@ class ModelInterface
                     continue;
                 }
                 throw new Exception(
-                    "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models interfaces array"
+                    "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models mutations array"
                 );
             }else {
                 if (isset($model->mutations) && isset($model->mutations[$mutator])) {
