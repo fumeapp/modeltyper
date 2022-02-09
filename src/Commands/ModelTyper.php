@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Commands;
 
 use FumeApp\ModelTyper\ModelInterface;
 use Illuminate\Console\Command;
+use ReflectionException;
 
 class ModelTyper extends Command
 {
@@ -12,7 +13,7 @@ class ModelTyper extends Command
      *
      * @var string
      */
-    protected $signature = 'model:typer';
+    protected $signature = 'model:typer {--global}';
 
     /**
      * The console command description.
@@ -35,10 +36,11 @@ class ModelTyper extends Command
      * Execute the console command.
      *
      * @return int
+     * @throws ReflectionException
      */
     public function handle()
     {
-        echo  (new ModelInterface())->generate();
+        echo  (new ModelInterface($this->option('global')))->generate();
         return 0;
     }
 }

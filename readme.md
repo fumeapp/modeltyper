@@ -75,5 +75,61 @@ public function getFirstNameAttribute(): string // <- this
 }
 ```
 
+### Custom Interfaces
+If you have custom interfaces you are using for your models you can specify them in a reserved `interfaces` array
+
+For example for a custom `Point` interface in a `Location` model you can put this in the model
+
+```php
+public array $interfaces = [
+    'coordinate' => [
+        'name' => 'Point',
+        'import' => "@/types/api",
+    ],
+];
+```
+
+And it should generate:
+
+```ts
+import { Point } from '@/types/api'
+
+export interface Location {
+  // columns
+  coordinate: Point
+}
+```
+
+This will override all columns, mutators and relationships
+
+You can also specify an interface is nullable:
+
+```php
+    public array $interfaces = [
+        'choices' => [
+            'name' => 'ChoicesWithPivot',
+            'import' => '@/types/api',
+            'nullable' => true,
+        ],
+    ];
+```
 
 
+### Declare global
+Generate your interfaces in a global namespace named `model`
+```bash
+artisn model:typer --global
+```
+
+```ts
+export {}
+declare global {
+  export namespace models {
+
+    export interface Provider {
+      // columns
+      id: number
+      user_id: number
+      avatar?: string
+...
+```

@@ -5,30 +5,50 @@ namespace FumeApp\ModelTyper;
 
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Types\Type;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Viny\PointType;
 
 class ModelInterface
 {
-
     public array $mappings = [
         'bigint' => 'number',
         'int' => 'number',
         'integer' => 'number',
         'text' => 'string',
         'string' => 'string',
+        'decimal' => 'number',
         'datetime' => 'Date',
+        'date' => 'Date',
         'bool' => 'boolean',
         'boolean' => 'boolean',
         'json' => '[]',
+        'array' => 'string[]',
+        'point' =>  'Point',
     ];
+
+    public array $imports = [];
+
+    private string $space = '';
+
+
+    public function __construct(
+        private bool $global = false,
+    )
+    {
+        Type::addType('point', PointType::class);
+        DB::getDoctrineSchemaManager()
+            ->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
+    }
 
     /**
      * Combine all instances together
@@ -37,13 +57,45 @@ class ModelInterface
      */
     public function generate(): string
     {
-        $allCode = '';
         $models = $this->getModels();
+        $allCode = $this->getImports($models);
+
+        if ($this->global) {
+            $allCode .= "export {}\ndeclare global {\n  export namespace models {\n\n";
+            $this->space = '    ';
+        }
+
         foreach ($models as $model) {
             $interface = $this->getInterface(new $model());
             $allCode .= $this->getCode($interface);
         }
-        return $allCode;
+        if ($this->global) {
+            $allCode .= "  }\n}\n\n";
+        }
+        return substr($allCode, 0, strrpos($allCode, "\n"));
+    }
+
+    /**
+     * Generate a list of imports from specified interfaces
+     * @param Collection $models
+     * @return string
+     */
+    private function getImports(Collection $models): string {
+        $code = '';
+        $imports = [];
+        foreach ($models as $model) {
+            if ($interfaces = (new $model())->interfaces) {
+                foreach ($interfaces as $interface) {
+                    if (isset($interface['import'])) {
+                        $imports[ $interface[ 'import' ] ][] = $interface[ 'name' ];
+                    }
+                }
+            }
+        }
+        foreach ($imports as $import=>$names) {
+            $code .= "import { " . join(', ', array_unique($names)) . " } from '$import'\n";
+        }
+        return $code;
     }
 
     /**
@@ -58,13 +110,16 @@ class ModelInterface
         $columns = $this->getColumns($model);
         $mutators = $this->getMutators($model);
         $relations = $this->getRelations($model);
+        $interfaces = $this->getInterfaces($model, $columns, $mutators, $relations);
         return new TypescriptInterface(
             name: (new ReflectionClass($model))->getShortName(),
             columns: $columns,
             mutators: $mutators,
             relations: $relations,
+            interfaces: $interfaces,
         );
     }
+
 
     /**
      * Build TS code from an interface
@@ -73,28 +128,34 @@ class ModelInterface
      */
     private function getCode(TypescriptInterface $interface): string
     {
-        $code = "export interface {$interface->name} {\n";
+        $code = "{$this->space}export interface {$interface->name} {\n";
         if (count($interface->columns) > 0) {
-            $code .= "  // columns\n";
+            $code .= "{$this->space}  // columns\n";
             foreach ($interface->columns as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
         if (count($interface->mutators) > 0) {
-            $code .= "  // mutators\n";
+            $code .= "{$this->space}  // mutators\n";
             foreach ($interface->mutators as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
         if (count($interface->relations) > 0) {
-            $code .= "  // relations\n";
+            $code .= "{$this->space}  // relations\n";
             foreach ($interface->relations as $key => $value) {
-                $code .= "  {$key}: {$value}\n";
+                $code .= "{$this->space}  $key: $value\n";
             }
         }
-        $code .= "}\n";
+        if (count($interface->interfaces) > 0) {
+            $code .= "{$this->space}  // interfaces\n";
+            foreach ($interface->interfaces as $key => $value) {
+                $code .= "{$this->space}  $key: $value\n";
+            }
+        }
+        $code .= "{$this->space}}\n";
         $plural = Str::plural($interface->name);
-        $code .= "export type $plural = Array<{$interface->name}>\n\n";
+        $code .= "{$this->space}export type $plural = Array<{$interface->name}>\n\n";
         return $code;
     }
 
@@ -113,10 +174,21 @@ class ModelInterface
         foreach ($methods as $method) {
             $reflection = new ReflectionMethod($model, $method);
             if ($reflection->hasReturnType()) {
+                if ($model->interfaces) {
+                    foreach ($model->interfaces as $key => $value) {
+                        if ($key === $method) {
+                            if (isset($value['nullable']) && $value['nullable'] === true) {
+                                $relations[ $key . '?' ] = $value[ 'name' ];
+                            } else {
+                                $relations[ $key ] = $value[ 'name' ];
+                            }
+                            continue 2;
+                        }
+                    }
+                }
                 $type = (string) $reflection->getReturnType();
                 $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
                 preg_match('/\((.*?)::class/', $code, $matches);
-                if (strstr($type, 'or')) ray($type);
                 if ($matches && $matches[1]) {
 
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
@@ -159,6 +231,37 @@ class ModelInterface
     }
 
     /**
+     * Return any other remaining interfaces
+     *
+     * @param Model $model
+     * @param array $columns
+     * @param array $mutators
+     * @param array $relations
+     * @return array
+     */
+    private function getInterfaces(Model $model, array $columns, array $mutators, array $relations): array
+    {
+        if (!isset($model->interfaces)) {
+            return [];
+        }
+        $interfaces = [];
+        foreach ($model->interfaces as $key=>$interface) {
+            if (array_key_exists($key, $columns) || array_key_exists($key . '?', $columns)) {
+                continue;
+            }
+            if (array_key_exists($key, $mutators) || array_key_exists($key . '?', $mutators)) {
+                continue;
+            }
+                if (array_key_exists($key, $relations) || array_key_exists($key . '?', $relations)) {
+                continue;
+            }
+            $interfaces[$key] = $interface['name'];
+        }
+        return $interfaces;
+    }
+
+
+    /**
      * Find and map our get mutators
      * @param Model $model
      * @return array
@@ -169,6 +272,12 @@ class ModelInterface
         $mutations = [];
         $mutators = $model->getMutatedAttributes();
         foreach ($mutators as $mutator) {
+
+            if (isset($model->interfaces) && isset($model->interfaces[$mutator])) {
+                $mutations[$mutator] = $model->interfaces[$mutator]['name'];
+                continue;
+            }
+
             $method = 'get' . $this->camelize($mutator) . 'Attribute';
             $reflection = new ReflectionMethod($model, $method);
             if (!$reflection->hasReturnType()) {
@@ -207,11 +316,19 @@ class ModelInterface
     {
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
+
             try {
                 $column = $this->getColumn($model, $columnName);
-
+                if (isset($model->interfaces) && isset($model->interfaces[$columnName])) {
+                    if ($column->getNotnull()) {
+                        $columns [ $columnName ] = $model->interfaces[ $columnName ][ 'name' ];
+                    } else {
+                        $columns [ $columnName . '?' ] = $model->interfaces[ $columnName ][ 'name' ];
+                    }
+                    continue;
+                }
                 if (!isset($this->mappings[$column->getType()->getName()])) {
-                    throw new Exception('Unknown type found: ' . $column->getType()->getName());
+                  throw new Exception('Unknown type found: ' . $column->getType()->getName());
                 } else {
                     if ($column->getNotnull()) {
                         $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
@@ -234,14 +351,11 @@ class ModelInterface
      */
     private function getColumnList(Model $model): array
     {
-        try {
-            return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
-        } catch (Exception $exception) {
-        }
+        return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
     }
 
-/**
- * Get column details
+    /**
+     * Get column details
      * @param Model $model
      * @param string $column
      * @return Column
