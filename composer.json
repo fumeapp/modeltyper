@@ -3,8 +3,8 @@
     "description": "Generate TypeScript interfaces from Laravel Models",
     "type": "library",
     "require": {
-        "php": "^8.0",
-        "illuminate/support": "8.*"
+        "php": "^8.0|^8.1",
+        "illuminate/support": "8.*|9.*"
     },
     "license": "MIT",
     "authors": [
