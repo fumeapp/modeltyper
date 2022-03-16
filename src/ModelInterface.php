@@ -110,7 +110,12 @@ class ModelInterface
         $columns = $this->getColumns($model);
         $mutators = $this->getMutators($model);
         $relations = $this->getRelations($model);
-        $interfaces = $this->getInterfaces($model, $columns, $mutators, $relations);
+        list(
+            $interfaces,
+            $columns,
+            $mutators,
+            $relations
+            ) = $this->getInterfaces($model, $columns, $mutators, $relations);
         return new TypescriptInterface(
             name: (new ReflectionClass($model))->getShortName(),
             columns: $columns,
@@ -155,7 +160,7 @@ class ModelInterface
         }
         $code .= "{$this->space}}\n";
         $plural = Str::plural($interface->name);
-        $code .= "{$this->space}export type $plural = Array<{$interface->name}>\n\n";
+        $code .= "{$this->space}export type $plural = {$interface->name}[]\n\n";
         return $code;
     }
 
@@ -242,22 +247,24 @@ class ModelInterface
     private function getInterfaces(Model $model, array $columns, array $mutators, array $relations): array
     {
         if (!isset($model->interfaces)) {
-            return [];
+            return [ [], $columns, $mutators, $relations ];
         }
         $interfaces = [];
         foreach ($model->interfaces as $key=>$interface) {
-            if (array_key_exists($key, $columns) || array_key_exists($key . '?', $columns)) {
-                continue;
-            }
-            if (array_key_exists($key, $mutators) || array_key_exists($key . '?', $mutators)) {
-                continue;
-            }
-                if (array_key_exists($key, $relations) || array_key_exists($key . '?', $relations)) {
-                continue;
-            }
+            $interfaces[$key] = $interface['name'];
+
+            if (array_key_exists($key, $columns)) { unset($columns[$key]); }
+            if (array_key_exists($key . '?', $columns)) { unset($columns[$key . '?']); }
+
+            if (array_key_exists($key, $mutators)) { unset($mutators[$key]); }
+            if (array_key_exists($key . '?', $mutators)) { unset($mutators[$key . '?']); }
+
+            if (array_key_exists($key, $relations)) { unset($relations[$key]); }
+            if (array_key_exists($key . '?', $relations)) { unset($relations[$key . '?']); }
+
             $interfaces[$key] = $interface['name'];
         }
-        return $interfaces;
+        return [ $interfaces, $columns, $mutators, $relations ];
     }
 
 
@@ -275,19 +282,19 @@ class ModelInterface
             $reflection = $this->determineAccessorType($model, $mutator);
             $returnType = (string) $reflection->getReturnType();
 
-            // If Model is using Laravel's new Accessors
+            // If Model is using v9 Attributes
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
-                if (isset($model->mutations) && isset($model->mutations[$mutator])) {
-                    $mutations[$mutator] = $model->mutations[$mutator];
+                if (isset($model->attrs) && isset($model->attrs[$mutator])) {
+                    $mutations[$mutator] = $model->attrs[$mutator];
                     continue;
                 }
                 throw new Exception(
-                    "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models mutations array"
+                    "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models \$attrs array"
                 );
-            }else {
-                if (isset($model->mutations) && isset($model->mutations[$mutator])) {
-                    $mutations[$mutator] = $model->mutations[$mutator];
+            } else {
+                if (isset($model->attrs) && isset($model->attrs[$mutator])) {
+                    $mutations[$mutator] = $model->attrs[$mutator];
                     continue;
                 }
 

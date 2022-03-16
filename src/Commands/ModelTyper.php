@@ -13,7 +13,8 @@ class ModelTyper extends Command
      *
      * @var string
      */
-    protected $signature = 'model:typer {--global}';
+    protected $signature = 'model:typer
+                            {--global : Generate your interfaces in a global namespace named model}';
 
     /**
      * The console command description.
