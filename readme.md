@@ -118,7 +118,7 @@ You can also specify an interface is nullable:
 ### Declare global
 Generate your interfaces in a global namespace named `model`
 ```bash
-artisn model:typer --global
+artisan model:typer --global
 ```
 
 ```ts
@@ -132,4 +132,46 @@ declare global {
       user_id: number
       avatar?: string
 ...
+```
+
+### Laravel V9 Attribute support
+Laravel V9 now has a very different way of [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators)
+In order to tell modeltyper the types of your attributes - we need a way to know - and will look for an $attrs array in your model:
+
+```php
+    public array $attrs = [
+        'is_captain' => 'boolean',
+    ];
+
+...
+    /**
+     * Determine if the user is a captain of a team
+     *
+     * @return Attribute
+     */
+    public function isCaptain(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->teams[0]->pivot->captain ?? false,
+        );
+    }
+```
+
+This will then properly generate something like:
+
+```ts
+export interface User {
+  // columns
+  id: number
+  email: string
+  name?: string
+  created_at?: Date
+  updated_at?: Date
+  // mutators
+  is_captain: boolean
+  // relations
+  teams: TeamUsers
+
+}
+
 ```
