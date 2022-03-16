@@ -114,6 +114,29 @@ You can also specify an interface is nullable:
     ];
 ```
 
+In the latest versions of Laravel you can now define mutators & accessor within the new `Illuminate\Database\Eloquent\Casts\Attribute` return type. So your model might look something like this:
+```php
+/**
+ * Get the user's first name.
+ *
+ * @return \Illuminate\Database\Eloquent\Casts\Attribute
+ */
+protected function firstName(): Attribute
+{
+    return new Attribute(
+        get: fn ($value, $attributes) => ucfirst(explode(' ', $attributes['name'])[0]),
+    );
+}
+```
+
+With this new way there is no easy way to know what the get function should return. So if you are using this new way you can define a `$mutations` array on your model like so:
+```php
+public array $mutations = [
+    'first_name' => 'string',
+];
+```
+This lets us know it should use value of that as the return type of the attribute.
+
 
 ### Declare global
 Generate your interfaces in a global namespace named `model`
