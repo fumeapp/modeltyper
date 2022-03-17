@@ -192,7 +192,10 @@ class ModelInterface
                     }
                 }
                 $type = (string) $reflection->getReturnType();
-                $code = file($reflection->getFileName())[$reflection->getEndLine()-2];
+                $code = '';
+                for ($i = $reflection->getStartLine(); $i <= $reflection->getEndLine(); $i++) {
+                    $code .= file($reflection->getFileName())[$i];
+                }
                 preg_match('/\((.*?)::class/', $code, $matches);
                 if ($matches && $matches[1]) {
 
