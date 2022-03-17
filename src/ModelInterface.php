@@ -7,6 +7,7 @@ namespace FumeApp\ModelTyper;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Opis\Closure\SerializableClosure;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionException;
@@ -273,6 +274,7 @@ class ModelInterface
      * @param Model $model
      * @return array
      * @throws ReflectionException
+     * @throws Exception
      */
     public function getMutators(Model $model): array
     {
@@ -284,6 +286,14 @@ class ModelInterface
 
             // If Model is using v9 Attributes
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
+
+                /* TODO: figure out a way to get the returnType from a closure
+                if ($reflection->name === 'isCaptain') {
+                    $closure = $reflection->getClosure($model)->getReturnType();
+                    ray($closure);
+                }
+                */
+
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
                 if (isset($model->attrs) && isset($model->attrs[$mutator])) {
                     $mutations[$mutator] = $model->attrs[$mutator];
@@ -297,9 +307,6 @@ class ModelInterface
                     $mutations[$mutator] = $model->attrs[$mutator];
                     continue;
                 }
-
-                $method = 'get' . $this->camelize($mutator) . 'Attribute';
-                $reflection = new ReflectionMethod($model, $method);
                 if (!$returnType) {
                     throw new Exception(
                         "Model for table {$model->getTable()} has no return type for mutator: {$mutator}"
