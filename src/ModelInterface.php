@@ -290,13 +290,13 @@ class ModelInterface
                     $mutations[$mutator] = $model->attrs[$mutator];
                     continue;
                 }
-                
+
                 $closure = call_user_func($reflection->getClosure($model), 1);
-                if (! is_null($closure->get)) {
+                if (!is_null($closure->get)) {
                     $rf = new ReflectionFunction($closure->get);
                     if ($rf->hasReturnType()) {
                         $returnType = $rf->getReturnType()->getName();
-                        $mutations[$mutator] = $this->mapReturnType((string) $returnType);
+                        $mutations[$mutator] = $this->mapReturnType($returnType);
                         continue;
                     }else {
                         // warn user to add return type to closure

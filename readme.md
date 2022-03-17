@@ -136,13 +136,9 @@ declare global {
 
 ### Laravel V9 Attribute support
 Laravel now has a very different way of [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators)
-In order to tell modeltyper the types of your attributes - we need a way to know - and will look for an $attrs array in your model:
+In order to tell modeltyper the types of your attributes - be sure to specify the type the attribute returns:
 
 ```php
-    public array $attrs = [
-        'is_captain' => 'boolean',
-    ];
-    
     /**
      * Determine if the user is a captain of a team
      *
@@ -151,7 +147,7 @@ In order to tell modeltyper the types of your attributes - we need a way to know
     public function isCaptain(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->teams[0]->pivot->captain ?? false,
+            get: fn (): bool => $this->teams[0]->pivot->captain ?? false,
         );
     }
 ```
