@@ -3,13 +3,12 @@
 
 namespace FumeApp\ModelTyper;
 
-
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Opis\Closure\SerializableClosure;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionFunction;
 use ReflectionException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
@@ -286,18 +285,23 @@ class ModelInterface
 
             // If Model is using v9 Attributes
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
-
-                /* TODO: figure out a way to get the returnType from a closure
-                if ($reflection->name === 'isCaptain') {
-                    $closure = $reflection->getClosure($model)->getReturnType();
-                    ray($closure);
-                }
-                */
-
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
                 if (isset($model->attrs) && isset($model->attrs[$mutator])) {
                     $mutations[$mutator] = $model->attrs[$mutator];
                     continue;
+                }
+                
+                $closure = call_user_func($reflection->getClosure($model), 1);
+                if (! is_null($closure->get)) {
+                    $rf = new ReflectionFunction($closure->get);
+                    if ($rf->hasReturnType()) {
+                        $returnType = $rf->getReturnType()->getName();
+                        $mutations[$mutator] = $this->mapReturnType((string) $returnType);
+                        continue;
+                    }else {
+                        // warn user to add return type to closure
+                        throw new Exception('Unable to determine return type for ' . $mutator . ' Please add a return type to the get closure');
+                    }
                 }
                 throw new Exception(
                     "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models \$attrs array"
