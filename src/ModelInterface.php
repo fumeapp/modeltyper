@@ -296,7 +296,7 @@ class ModelInterface
                     $rf = new ReflectionFunction($closure->get);
                     if ($rf->hasReturnType()) {
                         $returnType = $rf->getReturnType()->getName();
-                        $mutations[$mutator] = $this->mappings[$returnType];
+                        $mutations[$mutator] = $this->mapReturnType((string) $returnType);
                         continue;
                     }else {
                         // warn user to add return type to closure
