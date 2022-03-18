@@ -135,8 +135,8 @@ declare global {
 ```
 
 ### Laravel V9 Attribute support
-Laravel now has a very different way of [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators)
-In order to tell modeltyper the types of your attributes - be sure to specify the type the attribute returns:
+Laravel now has a very different way of specifying [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators).  
+In order to tell modeltyper the types of your attributes - be sure to add the type the attribute returns:
 
 ```php
     /**
@@ -152,7 +152,7 @@ In order to tell modeltyper the types of your attributes - be sure to specify th
     }
 ```
 
-This will then properly generate something like:
+This will generate something like:
 
 ```ts
 export interface User {
