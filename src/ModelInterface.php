@@ -170,7 +170,12 @@ class ModelInterface
         foreach ($casts as $key => $values) {
             $code .= "export enum $key {\n";
             foreach ($values as $value) {
-                $code .= "  $value[name] = $value[value],\n";
+                $enumVal = $value['value'];
+                if (is_string($value['value'])) {
+                    $enumVal = "'$value[value]'";
+                }
+
+                $code .= "  $value[name] = $enumVal,\n";
             }
             $code .= "}\n";
         }
