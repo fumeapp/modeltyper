@@ -3,19 +3,21 @@
 
 namespace FumeApp\ModelTyper;
 
-use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionFunction;
-use ReflectionException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
+use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use ReflectionClass;
+use ReflectionEnum;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionMethod;
 use Viny\PointType;
 
 class ModelInterface
@@ -37,6 +39,7 @@ class ModelInterface
     ];
 
     public array $imports = [];
+    public array $enums = [];
 
     private string $space = '';
 
@@ -59,6 +62,7 @@ class ModelInterface
     {
         $models = $this->getModels();
         $allCode = $this->getImports($models);
+        $allCode .= $this->getCasts($models);
 
         if ($this->global) {
             $allCode .= "export {}\ndeclare global {\n  export namespace models {\n\n";
@@ -125,6 +129,73 @@ class ModelInterface
         );
     }
 
+    /**
+     * Get all Casts for for models
+     *
+     * @param Collection $models - Collection of models
+     * @return string
+     */
+    private function getCasts(Collection $models): string
+    {
+        $code = '';
+        $casts = [];
+        foreach ($models as $model) {
+            $model = new $model();
+            foreach ($model->getCasts() as $key => $value) {
+                if (!class_exists($value)) {
+                    continue;
+                }
+                $reflection = (new ReflectionClass($value));
+
+                // if not an enum or already imported skip
+                if (!$reflection->isEnum() || in_array($value, $casts)) {
+                    continue;
+                }
+
+                $enum = (new ReflectionEnum($value));
+                $enumValues = [];
+                foreach ($enum->getConstants() as $case) {
+                    $enumValues[] = [
+                        'name' => $case->name,
+                        'value' => $case->value,
+                    ];
+                }
+
+                $casts[$enum->getShortName()] = $enumValues;
+                $this->enums[] = $value;
+            }
+        }
+
+        // Now Loop over casts and make them TS imports
+        foreach ($casts as $key => $values) {
+            $code .= "export enum $key {\n";
+            foreach ($values as $value) {
+                $code .= "  $value[name] = $value[value],\n";
+            }
+            $code .= "}\n";
+        }
+
+        return $code;
+    }
+
+    /**
+     * TODO - Add support for enum comments
+     * Extract Enum DocBlock comments
+     * @param ReflectionEnum $enum
+     */
+    private function getEnumDocBlock(ReflectionEnum $enum): string
+    {
+        $docBlock = $enum->getDocComment();
+        $docBlock = str_replace('/**', '', $docBlock);
+        $docBlock = str_replace('*/', '', $docBlock);
+        $docBlock = str_replace('*', '', $docBlock);
+        $docBlock = str_replace('@', '', $docBlock);
+        $docBlock = str_replace("\n", '', $docBlock);
+        $docBlock = str_replace("\r", '', $docBlock);
+        $docBlock = str_replace("\t", '', $docBlock);
+        $docBlock = trim($docBlock);
+        return $docBlock;
+    }
 
     /**
      * Build TS code from an interface
@@ -378,31 +449,34 @@ class ModelInterface
     {
         $columns = [];
         foreach ($this->getColumnList($model) as $columnName) {
-
             try {
                 $column = $this->getColumn($model, $columnName);
                 if (isset($model->interfaces) && isset($model->interfaces[$columnName])) {
                     if ($column->getNotnull()) {
-                        $columns [ $columnName ] = $model->interfaces[ $columnName ][ 'name' ];
+                        $columns[$columnName] = $model->interfaces[$columnName]['name'];
                     } else {
-                        $columns [ $columnName . '?' ] = $model->interfaces[ $columnName ][ 'name' ];
+                        $columns[$columnName . '?'] = $model->interfaces[$columnName]['name'];
                     }
                     continue;
                 }
+                // If model has casts use them
+                if ($model->hasCast($columnName) && in_array($model->getCasts()[$columnName], $this->enums)) {
+                    $columns[$columnName] = Arr::last(explode('\\', $model->getCasts()[$columnName]));
+                    continue;
+                }
                 if (!isset($this->mappings[$column->getType()->getName()])) {
-                  throw new Exception('Unknown type found: ' . $column->getType()->getName());
+                    throw new Exception('Unknown type found: ' . $column->getType()->getName());
                 } else {
                     if ($column->getNotnull()) {
-                        $columns[ $columnName ] = $this->mappings[ $column->getType()->getName() ];
+                        $columns[$columnName] = $this->mappings[$column->getType()->getName()];
                     } else {
-                        $columns[ $columnName . '?' ] = $this->mappings[ $column->getType()->getName() ];
+                        $columns[$columnName . '?'] = $this->mappings[$column->getType()->getName()];
                     }
                 }
             } catch (Exception $exception) {
             }
-
-
         }
+
         return $columns;
     }
 
