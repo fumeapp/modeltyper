@@ -178,10 +178,13 @@ class ModelInterface
                     $enumVal = "'$value[value]'";
                 }
 
+                // ! This is assuming the @property are in same order as the enum declarations
                 // if comments exists and the key is the same as the value add it before the value
                 if (! empty($values['comments'])) {
                     if (strpos($values['comments'][$key], $value['name']) === 0) {
-                        $comment = $values['comments'][$key];
+                        $comment = str_replace($value['name'], '', $values['comments'][$key]);
+                        $comment = preg_replace('/[^a-zA-Z0-9\s]/', '', $comment);
+                        $comment = trim($comment);
                         $code .= "  /** $comment */\n";
                     }
                 }
