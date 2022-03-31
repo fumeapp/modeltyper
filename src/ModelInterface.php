@@ -173,7 +173,7 @@ class ModelInterface
 
         // Now Loop over casts and make them TS imports
         foreach ($casts as $key => $values) {
-            $code .= "export enum $key {\n";
+            $code .= "{$this->space}export enum $key {\n";
             foreach ($values['values'] as $key => $value) {
                 $enumVal = $value['value'];
                 if (is_string($value['value'])) {
@@ -188,15 +188,15 @@ class ModelInterface
                             $comment = str_replace($value['name'], '', $comment);
                             $comment = preg_replace('/[^a-zA-Z0-9\s]/', '', $comment);
                             $comment = trim($comment);
-                            $code .= "  /** $comment */\n";
+                            $code .= "{$this->space}  /** $comment */\n";
                             break;
                         }
                     }
                 }
 
-                $code .= "  $value[name] = $enumVal,\n";
+                $code .= "{$this->space}  $value[name] = $enumVal,\n";
             }
-            $code .= "}\n\n";
+            $code .= "{$this->space}}\n\n";
         }
 
         return $code;
