@@ -153,6 +153,9 @@ class ModelInterface
                 }
 
                 $enum = (new ReflectionEnum($value));
+
+                $docBlock = $this->getEnumDocBlock($enum);
+                $casts[$enum->getShortName()]['comments'] = $docBlock;
                 $enumValues = [];
                 foreach ($enum->getConstants() as $case) {
                     $enumValues[] = [
@@ -161,7 +164,7 @@ class ModelInterface
                     ];
                 }
 
-                $casts[$enum->getShortName()] = $enumValues;
+                $casts[$enum->getShortName()]['values'] = $enumValues;
                 $this->enums[] = $value;
             }
         }
@@ -169,10 +172,18 @@ class ModelInterface
         // Now Loop over casts and make them TS imports
         foreach ($casts as $key => $values) {
             $code .= "export enum $key {\n";
-            foreach ($values as $value) {
+            foreach ($values['values'] as $key => $value) {
                 $enumVal = $value['value'];
                 if (is_string($value['value'])) {
                     $enumVal = "'$value[value]'";
+                }
+
+                // if comments exists and the key is the same as the value add it before the value
+                if (! empty($values['comments'])) {
+                    if (strpos($values['comments'][$key], $value['name']) === 0) {
+                        $comment = $values['comments'][$key];
+                        $code .= "  /** $comment */\n";
+                    }
                 }
 
                 $code .= "  $value[name] = $enumVal,\n";
@@ -187,19 +198,19 @@ class ModelInterface
      * TODO - Add support for enum comments
      * Extract Enum DocBlock comments
      * @param ReflectionEnum $enum
+     * @return array
      */
-    private function getEnumDocBlock(ReflectionEnum $enum): string
+    private function getEnumDocBlock(ReflectionEnum $enum): array
     {
+        $comments = [];
         $docBlock = $enum->getDocComment();
-        $docBlock = str_replace('/**', '', $docBlock);
-        $docBlock = str_replace('*/', '', $docBlock);
-        $docBlock = str_replace('*', '', $docBlock);
-        $docBlock = str_replace('@', '', $docBlock);
-        $docBlock = str_replace("\n", '', $docBlock);
-        $docBlock = str_replace("\r", '', $docBlock);
-        $docBlock = str_replace("\t", '', $docBlock);
-        $docBlock = trim($docBlock);
-        return $docBlock;
+        if ($docBlock) {
+            $pattern = "#(@property+\s*[a-zA-Z0-9, ()_].*)#";
+            preg_match_all($pattern, $docBlock, $matches, PREG_PATTERN_ORDER);
+            $comments = array_map(fn ($match) => trim(str_replace('@property', '', $match)), $matches[0]);
+        }
+
+        return $comments;
     }
 
     /**
