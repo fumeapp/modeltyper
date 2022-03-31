@@ -62,12 +62,13 @@ class ModelInterface
     {
         $models = $this->getModels();
         $allCode = $this->getImports($models);
-        $allCode .= $this->getCasts($models);
 
         if ($this->global) {
             $allCode .= "export {}\ndeclare global {\n  export namespace models {\n\n";
             $this->space = '    ';
         }
+
+        $allCode .= $this->getCasts($models);
 
         foreach ($models as $model) {
             $interface = $this->getInterface(new $model());
@@ -130,10 +131,11 @@ class ModelInterface
     }
 
     /**
-     * Get all Casts for for models
+     * Get all Casts for models
      *
      * @param Collection $models - Collection of models
      * @return string
+     * @throws ReflectionException
      */
     private function getCasts(Collection $models): string
     {
@@ -194,7 +196,7 @@ class ModelInterface
 
                 $code .= "  $value[name] = $enumVal,\n";
             }
-            $code .= "}\n";
+            $code .= "}\n\n";
         }
 
         return $code;

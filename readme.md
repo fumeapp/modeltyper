@@ -170,3 +170,51 @@ export interface User {
 }
 
 ```
+
+### Enum Eloquent Attribute Casting
+Laravel now lets you cast [Enums](https://laravel.com/docs/9.x/releases#enum-casting).  This will detect this and bring in your enum class, converting any comments you've made:
+
+> `app/Enums/UserRoleEnum.php`
+```php
+<?php
+
+namespace App\Enums;
+
+/**
+ * @property Admin - Can do anything
+ * @property USER - Standard read-only
+ */
+enum UserRoleEnum: string
+{
+    case ADMIN = 'admin';
+    case USER = 'user';
+}
+```
+
+Then inside our User model
+> `app/Models/User.php`
+```php
+protected $casts = [
+    'role' => App\Enums\UserRoleEnum::class,
+];
+```
+
+Now our modeltyper output will look like the following:
+```ts
+export enum UserRoleEnum {
+  /** Can do anything */
+  ADMIN = 'admin',
+  /** Standard read-only */
+  USER = 'user',
+}
+export interface User {
+  ...
+  role: UserRoleEnum
+  ...
+}
+```
+
+> Notice how the comments are found and parsed - they must follow the specified format
+
+
+
