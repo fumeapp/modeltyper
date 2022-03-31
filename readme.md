@@ -172,7 +172,7 @@ export interface User {
 ```
 
 ### Enum Eloquent Attribute Casting
-Laravel now lets you cast [Enums](https://laravel.com/docs/9.x/releases#enum-casting).  This will detect this and bring in your enum class, converting any comments you've made:
+Laravel now lets you cast [Enums in your models](https://laravel.com/docs/9.x/releases#enum-casting).  This will get detected and bring in your enum class with your comments:
 
 > `app/Enums/UserRoleEnum.php`
 ```php
@@ -181,7 +181,7 @@ Laravel now lets you cast [Enums](https://laravel.com/docs/9.x/releases#enum-cas
 namespace App\Enums;
 
 /**
- * @property Admin - Can do anything
+ * @property ADMIN - Can do anything
  * @property USER - Standard read-only
  */
 enum UserRoleEnum: string
