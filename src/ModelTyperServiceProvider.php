@@ -4,7 +4,6 @@ namespace FumeApp\ModelTyper;
 
 use FumeApp\ModelTyper\Commands\ModelTyper;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 
 class ModelTyperServiceProvider extends ServiceProvider
 {
@@ -13,9 +12,8 @@ class ModelTyperServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(Router $router)
+    public function boot()
     {
-
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ModelTyper::class,
