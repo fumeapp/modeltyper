@@ -44,6 +44,9 @@ class ModelInterface
     private string $space = '';
 
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function __construct(
         private bool $global = false,
     )
@@ -173,8 +176,8 @@ class ModelInterface
 
         // Now Loop over casts and make them TS imports
         foreach ($casts as $key => $values) {
-            $code .= "export enum $key {\n";
-            foreach ($values['values'] as $key => $value) {
+            $code .= "{$this->space}export enum $key {\n";
+            foreach ($values['values'] as $value) {
                 $enumVal = $value['value'];
                 if (is_string($value['value'])) {
                     $enumVal = "'$value[value]'";
@@ -184,19 +187,19 @@ class ModelInterface
                 if (! empty($values['comments'])) {
                     // loop over comments and find the comment for this value
                     foreach ($values['comments'] as $comment) {
-                        if (strpos($comment, $value['name']) === 0) {
+                        if (str_starts_with($comment, $value['name'])) {
                             $comment = str_replace($value['name'], '', $comment);
                             $comment = preg_replace('/[^a-zA-Z0-9\s]/', '', $comment);
                             $comment = trim($comment);
-                            $code .= "  /** $comment */\n";
+                            $code .= "{$this->space}  /** $comment */\n";
                             break;
                         }
                     }
                 }
 
-                $code .= "  $value[name] = $enumVal,\n";
+                $code .= "{$this->space}  $value[name] = $enumVal,\n";
             }
-            $code .= "}\n\n";
+            $code .= "{$this->space}}\n\n";
         }
 
         return $code;
@@ -312,9 +315,7 @@ class ModelInterface
                         $type === 'Illuminate\Database\Eloquent\Relations\MorphToMany' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\MorphMany'
                     ) {
-                        if ($matches[1]) {
-                            $relations[Str::snake($method)] = Str::plural($matches[1]);
-                        }
+                        $relations[Str::snake($method)] = Str::plural($matches[1]);
                     }
 
                     if ($type === '?Illuminate\Database\Eloquent\Relations\BelongsToMany' ||
@@ -322,9 +323,7 @@ class ModelInterface
                         $type === '?Illuminate\Database\Eloquent\Relations\MorphToMany' ||
                         $type === '?Illuminate\Database\Eloquent\Relations\MorphMany'
                     ) {
-                        if ($matches[1]) {
-                            $relations[Str::snake($method) . '?'] = Str::plural($matches[1]);
-                        }
+                        $relations[Str::snake($method) . '?'] = Str::plural($matches[1]);
                     }
                 }
             }
@@ -381,12 +380,12 @@ class ModelInterface
             $returnType = (string) $reflection->getReturnType();
 
             // If Model is using v9 Attributes
+            if (isset($model->attrs) && isset($model->attrs[$mutator])) {
+                $mutations[$mutator] = $model->attrs[$mutator];
+                continue;
+            }
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
-                if (isset($model->attrs) && isset($model->attrs[$mutator])) {
-                    $mutations[$mutator] = $model->attrs[$mutator];
-                    continue;
-                }
 
                 $closure = call_user_func($reflection->getClosure($model), 1);
                 if (!is_null($closure->get)) {
@@ -404,10 +403,6 @@ class ModelInterface
                     "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models \$attrs array"
                 );
             } else {
-                if (isset($model->attrs) && isset($model->attrs[$mutator])) {
-                    $mutations[$mutator] = $model->attrs[$mutator];
-                    continue;
-                }
                 if (!$returnType) {
                     throw new Exception(
                         "Model for table {$model->getTable()} has no return type for mutator: {$mutator}"
@@ -428,7 +423,7 @@ class ModelInterface
      * @return ReflectionMethod
      * @throws Exception
      */
-    private function determineAccessorType($model, $mutator): ReflectionMethod
+    private function determineAccessorType(Model $model, string $mutator): ReflectionMethod
     {
         // Try traditional
         try {
@@ -546,18 +541,18 @@ class ModelInterface
                 }
                 return $valid;
             });
+
         return $models->values();
     }
 
     /**
      * under_scores to CamelCase
      * @param $input
-     * @param string $separator
      * @return string
      */
-    private function camelize($input, $separator = '_'): string
+    private function camelize($input): string
     {
-        return str_replace($separator, '', ucwords($input, $separator));
+        return str_replace('_', '', ucwords($input, '_'));
     }
 
 }

@@ -3,7 +3,7 @@
     "description": "Generate TypeScript interfaces from Laravel Models",
     "type": "library",
     "require": {
-        "php": "^8.0|^8.1",
+        "php": "^8.1",
         "illuminate/support": "8.*|9.*",
         "vinyvicente/doctrine-point-type": "^2.3"
     },

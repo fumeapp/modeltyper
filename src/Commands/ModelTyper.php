@@ -2,6 +2,7 @@
 
 namespace FumeApp\ModelTyper\Commands;
 
+use Doctrine\DBAL\Exception;
 use FumeApp\ModelTyper\ModelInterface;
 use Illuminate\Console\Command;
 use ReflectionException;
@@ -37,11 +38,12 @@ class ModelTyper extends Command
      * Execute the console command.
      *
      * @return int
-     * @throws ReflectionException
+     * @throws ReflectionException|Exception
      */
-    public function handle()
+    public function handle(): int
     {
         echo  (new ModelInterface($this->option('global')))->generate();
-        return 0;
+
+        return Command::SUCCESS;
     }
 }
