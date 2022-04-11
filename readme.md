@@ -215,7 +215,7 @@ export interface User {
 }
 ```
 
-> ModelTyper uses Object Literals instead of TS Enums (for opinionated reasons)[https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1]
+> ModelTyper uses Object Literals instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1)
 > Notice how the comments are found and parsed - they must follow the specified format
 
 
