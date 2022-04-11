@@ -201,12 +201,13 @@ protected $casts = [
 
 Now our modeltyper output will look like the following:
 ```ts
-export enum UserRoleEnum {
+const UserRoleEnum = {
   /** Can do anything */
-  ADMIN = 'admin',
+  ADMIN: 'admin',
   /** Standard read-only */
-  USER = 'user',
+  USER: 'user',
 }
+export type UseRoleEnum = typeof UseRoleEnum[keyof typeof UserRoleEnum]
 export interface User {
   ...
   role: UserRoleEnum
@@ -214,6 +215,7 @@ export interface User {
 }
 ```
 
+> ModelTyper uses Object Literals instead of TS Enums (for opinionated reasons)[https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1]
 > Notice how the comments are found and parsed - they must follow the specified format
 
 

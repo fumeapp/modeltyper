@@ -176,7 +176,7 @@ class ModelInterface
 
         // Now Loop over casts and make them TS imports
         foreach ($casts as $key => $values) {
-            $code .= "{$this->space}export enum $key {\n";
+            $code .= "{$this->space}const $key = {\n";
             foreach ($values['values'] as $value) {
                 $enumVal = $value['value'];
                 if (is_string($value['value'])) {
@@ -197,9 +197,10 @@ class ModelInterface
                     }
                 }
 
-                $code .= "{$this->space}  $value[name] = $enumVal,\n";
+                $code .= "{$this->space}  $value[name]: $enumVal,\n";
             }
-            $code .= "{$this->space}}\n\n";
+            $code .= "{$this->space}}\n";
+            $code .= "{$this->space}export type {$key} = typeof {$key}[keyof typeof {$key}]\n\n";
         }
 
         return $code;
