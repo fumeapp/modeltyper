@@ -249,6 +249,12 @@ class ModelInterface
             foreach ($interface->relations as $key => $value) {
                 $code .= "{$this->space}  $key: $value\n";
             }
+
+            $code .= "{$this->space}  // relation counts\n";
+            foreach ($interface->relations as $key => $value) {
+                $countKey = substr($key, -1) === '?' ? Str::snake(substr_replace($key, '_count?', -1)) : Str::snake($key . '_count');
+                $code .= "{$this->space}  $countKey: number\n";
+            }
         }
         if (count($interface->interfaces) > 0) {
             $code .= "{$this->space}  // interfaces\n";
