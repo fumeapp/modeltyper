@@ -1,0 +1,14 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    # Determines the level of checking. 5 is a good starter point 8 is max
+    level: 5
+
+    ignoreErrors:
+
+    excludePaths:
+        - vendor/*

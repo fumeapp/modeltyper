@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FumeApp\ModelTyper;
 
 use Doctrine\DBAL\Schema\Column;
@@ -35,22 +34,21 @@ class ModelInterface
         'boolean' => 'boolean',
         'json' => '[]',
         'array' => 'string[]',
-        'point' =>  'Point',
+        'point' => 'Point',
     ];
 
     public array $imports = [];
+
     public array $enums = [];
 
     private string $space = '';
-
 
     /**
      * @throws \Doctrine\DBAL\Exception
      */
     public function __construct(
         private bool $global = false,
-    )
-    {
+    ) {
         Type::addType('point', PointType::class);
         DB::getDoctrineSchemaManager()
             ->getDatabasePlatform()->registerDoctrineTypeMapping('point', 'point');
@@ -58,7 +56,9 @@ class ModelInterface
 
     /**
      * Combine all instances together
+     *
      * @return string
+     *
      * @throws ReflectionException
      */
     public function generate(): string
@@ -80,36 +80,42 @@ class ModelInterface
         if ($this->global) {
             $allCode .= "  }\n}\n\n";
         }
+
         return substr($allCode, 0, strrpos($allCode, "\n"));
     }
 
     /**
      * Generate a list of imports from specified interfaces
-     * @param Collection $models
+     *
+     * @param  Collection  $models
      * @return string
      */
-    private function getImports(Collection $models): string {
+    private function getImports(Collection $models): string
+    {
         $code = '';
         $imports = [];
         foreach ($models as $model) {
             if ($interfaces = (new $model())->interfaces) {
                 foreach ($interfaces as $interface) {
                     if (isset($interface['import'])) {
-                        $imports[ $interface[ 'import' ] ][] = $interface[ 'name' ];
+                        $imports[$interface['import']][] = $interface['name'];
                     }
                 }
             }
         }
-        foreach ($imports as $import=>$names) {
-            $code .= "import { " . join(', ', array_unique($names)) . " } from '$import'\n";
+        foreach ($imports as $import => $names) {
+            $code .= 'import { ' . implode(', ', array_unique($names)) . " } from '$import'\n";
         }
+
         return $code;
     }
 
     /**
      * Build an interface from a model
-     * @param Model $model
+     *
+     * @param  Model  $model
      * @return TypescriptInterface
+     *
      * @throws ReflectionException
      * @throws Exception
      */
@@ -118,12 +124,13 @@ class ModelInterface
         $columns = $this->getColumns($model);
         $mutators = $this->getMutators($model);
         $relations = $this->getRelations($model);
-        list(
+        [
             $interfaces,
             $columns,
             $mutators,
             $relations
-            ) = $this->getInterfaces($model, $columns, $mutators, $relations);
+        ] = $this->getInterfaces($model, $columns, $mutators, $relations);
+
         return new TypescriptInterface(
             name: (new ReflectionClass($model))->getShortName(),
             columns: $columns,
@@ -136,8 +143,9 @@ class ModelInterface
     /**
      * Get all Casts for models
      *
-     * @param Collection $models - Collection of models
+     * @param  Collection  $models - Collection of models
      * @return string
+     *
      * @throws ReflectionException
      */
     private function getCasts(Collection $models): string
@@ -147,13 +155,13 @@ class ModelInterface
         foreach ($models as $model) {
             $model = new $model();
             foreach ($model->getCasts() as $key => $value) {
-                if (!class_exists($value)) {
+                if (! class_exists($value)) {
                     continue;
                 }
                 $reflection = (new ReflectionClass($value));
 
                 // if not an enum or already imported skip
-                if (!$reflection->isEnum() || in_array($value, $casts)) {
+                if (! $reflection->isEnum() || in_array($value, $casts)) {
                     continue;
                 }
 
@@ -208,7 +216,8 @@ class ModelInterface
 
     /**
      * Extract Enum DocBlock comments
-     * @param ReflectionEnum $enum
+     *
+     * @param  ReflectionEnum  $enum
      * @return array
      */
     private function getEnumDocBlock(ReflectionEnum $enum): array
@@ -226,7 +235,8 @@ class ModelInterface
 
     /**
      * Build TS code from an interface
-     * @param TypescriptInterface $interface
+     *
+     * @param  TypescriptInterface  $interface
      * @return string
      */
     private function getCode(TypescriptInterface $interface): string
@@ -259,15 +269,16 @@ class ModelInterface
         $code .= "{$this->space}}\n";
         $plural = Str::plural($interface->name);
         $code .= "{$this->space}export type $plural = {$interface->name}[]\n\n";
+
         return $code;
     }
-
 
     /**
      * Find and map relationships
      *
-     * @param Model $model
+     * @param  Model  $model
      * @return array
+     *
      * @throws ReflectionException
      */
     public function getRelations(Model $model): array
@@ -281,10 +292,11 @@ class ModelInterface
                     foreach ($model->interfaces as $key => $value) {
                         if ($key === $method) {
                             if (isset($value['nullable']) && $value['nullable'] === true) {
-                                $relations[ $key . '?' ] = $value[ 'name' ];
+                                $relations[$key . '?'] = $value['name'];
                             } else {
-                                $relations[ $key ] = $value[ 'name' ];
+                                $relations[$key] = $value['name'];
                             }
+
                             continue 2;
                         }
                     }
@@ -296,7 +308,6 @@ class ModelInterface
                 }
                 preg_match('/\((.*?)::class/', $code, $matches);
                 if ($matches && $matches[1]) {
-
                     if ($type === 'Illuminate\Database\Eloquent\Relations\BelongsTo' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\HasOne' ||
                         $type === 'Illuminate\Database\Eloquent\Relations\MorphOne'
@@ -329,46 +340,61 @@ class ModelInterface
                 }
             }
         }
+
         return $relations;
     }
 
     /**
      * Return any other remaining interfaces
      *
-     * @param Model $model
-     * @param array $columns
-     * @param array $mutators
-     * @param array $relations
+     * @param  Model  $model
+     * @param  array  $columns
+     * @param  array  $mutators
+     * @param  array  $relations
      * @return array
      */
     private function getInterfaces(Model $model, array $columns, array $mutators, array $relations): array
     {
-        if (!isset($model->interfaces)) {
-            return [ [], $columns, $mutators, $relations ];
+        if (! isset($model->interfaces)) {
+            return [[], $columns, $mutators, $relations];
         }
         $interfaces = [];
-        foreach ($model->interfaces as $key=>$interface) {
+        foreach ($model->interfaces as $key => $interface) {
             $interfaces[$key] = $interface['name'];
 
-            if (array_key_exists($key, $columns)) { unset($columns[$key]); }
-            if (array_key_exists($key . '?', $columns)) { unset($columns[$key . '?']); }
+            if (array_key_exists($key, $columns)) {
+                unset($columns[$key]);
+            }
+            if (array_key_exists($key . '?', $columns)) {
+                unset($columns[$key . '?']);
+            }
 
-            if (array_key_exists($key, $mutators)) { unset($mutators[$key]); }
-            if (array_key_exists($key . '?', $mutators)) { unset($mutators[$key . '?']); }
+            if (array_key_exists($key, $mutators)) {
+                unset($mutators[$key]);
+            }
+            if (array_key_exists($key . '?', $mutators)) {
+                unset($mutators[$key . '?']);
+            }
 
-            if (array_key_exists($key, $relations)) { unset($relations[$key]); }
-            if (array_key_exists($key . '?', $relations)) { unset($relations[$key . '?']); }
+            if (array_key_exists($key, $relations)) {
+                unset($relations[$key]);
+            }
+            if (array_key_exists($key . '?', $relations)) {
+                unset($relations[$key . '?']);
+            }
 
             $interfaces[$key] = $interface['name'];
         }
-        return [ $interfaces, $columns, $mutators, $relations ];
-    }
 
+        return [$interfaces, $columns, $mutators, $relations];
+    }
 
     /**
      * Find and map our get mutators
-     * @param Model $model
+     *
+     * @param  Model  $model
      * @return array
+     *
      * @throws ReflectionException
      * @throws Exception
      */
@@ -383,28 +409,29 @@ class ModelInterface
             // If Model is using v9 Attributes
             if (isset($model->attrs) && isset($model->attrs[$mutator])) {
                 $mutations[$mutator] = $model->attrs[$mutator];
+
                 continue;
             }
             if ($returnType == 'Illuminate\Database\Eloquent\Casts\Attribute') {
                 // Check to see if the Model has Custom interfaces & has the mutator set with its type
 
                 $closure = call_user_func($reflection->getClosure($model), 1);
-                if (!is_null($closure->get)) {
+                if (! is_null($closure->get)) {
                     $rf = new ReflectionFunction($closure->get);
                     if ($rf->hasReturnType()) {
                         $returnType = $rf->getReturnType()->getName();
                         $mutations[$mutator] = $this->mapReturnType($returnType);
+
                         continue;
-                    }else {
-                        // warn user to add return type to closure
-                        throw new Exception('Unable to determine return type for ' . $mutator . ' Please add a return type to the get closure');
                     }
+                    // warn user to add return type to closure
+                    throw new Exception('Unable to determine return type for ' . $mutator . ' Please add a return type to the get closure');
                 }
                 throw new Exception(
                     "Model for table {$model->getTable()} is using new mutator: {$mutator}. You must define them inside your models \$attrs array"
                 );
             } else {
-                if (!$returnType) {
+                if (! $returnType) {
                     throw new Exception(
                         "Model for table {$model->getTable()} has no return type for mutator: {$mutator}"
                     );
@@ -412,6 +439,7 @@ class ModelInterface
                 $mutations[$mutator] = $this->mapReturnType((string) $returnType);
             }
         }
+
         return $mutations;
     }
 
@@ -419,9 +447,11 @@ class ModelInterface
      * Determine which Laravel Accessor type is used
      *
      * @see https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
-     * @param Model $model
-     * @param string $mutator
+     *
+     * @param  Model  $model
+     * @param  string  $mutator
      * @return ReflectionMethod
+     *
      * @throws Exception
      */
     private function determineAccessorType(Model $model, string $mutator): ReflectionMethod
@@ -429,39 +459,46 @@ class ModelInterface
         // Try traditional
         try {
             $method = 'get' . $this->camelize($mutator) . 'Attribute';
+
             return new ReflectionMethod($model, $method);
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
 
         // Try new
         try {
             $method = $this->camelize($mutator);
+
             return new ReflectionMethod($model, $method);
+        } catch (Exception $e) {
+        }
 
-        } catch (Exception $e) {}
-
-        throw new Exception('Accessor method for ' . $mutator . ' on model '. get_class($model) . ' does not exist');
+        throw new Exception('Accessor method for ' . $mutator . ' on model ' . get_class($model) . ' does not exist');
     }
 
     /**
      * Properly map a return type
+     *
      * @param $returnType
      * @return string
      */
     private function mapReturnType($returnType): string
     {
         if ($returnType[0] === '?') {
-            return $this->mappings[str_replace('?', '', $returnType)]  . '|null';
+            return $this->mappings[str_replace('?', '', $returnType)] . '|null';
         }
-        if (!isset($this->mappings[$returnType])) {
+        if (! isset($this->mappings[$returnType])) {
             return $returnType;
         }
+
         return $this->mappings[$returnType];
     }
 
     /**
      * Get columns with their mappings
-     * @param Model $model
+     *
+     * @param  Model  $model
      * @return array
+     *
      * @throws Exception
      */
     private function getColumns(Model $model): array
@@ -476,21 +513,22 @@ class ModelInterface
                     } else {
                         $columns[$columnName . '?'] = $model->interfaces[$columnName]['name'];
                     }
+
                     continue;
                 }
                 // If model has casts use them
                 if ($model->hasCast($columnName) && in_array($model->getCasts()[$columnName], $this->enums)) {
                     $columns[$columnName] = Arr::last(explode('\\', $model->getCasts()[$columnName]));
+
                     continue;
                 }
-                if (!isset($this->mappings[$column->getType()->getName()])) {
+                if (! isset($this->mappings[$column->getType()->getName()])) {
                     throw new Exception('Unknown type found: ' . $column->getType()->getName());
+                }
+                if ($column->getNotnull()) {
+                    $columns[$columnName] = $this->mappings[$column->getType()->getName()];
                 } else {
-                    if ($column->getNotnull()) {
-                        $columns[$columnName] = $this->mappings[$column->getType()->getName()];
-                    } else {
-                        $columns[$columnName . '?'] = $this->mappings[$column->getType()->getName()];
-                    }
+                    $columns[$columnName . '?'] = $this->mappings[$column->getType()->getName()];
                 }
             } catch (Exception $exception) {
             }
@@ -501,7 +539,8 @@ class ModelInterface
 
     /**
      * Get an array of columns
-     * @param Model $model
+     *
+     * @param  Model  $model
      * @return array
      */
     private function getColumnList(Model $model): array
@@ -511,8 +550,9 @@ class ModelInterface
 
     /**
      * Get column details
-     * @param Model $model
-     * @param string $column
+     *
+     * @param  Model  $model
+     * @param  string  $column
      * @return Column
      */
     private function getColumn(Model $model, string $column): Column
@@ -522,6 +562,7 @@ class ModelInterface
 
     /**
      * Get a list of all models
+     *
      * @return Collection
      */
     private function getModels(): Collection
@@ -529,6 +570,7 @@ class ModelInterface
         $models = collect(File::allFiles(app_path()))
             ->map(function ($item) {
                 $path = $item->getRelativePathName();
+
                 return sprintf(
                     '\%s%s',
                     Container::getInstance()->getNamespace(),
@@ -538,8 +580,9 @@ class ModelInterface
                 $valid = false;
                 if (class_exists($class)) {
                     $reflection = new ReflectionClass($class);
-                    $valid = $reflection->isSubclassOf(Model::class) && !$reflection->isAbstract();
+                    $valid = $reflection->isSubclassOf(Model::class) && ! $reflection->isAbstract();
                 }
+
                 return $valid;
             });
 
@@ -548,6 +591,7 @@ class ModelInterface
 
     /**
      * under_scores to CamelCase
+     *
      * @param $input
      * @return string
      */
@@ -555,5 +599,4 @@ class ModelInterface
     {
         return str_replace('_', '', ucwords($input, '_'));
     }
-
 }

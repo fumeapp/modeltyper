@@ -1,0 +1,10 @@
+{
+    "[php]": {
+        "editor.defaultFormatter": "open-southeners.laravel-pint",
+        "editor.formatOnSave": true
+    },
+    "cSpell.words": [
+        "laravel",
+        "typer",
+    ]
+}

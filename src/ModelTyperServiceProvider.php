@@ -2,7 +2,7 @@
 
 namespace FumeApp\ModelTyper;
 
-use FumeApp\ModelTyper\Commands\ModelTyper;
+use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ModelTyperServiceProvider extends ServiceProvider
@@ -12,11 +12,11 @@ class ModelTyperServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                ModelTyper::class,
+                ModelTyperCommand::class,
             ]);
         }
     }
@@ -26,7 +26,8 @@ class ModelTyperServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
+        //
     }
 }
