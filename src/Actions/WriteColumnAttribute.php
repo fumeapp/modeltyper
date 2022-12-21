@@ -6,6 +6,7 @@ use FumeApp\ModelTyper\Constants\TypescriptMappings;
 use FumeApp\ModelTyper\Traits\ModelBaseName;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use ReflectionFunction;
 
 class WriteColumnAttribute
 {
@@ -35,7 +36,21 @@ class WriteColumnAttribute
                 } else {
                     if ($attribute['cast'] === 'accessor' || $attribute['cast'] === 'attribute') {
                         $accessorMethod = app(DetermineAccessorType::class)($reflectionModel, $name);
-                        $type = $accessorMethod->getReturnType() ? $this->getModelName($accessorMethod->getReturnType()->getName()) : 'unknown';
+
+                        if ($accessorMethod->getReturnType()) {
+                            if ($accessorMethod->getReturnType()->getName() === 'Illuminate\Database\Eloquent\Casts\Attribute') {
+                                $closure = call_user_func($accessorMethod->getClosure($reflectionModel->newInstance()), 1);
+
+                                if (! is_null($closure->get)) {
+                                    $rf = new ReflectionFunction($closure->get);
+                                    if ($rf->hasReturnType()) {
+                                        $type = $returnType($rf->getReturnType()->getName());
+                                    }
+                                }
+                            } else {
+                                $type = $this->getModelName($accessorMethod->getReturnType()->getName());
+                            }
+                        }
                     } else {
                         if (Str::contains($attribute['cast'], '\\')) {
                             $reflection = (new ReflectionClass($attribute['cast']));
