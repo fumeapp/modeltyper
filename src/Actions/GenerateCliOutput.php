@@ -91,12 +91,12 @@ class GenerateCliOutput
         });
 
         collect($this->enumReflectors)
-        ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
-        ->each(function (ReflectionClass $reflector) {
-            $entry = '';
-            $entry .= app(WriteEnumConst::class)($this->indent, $reflector);
-            $this->output .= $entry;
-        });
+            ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
+            ->each(function (ReflectionClass $reflector) {
+                $entry = '';
+                $entry .= app(WriteEnumConst::class)($this->indent, $reflector);
+                $this->output .= $entry;
+            });
 
         if ($global) {
             $this->output .= "  }\n}\n\n";
