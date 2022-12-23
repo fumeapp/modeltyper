@@ -16,6 +16,8 @@ class GenerateCliOutput
 
     protected string $indent = '';
 
+    protected array $enumReflectors = [];
+
     /**
      * Output the command in the CLI.
      *
@@ -54,14 +56,22 @@ class GenerateCliOutput
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
                 $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    $entry .= $colAttrWriter($reflectionModel, $this->indent, $att);
+                    [$line, $enum] = $colAttrWriter($reflectionModel, $this->indent, $att);
+                    $entry .= $line;
+                    if ($enum) {
+                        $this->enumReflectors[] = $enum;
+                    }
                 });
             }
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
                 $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    $entry .= $colAttrWriter($reflectionModel, $this->indent, $att);
+                    [$line, $enum] = $colAttrWriter($reflectionModel, $this->indent, $att);
+                    $entry .= $line;
+                    if ($enum) {
+                        $this->enumReflectors[] = $enum;
+                    }
                 });
             }
 
@@ -77,6 +87,12 @@ class GenerateCliOutput
             $plural = Str::plural($name);
             $entry .= "{$this->indent}export type $plural = {$name}[]\n\n";
 
+            $this->output .= $entry;
+        });
+
+        collect($this->enumReflectors)->each(function (ReflectionClass $reflector) {
+            $entry = '';
+            $entry .= app(WriteEnumConst::class)($this->indent, $reflector);
             $this->output .= $entry;
         });
 

@@ -18,10 +18,11 @@ class WriteColumnAttribute
      * @param  ReflectionClass  $reflectionModel
      * @param  string  $indent
      * @param  array  $attribute <{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden: bool, appended: mixed, cast: string}>
-     * @return string
+     * @return array
      */
-    public function __invoke(ReflectionClass $reflectionModel, string $indent, array $attribute): string
+    public function __invoke(ReflectionClass $reflectionModel, string $indent, array $attribute): array
     {
+        $enumRef = null;
         $returnType = app(MapReturnType::class);
 
         $name = Str::snake($attribute['name']);
@@ -55,20 +56,8 @@ class WriteColumnAttribute
                         if (Str::contains($attribute['cast'], '\\')) {
                             $reflection = (new ReflectionClass($attribute['cast']));
                             if ($reflection->isEnum()) {
-                                $cases = $reflection->getConstants();
-                                $docBlock = $reflection->getDocComment();
-
-                                // TODO - create const for enums
-                                // dd($cases, $docBlock);
-
-                                $comments = [];
-                                $docBlock = $reflection->getDocComment();
-                                if ($docBlock) {
-                                    $pattern = "#(@property+\s*[a-zA-Z0-9, ()_].*)#";
-                                    preg_match_all($pattern, $docBlock, $matches, PREG_PATTERN_ORDER);
-                                    $comments = array_map(fn ($match) => trim(str_replace('@property', '', $match)), $matches[0]);
-                                }
-                                // dd($comments);
+                                $type = $this->getModelName($attribute['cast']);
+                                $enumRef = $reflection;
                             }
                         } else {
                             $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
@@ -91,6 +80,6 @@ class WriteColumnAttribute
             $name = "{$name}?";
         }
 
-        return "{$indent}  {$name}: {$type}\n";
+        return ["{$indent}  {$name}: {$type}\n", $enumRef];
     }
 }
