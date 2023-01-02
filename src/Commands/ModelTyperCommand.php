@@ -2,7 +2,7 @@
 
 namespace FumeApp\ModelTyper\Commands;
 
-use FumeApp\ModelTyper\Actions\Generate;
+use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\ModelInterface;
 use Illuminate\Console\Command;
 
@@ -45,10 +45,10 @@ class ModelTyperCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param  Generate  $generator
+     * @param  Generator  $generator
      * @return int
      */
-    public function handle(Generate $generator): int
+    public function handle(Generator $generator): int
     {
         echo $generator($this->option('model'), $this->option('global'), $this->option('json'));
 
