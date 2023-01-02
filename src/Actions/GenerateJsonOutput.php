@@ -5,7 +5,6 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
 class GenerateJsonOutput
@@ -49,13 +48,13 @@ class GenerateJsonOutput
                     return $property;
                 });
 
-            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter) {
+            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
                 $relation = $relationWriter(relation: $rel, jsonOutput: true);
 
                 return [
                     $relation['type'] => [
                         'name' => $relation['name'],
-                        'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . Str::singular($relation['type']) . '>',
+                        'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . $name . '>',
                     ],
                 ];
             });
