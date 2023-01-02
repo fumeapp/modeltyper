@@ -7,7 +7,7 @@ use FumeApp\ModelTyper\Constants\TypescriptMappings;
 class MapReturnType
 {
     /**
-     * Determine the type of accessor.
+     * Map the return type to a typescript type.
      *
      * @param  string  $returnType
      * @return string

@@ -7,13 +7,14 @@ use ReflectionClass;
 class WriteEnumConst
 {
     /**
-     * Write the enum const.
+     * Write the enum const to the output.
      *
-     * @param  string  $indent
      * @param  ReflectionClass  $reflection
-     * @return string
+     * @param  string  $indent
+     * @param  bool  $jsonOutput
+     * @return array|string
      */
-    public function __invoke(string $indent, ReflectionClass $reflection): string
+    public function __invoke(ReflectionClass $reflection, string $indent = '', bool $jsonOutput = false): array|string
     {
         $entry = '';
 
@@ -54,6 +55,13 @@ class WriteEnumConst
 
             $entry .= "{$indent}} as const;\n\n";
             $entry .= "{$indent}export type {$reflection->getShortName()} = typeof {$reflection->getShortName()}[keyof typeof {$reflection->getShortName()}]\n\n";
+        }
+
+        if ($jsonOutput) {
+            return [
+                'name' => $reflection->getShortName(),
+                'type' => $entry,
+            ];
         }
 
         return $entry;

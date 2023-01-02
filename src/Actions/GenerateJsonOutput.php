@@ -2,20 +2,78 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use FumeApp\ModelTyper\Traits\ClassBaseName;
+use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Symfony\Component\Finder\SplFileInfo;
 
 class GenerateJsonOutput
 {
+    protected array $output = [];
+
+    protected array $enumReflectors = [];
+
+    use ClassBaseName;
+    use ModelRefClass;
+
     /**
      * Output the command in the CLI as JSON.
      *
-     * @param  Collection  $models
+     * @param  Collection<int, SplFileInfo>  $models
      * @return string
      */
     public function __invoke(Collection $models): string
     {
-        // TODO
+        $modelBuilder = app(BuildModelDetails::class);
+        $colAttrWriter = app(WriteColumnAttribute::class);
+        $relationWriter = app(WriteRelationship::class);
+        $enumWriter = app(WriteEnumConst::class);
 
-        return '';
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter) {
+            [
+                'reflectionModel' => $reflectionModel,
+                'name' => $name,
+                'columns' => $columns,
+                'nonColumns' => $nonColumns,
+                'relations' => $relations,
+            ] = $modelBuilder($model);
+
+            $this->output['interfaces'][$name] = [];
+
+            $this->output['interfaces'][$name] = $columns->merge($nonColumns)
+                ->map(function ($att) use ($reflectionModel, $colAttrWriter) {
+                    [$property, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, jsonOutput: true);
+                    if ($enum) {
+                        $this->enumReflectors[] = $enum;
+                    }
+
+                    return $property;
+                });
+
+            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter) {
+                $relation = $relationWriter(relation: $rel, jsonOutput: true);
+
+                return [
+                    $relation['type'] => [
+                        'name' => $relation['name'],
+                        'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . Str::singular($relation['type']) . '>',
+                    ],
+                ];
+            });
+        });
+
+        $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter) {
+            $enumConst = $enumWriter(reflection: $enum, jsonOutput: true);
+
+            return [
+                $enumConst['name'] => [
+                    'name' => $enumConst['name'],
+                    'type' => $enumConst['type'],
+                ],
+            ];
+        });
+
+        return json_encode($this->output, JSON_PRETTY_PRINT) . PHP_EOL;
     }
 }

@@ -9,7 +9,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class Generate
 {
     /**
-     * Run the command.
+     * Run the command to generate the output.
      *
      * @param  string|null  $specificModel
      * @param  bool  $global

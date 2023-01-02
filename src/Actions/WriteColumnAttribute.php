@@ -3,24 +3,25 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Constants\TypescriptMappings;
-use FumeApp\ModelTyper\Traits\ModelBaseName;
+use FumeApp\ModelTyper\Traits\ClassBaseName;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionFunction;
 
 class WriteColumnAttribute
 {
-    use ModelBaseName;
+    use ClassBaseName;
 
     /**
-     * Get model columns and attributes.
+     * Get model columns and attributes to the output.
      *
      * @param  ReflectionClass  $reflectionModel
-     * @param  string  $indent
      * @param  array  $attribute <{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden: bool, appended: mixed, cast: string}>
+     * @param  string  $indent
+     * @param  bool  $jsonOutput
      * @return array
      */
-    public function __invoke(ReflectionClass $reflectionModel, string $indent, array $attribute): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -32,7 +33,7 @@ class WriteColumnAttribute
             if (isset(TypescriptMappings::$mappings[$attribute['cast']])) {
                 $type = $returnType($attribute['cast']);
             } else {
-                if ($attribute['type'] === 'json' || $this->getModelName($attribute['cast']) === 'AsCollection' || $this->getModelName($attribute['cast']) === 'AsArrayObject') {
+                if ($attribute['type'] === 'json' || $this->getClassName($attribute['cast']) === 'AsCollection' || $this->getClassName($attribute['cast']) === 'AsArrayObject') {
                     $type = $returnType('json');
                 } else {
                     if ($attribute['cast'] === 'accessor' || $attribute['cast'] === 'attribute') {
@@ -49,14 +50,14 @@ class WriteColumnAttribute
                                     }
                                 }
                             } else {
-                                $type = $this->getModelName($accessorMethod->getReturnType()->getName());
+                                $type = $this->getClassName($accessorMethod->getReturnType()->getName());
                             }
                         }
                     } else {
                         if (Str::contains($attribute['cast'], '\\')) {
                             $reflection = (new ReflectionClass($attribute['cast']));
                             if ($reflection->isEnum()) {
-                                $type = $this->getModelName($attribute['cast']);
+                                $type = $this->getClassName($attribute['cast']);
                                 $enumRef = $reflection;
                             }
                         } else {
@@ -78,6 +79,13 @@ class WriteColumnAttribute
         if ($attribute['nullable']) {
             $type .= '|null';
             $name = "{$name}?";
+        }
+
+        if ($jsonOutput) {
+            return [[
+                'name' => $name,
+                'type' => $type,
+            ], $enumRef];
         }
 
         return ["{$indent}  {$name}: {$type}\n", $enumRef];

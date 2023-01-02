@@ -9,6 +9,7 @@ parameters:
     level: 5
 
     ignoreErrors:
+        - '#Call to an undefined method ReflectionType::getName\(\)#'
 
     excludePaths:
         - vendor/*

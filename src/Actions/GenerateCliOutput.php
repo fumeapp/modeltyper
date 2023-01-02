@@ -2,7 +2,8 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Traits\ModelBaseName;
+use FumeApp\ModelTyper\Traits\ClassBaseName;
+use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -10,7 +11,8 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class GenerateCliOutput
 {
-    use ModelBaseName;
+    use ClassBaseName;
+    use ModelRefClass;
 
     protected string $output = '';
 
@@ -27,7 +29,7 @@ class GenerateCliOutput
      */
     public function __invoke(Collection $models, bool $global = false): string
     {
-        $modalShow = app(RunModelShowCommand::class);
+        $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
 
@@ -36,27 +38,21 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modalShow, $colAttrWriter, $relationWriter) {
-            $modelDetails = $modalShow($model->getBasename('.php'));
-            // dd($modelDetails);
-
-            $entry = '';
-
-            $reflectionModel = $this->getRefInterface($modelDetails);
-            $laravelModel = $reflectionModel->newInstance();
-            $databaseColumns = $laravelModel->getConnection()->getSchemaBuilder()->getColumnListing($laravelModel->getTable());
-
-            $name = $this->getName($modelDetails);
-            $columns = collect($modelDetails['attributes'])->filter(fn ($att) => in_array($att['name'], $databaseColumns));
-            $nonColumns = collect($modelDetails['attributes'])->filter(fn ($att) => ! in_array($att['name'], $databaseColumns));
-            $relations = collect($modelDetails['relations']);
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter) {
+            [
+                'reflectionModel' => $reflectionModel,
+                'name' => $name,
+                'columns' => $columns,
+                'nonColumns' => $nonColumns,
+                'relations' => $relations,
+            ] = $modelBuilder($model);
 
             $entry = "{$this->indent}export interface {$name} {\n";
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
                 $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    [$line, $enum] = $colAttrWriter($reflectionModel, $this->indent, $att);
+                    [$line, $enum] = $colAttrWriter($reflectionModel, $att, $this->indent);
                     $entry .= $line;
                     if ($enum) {
                         $this->enumReflectors[] = $enum;
@@ -67,7 +63,7 @@ class GenerateCliOutput
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
                 $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    [$line, $enum] = $colAttrWriter($reflectionModel, $this->indent, $att);
+                    [$line, $enum] = $colAttrWriter($reflectionModel, $att, $this->indent);
                     $entry .= $line;
                     if ($enum) {
                         $this->enumReflectors[] = $enum;
@@ -78,7 +74,7 @@ class GenerateCliOutput
             if ($relations->isNotEmpty()) {
                 $entry .= "{$this->indent}  // relations\n";
                 $relations->each(function ($rel) use (&$entry, $relationWriter) {
-                    $entry .= $relationWriter($this->indent, $rel);
+                    $entry .= $relationWriter($rel, $this->indent);
                 });
             }
 
@@ -93,7 +89,7 @@ class GenerateCliOutput
         collect($this->enumReflectors)
             ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
             ->each(function (ReflectionClass $reflector) {
-                $this->output .= app(WriteEnumConst::class)($this->indent, $reflector);
+                $this->output .= app(WriteEnumConst::class)($reflector, $this->indent);
             });
 
         if ($global) {
@@ -101,31 +97,5 @@ class GenerateCliOutput
         }
 
         return substr($this->output, 0, strrpos($this->output, "\n"));
-    }
-
-    /**
-     * Get the reflection interface.
-     *
-     * @param  array  $info - The model details from the model:show command.
-     * @return ReflectionClass
-     */
-    protected function getRefInterface(array $info): ReflectionClass
-    {
-        $class = $info['class'];
-
-        return new ReflectionClass($class);
-    }
-
-    /**
-     * Get the name of the model.
-     *
-     * @param  array  $info - The model details from the model:show command.
-     * @return string
-     */
-    protected function getName(array $info): string
-    {
-        $class = $info['class'];
-
-        return $this->getModelName($class);
     }
 }
