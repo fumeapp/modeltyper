@@ -20,6 +20,8 @@ class GenerateCliOutput
 
     protected array $enumReflectors = [];
 
+    protected array $imports = [];
+
     /**
      * Output the command in the CLI.
      *
@@ -39,15 +41,21 @@ class GenerateCliOutput
         }
 
         $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter) {
+            $entry = '';
+
             [
                 'reflectionModel' => $reflectionModel,
                 'name' => $name,
                 'columns' => $columns,
                 'nonColumns' => $nonColumns,
                 'relations' => $relations,
+                'interfaces' => $interfaces,
+                'imports' => $imports,
             ] = $modelBuilder($model);
 
-            $entry = "{$this->indent}export interface {$name} {\n";
+            $this->imports = array_merge($this->imports, $imports->toArray());
+
+            $entry .= "{$this->indent}export interface {$name} {\n";
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
@@ -71,6 +79,14 @@ class GenerateCliOutput
                 });
             }
 
+            if ($interfaces->isNotEmpty()) {
+                $entry .= "{$this->indent}  // overrides\n";
+                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter) {
+                    [$line] = $colAttrWriter($reflectionModel, $interface, $this->indent);
+                    $entry .= $line;
+                });
+            }
+
             if ($relations->isNotEmpty()) {
                 $entry .= "{$this->indent}  // relations\n";
                 $relations->each(function ($rel) use (&$entry, $relationWriter) {
@@ -90,6 +106,13 @@ class GenerateCliOutput
             ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
             ->each(function (ReflectionClass $reflector) {
                 $this->output .= app(WriteEnumConst::class)($reflector, $this->indent);
+            });
+
+        collect($this->imports)
+            ->unique()
+            ->each(function ($import) {
+                $entry = "import { {$import['type']} } from '{$import['import']}'\n";
+                $this->output = $entry . $this->output;
             });
 
         if ($global) {

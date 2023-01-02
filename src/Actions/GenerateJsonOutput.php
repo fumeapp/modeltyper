@@ -36,9 +36,12 @@ class GenerateJsonOutput
                 'columns' => $columns,
                 'nonColumns' => $nonColumns,
                 'relations' => $relations,
+                'interfaces' => $interfaces,
             ] = $modelBuilder($model);
 
-            $this->output['interfaces'][$name] = $columns->merge($nonColumns)
+            $this->output['interfaces'][$name] = $columns
+                ->merge($nonColumns)
+                ->merge($interfaces)
                 ->map(function ($att) use ($reflectionModel, $colAttrWriter) {
                     [$property, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, jsonOutput: true);
                     if ($enum) {

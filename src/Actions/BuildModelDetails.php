@@ -29,6 +29,41 @@ class BuildModelDetails
         $columns = collect($modelDetails['attributes'])->filter(fn ($att) => in_array($att['name'], $databaseColumns));
         $nonColumns = collect($modelDetails['attributes'])->filter(fn ($att) => ! in_array($att['name'], $databaseColumns));
         $relations = collect($modelDetails['relations']);
+        $interfaces = collect($laravelModel->interfaces)->map(fn ($interface) => [
+            'name' => $interface['name'],
+            'type' => $interface['type'] ?? 'unknown',
+            'nullable' => $interface['nullable'] ?? false,
+            'import' => $interface['import'] ?? null,
+            'forceType' => true,
+        ])
+            ->values();
+
+        $imports = $interfaces->filter(function ($interface) {
+            return isset($interface['import']);
+        })
+            ->map(function ($interface) {
+                return [
+                    'import' => $interface['import'],
+                    'type' => $interface['type'],
+                ];
+            })
+            ->unique()
+            ->values();
+
+        $columns = $columns->map(function ($column) use (&$interfaces) {
+            $interfaces->each(function ($interface, $key) use (&$column, &$interfaces) {
+                if (isset($interface['name']) && $interface['name'] === $column['name']) {
+                    if (isset($interface['type'])) {
+                        $column['type'] = $interface['type'];
+                        $column['forceType'] = true;
+
+                        $interfaces->forget($key);
+                    }
+                }
+            });
+
+            return $column;
+        });
 
         return [
             'reflectionModel' => $reflectionModel,
@@ -36,6 +71,8 @@ class BuildModelDetails
             'columns' => $columns,
             'nonColumns' => $nonColumns,
             'relations' => $relations,
+            'interfaces' => $interfaces,
+            'imports' => $imports,
         ];
     }
 }
