@@ -221,7 +221,7 @@ export interface User {
 Generate your interfaces for a single model
 
 ```bash
-artisan model:typer --model=App/Models/User
+artisan model:typer --model=User
 ```
 
 ### Output as JSON
