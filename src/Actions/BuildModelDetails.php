@@ -29,14 +29,13 @@ class BuildModelDetails
         $columns = collect($modelDetails['attributes'])->filter(fn ($att) => in_array($att['name'], $databaseColumns));
         $nonColumns = collect($modelDetails['attributes'])->filter(fn ($att) => ! in_array($att['name'], $databaseColumns));
         $relations = collect($modelDetails['relations']);
-        $interfaces = collect($laravelModel->interfaces)->map(fn ($interface) => [
-            'name' => $interface['name'],
+        $interfaces = collect($laravelModel->interfaces)->map(fn ($interface, $key) => [
+            'name' => $key,
             'type' => $interface['type'] ?? 'unknown',
             'nullable' => $interface['nullable'] ?? false,
             'import' => $interface['import'] ?? null,
             'forceType' => true,
-        ])
-            ->values();
+        ]);
 
         $imports = $interfaces->filter(function ($interface) {
             return isset($interface['import']);
@@ -52,7 +51,7 @@ class BuildModelDetails
 
         $columns = $columns->map(function ($column) use (&$interfaces) {
             $interfaces->each(function ($interface, $key) use (&$column, &$interfaces) {
-                if (isset($interface['name']) && $interface['name'] === $column['name']) {
+                if ($key === $column['name']) {
                     if (isset($interface['type'])) {
                         $column['type'] = $interface['type'];
                         $column['forceType'] = true;
@@ -71,7 +70,7 @@ class BuildModelDetails
             'columns' => $columns,
             'nonColumns' => $nonColumns,
             'relations' => $relations,
-            'interfaces' => $interfaces,
+            'interfaces' => $interfaces->values(),
             'imports' => $imports,
         ];
     }

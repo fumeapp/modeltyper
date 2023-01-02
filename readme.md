@@ -86,8 +86,8 @@ For example for a custom `Point` interface in a `Location` model you can put thi
 ```php
 public array $interfaces = [
     'coordinate' => [
-        'name' => 'Point',
         'import' => "@/types/api",
+        'type' => 'Point',
     ],
 ];
 ```
@@ -110,11 +110,53 @@ You can also specify an interface is nullable:
 ```php
     public array $interfaces = [
         'choices' => [
-            'name' => 'ChoicesWithPivot',
             'import' => '@/types/api',
+            'type' => 'ChoicesWithPivot',
             'nullable' => true,
         ],
     ];
+```
+
+You can also choose to leave off the import and just use the type:
+
+```php
+    public array $interfaces = [
+        'choices' => [
+            'type' => "'good' | 'bad'",
+        ],
+    ];
+```
+
+And it should generate:
+
+```ts
+export interface Location {
+    // columns
+    choices: "good" | "bad";
+}
+```
+
+Using the custom interface is also a good place to append any additional properties you want to add to the interface.
+
+For example, if your interface keeps some additional state in something like Vuex, you can add it to the interfaces:
+
+```php
+    public array $interfaces = [
+        'state' => [
+            'type' => "found' | 'not_found' | 'searching' | 'reset'",
+        ],
+    ];
+```
+
+This will generate:
+
+```ts
+export interface Location {
+    // ...
+    // overrides
+    state: "found" | "not_found" | "searching" | "reset";
+    // ...
+}
 ```
 
 ### Declare global
