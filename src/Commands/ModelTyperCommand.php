@@ -3,7 +3,6 @@
 namespace FumeApp\ModelTyper\Commands;
 
 use FumeApp\ModelTyper\Actions\Generator;
-use FumeApp\ModelTyper\ModelInterface;
 use Illuminate\Console\Command;
 
 class ModelTyperCommand extends Command
@@ -50,9 +49,16 @@ class ModelTyperCommand extends Command
      */
     public function handle(Generator $generator): int
     {
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'));
+        // determine Laravel version
+        $laravelVersion = (float) app()->version();
 
-        // echo  (new ModelInterface($this->option('global')))->generate();
+        if ($laravelVersion < 9.20) {
+            $this->error('This package requires Laravel 9.2 or higher.');
+
+            return Command::FAILURE;
+        }
+
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'));
 
         return Command::SUCCESS;
     }
