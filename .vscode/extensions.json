@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "aaron-bond.better-comments",
+        "bmewburn.vscode-intelephense-client",
+        "EditorConfig.EditorConfig",
+        "MehediDracula.php-namespace-resolver",
+        "open-southeners.laravel-pint",
+        "swordev.phpstan",
+        "xdebug.php-debug"
+    ],
+}
