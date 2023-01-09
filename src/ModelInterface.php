@@ -485,7 +485,7 @@ class ModelInterface
     private function mapReturnType($returnType): string
     {
         if ($returnType[0] === '?') {
-            return $this->mappings[str_replace('?', '', $returnType)] . '|null';
+            return $this->mappings[str_replace('?', '', $returnType)];
         }
         if (! isset($this->mappings[$returnType])) {
             return $returnType;
