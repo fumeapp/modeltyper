@@ -58,13 +58,6 @@ class ModelTyperCommand extends Command
             return Command::FAILURE;
         }
 
-        // check if doctrine/dbal is installed
-        if (! class_exists('Doctrine\DBAL\DriverManager')) {
-            $this->error('This package requires doctrine/dbal to be installed.');
-
-            return Command::FAILURE;
-        }
-
         echo $generator($this->option('model'), $this->option('global'), $this->option('json'));
 
         return Command::SUCCESS;
