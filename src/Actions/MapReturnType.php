@@ -21,7 +21,7 @@ class MapReturnType
         $returnType = strtolower($returnType);
 
         if ($returnType[0] === '?') {
-            return $mappings[str_replace('?', '', $returnType)];
+            return $mappings[str_replace('?', '', $returnType)] . '|null';
         }
         if (! isset($mappings[$returnType])) {
             return 'unknown';

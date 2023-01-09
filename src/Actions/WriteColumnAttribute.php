@@ -82,7 +82,7 @@ class WriteColumnAttribute
         }
 
         if ($attribute['nullable']) {
-            $type .= '|null';
+            // $type .= '|null';
             $name = "{$name}?";
         }
 

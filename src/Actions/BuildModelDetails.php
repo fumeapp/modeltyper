@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
+use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
 class BuildModelDetails
@@ -14,8 +15,9 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @param  SplFileInfo  $modelFile
+     * @param SplFileInfo $modelFile
      * @return array
+     * @throws ReflectionException
      */
     public function __invoke(SplFileInfo $modelFile): array
     {
