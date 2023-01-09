@@ -268,7 +268,8 @@ class ModelInterface
         }
         $code .= "{$this->space}}\n";
         $plural = Str::plural($interface->name);
-        $code .= "{$this->space}export type $plural = {$interface->name}[]\n\n";
+        $code .= "{$this->space}export type $plural = {$interface->name}[]\n";
+        $code .= "{$this->space}export type {$interface->name}Results = Modify<api.MetApiResults, { data: $plural }>\n\n";
 
         return $code;
     }
