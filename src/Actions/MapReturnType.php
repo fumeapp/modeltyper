@@ -16,13 +16,12 @@ class MapReturnType
     {
         $mappings = TypescriptMappings::$mappings;
 
-        $returnType = $returnType;
         $returnType = explode(' ', $returnType)[0];
         $returnType = explode('(', $returnType)[0];
         $returnType = strtolower($returnType);
 
         if ($returnType[0] === '?') {
-            return $mappings[str_replace('?', '', $returnType)] . '|null';
+            return $mappings[str_replace('?', '', $returnType)];
         }
         if (! isset($mappings[$returnType])) {
             return 'unknown';
