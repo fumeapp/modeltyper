@@ -82,8 +82,7 @@ class WriteColumnAttribute
         }
 
         if ($attribute['nullable']) {
-            // $type .= '|null';
-            $name = "{$name}?";
+            $type .= '|null';
         }
 
         if ($jsonOutput) {
