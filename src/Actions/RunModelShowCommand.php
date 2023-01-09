@@ -19,13 +19,10 @@ class RunModelShowCommand
      */
     public function __invoke(string $model): array
     {
-        $exitCode = Artisan::call("model:show {$model} --json");
+        $exitCode = Artisan::call("model:show {$model} --json --no-interaction");
 
         if ($exitCode !== 0) {
-            dump('You may need to install the doctrine/dbal package to use this command.');
-            dump('composer require doctrine/dbal');
-
-            throw new Exception(Artisan::output());
+            throw new Exception('You may need to install the doctrine/dbal package to use this command.');
         }
 
         return json_decode(Artisan::output(), true);
