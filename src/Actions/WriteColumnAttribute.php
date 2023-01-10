@@ -85,6 +85,10 @@ class WriteColumnAttribute
             $type .= '|null';
         }
 
+        if (isset($attribute['hidden']) && $attribute['hidden']) {
+            $name = "{$name}?";
+        }
+
         if ($jsonOutput) {
             return [[
                 'name' => $name,

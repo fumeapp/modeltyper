@@ -15,8 +15,9 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @param SplFileInfo $modelFile
+     * @param  SplFileInfo  $modelFile
      * @return array
+     *
      * @throws ReflectionException
      */
     public function __invoke(SplFileInfo $modelFile): array
