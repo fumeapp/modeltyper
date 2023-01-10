@@ -2,6 +2,7 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use Exception;
 use Illuminate\Support\Facades\Artisan;
 
 class RunModelShowCommand
@@ -13,10 +14,16 @@ class RunModelShowCommand
      *
      * @param  string  $model
      * @return array
+     *
+     * @throws Exception
      */
     public function __invoke(string $model): array
     {
-        Artisan::call("model:show {$model} --json");
+        $exitCode = Artisan::call("model:show {$model} --json --no-interaction");
+
+        if ($exitCode !== 0) {
+            throw new Exception('You may need to install the doctrine/dbal package to use this command.');
+        }
 
         return json_decode(Artisan::output(), true);
     }
