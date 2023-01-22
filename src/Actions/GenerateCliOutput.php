@@ -99,6 +99,7 @@ class GenerateCliOutput
             $plural = Str::plural($name);
             $entry .= "{$this->indent}export type $plural = {$name}[]\n";
             $entry .= "{$this->indent}export type {$name}Results = Modify<api.MetApiResults, { data: $plural }>\n\n";
+            $entry .= "{$this->indent}export type {$name}Modified = Modify<api.MetApiModified, { data: $plural }>\n\n";
 
             $this->output .= $entry;
         });
