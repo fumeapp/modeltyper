@@ -270,8 +270,9 @@ class ModelInterface
         $plural = Str::plural($interface->name);
         $code .= "{$this->space}export type $plural = {$interface->name}[]\n";
         $code .= "{$this->space}export interface {$interface->name}Results extends api.MetApiResults { data: $plural }\n";
+        $code .= "{$this->space}export interface {$interface->name}Result extends api.MetApiResults { data: {$interface->name} }\n";
         $code .= "{$this->space}export interface {$interface->name}MetApiData extends api.MetApiData { data: {$interface->name} }\n";
-        $code .= "{$this->space}export interface {$interface->name}Response extends MetApiResponse { data: {$interface->name}MetApiData }\n\n";
+        $code .= "{$this->space}export interface {$interface->name}Response extends api.MetApiResponse { data: {$interface->name}MetApiData }\n\n";
 
         return $code;
     }
