@@ -22,7 +22,9 @@ class ModelTyperCommand extends Command
     protected $signature = 'model:typer
                             {--model= : Generate your interfaces for a specific model}
                             {--global : Generate your interfaces in a global namespace named models}
-                            {--json : Output the result as json}';
+                            {--json : Output the result as json}
+                            {--plurals : Output model plurals}
+                            {--api-resources : Output api.MetApi interfaces}';
 
     /**
      * The console command description.
@@ -43,9 +45,6 @@ class ModelTyperCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param  Generator  $generator
-     * @return int
      */
     public function handle(Generator $generator): int
     {
@@ -58,7 +57,7 @@ class ModelTyperCommand extends Command
             return Command::FAILURE;
         }
 
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'));
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $this->option('plurals'), $this->option('api-resources'));
 
         return Command::SUCCESS;
     }
