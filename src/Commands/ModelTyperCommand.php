@@ -24,7 +24,8 @@ class ModelTyperCommand extends Command
                             {--global : Generate your interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--plurals : Output model plurals}
-                            {--api-resources : Output api.MetApi interfaces}';
+                            {--api-resources : Output api.MetApi interfaces}
+                            {--all : Enable all output options (equivalent to --plurals --api-resources)}';
 
     /**
      * The console command description.
@@ -57,7 +58,10 @@ class ModelTyperCommand extends Command
             return Command::FAILURE;
         }
 
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $this->option('plurals'), $this->option('api-resources'));
+        $plurals = $this->option('json') || $this->option('all');
+        $apiResources = $this->option('api-resources') || $this->option('all');
+
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources);
 
         return Command::SUCCESS;
     }

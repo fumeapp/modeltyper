@@ -213,6 +213,18 @@ export interface UserMetApiData extends api.MetApiData { data: User }
 export interface UserResponse extends api.MetApiResponse { data: UserMetApiData }
 ```
 
+### Enable all output options
+
+```bash
+artisan model:typer --all
+```
+
+Exports both plurals & api-resources. i.e. it is equivalent to:
+
+```bash
+artisan model:typer --plurals --api-resources
+```
+
 ### Laravel V9 Attribute support
 
 Laravel now has a very different way of specifying [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators).
