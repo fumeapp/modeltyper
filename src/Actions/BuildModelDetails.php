@@ -22,7 +22,10 @@ class BuildModelDetails
      */
     public function __invoke(SplFileInfo $modelFile): array
     {
-        $modelDetails = app(RunModelShowCommand::class)($modelFile->getBasename('.php'));
+        $modelFileArg = $modelFile->getRelativePathname();
+        $modelFileArg = str_replace('.php', '', $modelFileArg);
+
+        $modelDetails = app(RunModelShowCommand::class)($modelFileArg);
 
         $reflectionModel = $this->getRefInterface($modelDetails);
         $laravelModel = $reflectionModel->newInstance();
