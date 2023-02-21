@@ -60,7 +60,7 @@ This command will go through all of your models and make [TypeScript Interfaces]
 Starting support is for Laravel v9.21+ and PHP v8.1+
 
 > **Note**
-> This package may require you to install Doctrine DBAL. If so you can run 
+> This package may require you to install Doctrine DBAL. If so you can run
 ```bash
 composer require doctrine/dbal
 ```
@@ -185,6 +185,44 @@ declare global {
       user_id: number
       avatar?: string
 ...
+```
+
+### Output plural interfaces for collections
+
+```bash
+artisan model:typer --plurals
+```
+Exports for example, when a `User` model exists:
+
+```ts
+export type Users = User[]
+```
+
+### Output Api.MetApi* resources
+
+```bash
+artisan model:typer --api-resources
+```
+
+Exports:
+
+```ts
+export interface UserResults extends api.MetApiResults { data: Users }
+export interface UserResult extends api.MetApiResults { data: User }
+export interface UserMetApiData extends api.MetApiData { data: User }
+export interface UserResponse extends api.MetApiResponse { data: UserMetApiData }
+```
+
+### Enable all output options
+
+```bash
+artisan model:typer --all
+```
+
+Exports both plurals & api-resources. i.e. it is equivalent to:
+
+```bash
+artisan model:typer --plurals --api-resources
 ```
 
 ### Laravel V9 Attribute support

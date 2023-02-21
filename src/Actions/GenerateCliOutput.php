@@ -26,10 +26,8 @@ class GenerateCliOutput
      * Output the command in the CLI.
      *
      * @param  Collection<int, SplFileInfo>  $models
-     * @param  bool  $global
-     * @return string
      */
-    public function __invoke(Collection $models, bool $global = false): string
+    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -40,7 +38,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources) {
             $entry = '';
 
             [
@@ -96,12 +94,22 @@ class GenerateCliOutput
 
             $entry .= "{$this->indent}}\n";
 
-            $plural = Str::plural($name);
-            $entry .= "{$this->indent}export type $plural = {$name}[]\n";
-            $entry .= "{$this->indent}export interface {$name}Results extends api.MetApiResults { data: $plural }\n";
-            $entry .= "{$this->indent}export interface {$name}Result extends api.MetApiResults { data: $name }\n";
-            $entry .= "{$this->indent}export interface {$name}MetApiData extends api.MetApiData { data: $name }\n";
-            $entry .= "{$this->indent}export interface {$name}Response extends api.MetApiResponse { data: {$name}MetApiData }\n\n";
+            if ($plurals) {
+                $plural = Str::plural($name);
+                $entry .= "{$this->indent}export type $plural = {$name}[]\n";
+
+                if ($apiResources) {
+                    $entry .= "{$this->indent}export interface {$name}Results extends api.MetApiResults { data: $plural }\n";
+                }
+            }
+
+            if ($apiResources) {
+                $entry .= "{$this->indent}export interface {$name}Result extends api.MetApiResults { data: $name }\n";
+                $entry .= "{$this->indent}export interface {$name}MetApiData extends api.MetApiData { data: $name }\n";
+                $entry .= "{$this->indent}export interface {$name}Response extends api.MetApiResponse { data: {$name}MetApiData }\n";
+            }
+
+            $entry .= "\n";
 
             $this->output .= $entry;
         });

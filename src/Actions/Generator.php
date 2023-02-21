@@ -11,22 +11,18 @@ class Generator
     /**
      * Run the command to generate the output.
      *
-     * @param  string|null  $specificModel
-     * @param  bool  $global
-     * @param  bool  $json
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false)
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false)
     {
         $models = $this->getModels($specificModel);
 
-        return $this->display($models, $global, $json);
+        return $this->display($models, $global, $json, $plurals, $apiResources);
     }
 
     /**
      * Return collection of models.
      *
-     * @param  string|null  $model
      * @return Collection<int, SplFileInfo>
      */
     protected function getModels(?string $model = null): Collection
@@ -44,11 +40,8 @@ class Generator
      * Display the command output.
      *
      * @param  Collection<int, SplFileInfo>  $models
-     * @param  bool  $global
-     * @param  bool  $json
-     * @return string
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false): string
     {
         if ($models->isEmpty()) {
             return 'ERROR: No models found.';
@@ -58,6 +51,6 @@ class Generator
             return app(GenerateJsonOutput::class)($models);
         }
 
-        return app(GenerateCliOutput::class)($models, $global);
+        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources);
     }
 }
