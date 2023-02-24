@@ -24,7 +24,7 @@ class WriteRelationship
 
         $relation = match ($relation['type']) {
             'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => Str::plural($relatedModel),
-            'BelongsTo', 'BelongsToThrough', 'HasOne', 'HasOneThrough', 'MorphOne' => Str::singular($relatedModel),
+            'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
             default => $relatedModel,
         };
 
