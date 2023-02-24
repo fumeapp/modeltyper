@@ -33,8 +33,8 @@ class ShowModelCommand extends BaseCommand
 
     public function handle()
     {
-        $customMethods = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method));
-        $this->relationMethods = array_merge($this->relationMethods, $customMethods);
+        $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method));
+        $this->relationMethods = array_merge($this->relationMethods, $customRelationships->toArray());
 
         parent::handle();
     }
