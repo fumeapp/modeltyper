@@ -58,7 +58,7 @@ class ModelTyperCommand extends Command
             return Command::FAILURE;
         }
 
-        $plurals = $this->option('json') || $this->option('all');
+        $plurals = $this->option('plurals') || $this->option('all');
         $apiResources = $this->option('api-resources') || $this->option('all');
 
         echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources);
