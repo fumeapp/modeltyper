@@ -63,7 +63,7 @@ class ModelTyperCommand extends Command
         $customRelationships = [];
 
         if($this->option('custom-relationships')) {
-            $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method));
+            $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method))->toArray();
         }
 
         echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $customRelationships);
