@@ -13,11 +13,11 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false)
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, array $customRelationships = [])
     {
         $models = $this->getModels($specificModel);
 
-        return $this->display($models, $global, $json, $plurals, $apiResources);
+        return $this->display($models, $global, $json, $plurals, $apiResources, $customRelationships);
     }
 
     /**
@@ -41,16 +41,16 @@ class Generator
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, array $customRelationships = []): string
     {
         if ($models->isEmpty()) {
             return 'ERROR: No models found.';
         }
 
         if ($json) {
-            return app(GenerateJsonOutput::class)($models);
+            return app(GenerateJsonOutput::class)($models, $customRelationships);
         }
 
-        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources);
+        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources, $customRelationships);
     }
 }

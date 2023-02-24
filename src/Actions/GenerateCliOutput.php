@@ -27,7 +27,7 @@ class GenerateCliOutput
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false): string
+    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, array $customRelationships = []): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -38,7 +38,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $customRelationships) {
             $entry = '';
 
             [
@@ -49,7 +49,7 @@ class GenerateCliOutput
                 'relations' => $relations,
                 'interfaces' => $interfaces,
                 'imports' => $imports,
-            ] = $modelBuilder($model);
+            ] = $modelBuilder($model, $customRelationships);
 
             $this->imports = array_merge($this->imports, $imports->toArray());
 

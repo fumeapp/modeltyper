@@ -25,8 +25,8 @@ class ModelTyperCommand extends Command
                             {--json : Output the result as json}
                             {--plurals : Output model plurals}
                             {--api-resources : Output api.MetApi interfaces}
-                            {--all : Enable all output options (equivalent to --plurals --api-resources)}';
-
+                            {--all : Enable all output options (equivalent to --plurals --api-resources)}
+                            {--custom-relationships : Custom relationships that should be included, separated by commas}';
     /**
      * The console command description.
      *
@@ -60,8 +60,13 @@ class ModelTyperCommand extends Command
 
         $plurals = $this->option('json') || $this->option('all');
         $apiResources = $this->option('api-resources') || $this->option('all');
+        $customRelationships = [];
 
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources);
+        if($this->option('custom-relationships')) {
+            $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method));
+        }
+
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $customRelationships);
 
         return Command::SUCCESS;
     }

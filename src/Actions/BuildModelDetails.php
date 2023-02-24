@@ -20,12 +20,12 @@ class BuildModelDetails
      *
      * @throws ReflectionException
      */
-    public function __invoke(SplFileInfo $modelFile): array
+    public function __invoke(SplFileInfo $modelFile, array $customRelationships = []): array
     {
         $modelFileArg = $modelFile->getRelativePathname();
         $modelFileArg = str_replace('.php', '', $modelFileArg);
 
-        $modelDetails = app(RunModelShowCommand::class)($modelFileArg);
+        $modelDetails = app(RunModelShowCommand::class)($modelFileArg, $customRelationships);
 
         $reflectionModel = $this->getRefInterface($modelDetails);
         $laravelModel = $reflectionModel->newInstance();
