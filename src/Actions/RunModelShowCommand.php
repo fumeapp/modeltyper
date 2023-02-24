@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 
 class RunModelShowCommand
@@ -17,9 +18,9 @@ class RunModelShowCommand
      *
      * @throws Exception
      */
-    public function __invoke(string $model, array $customRelationships = []): array
+    public function __invoke(string $model): array
     {
-        $relationships = implode(',', $customRelationships);
+        $relationships = implode(',', Arr::flatten(config('modeltyper.custom_relationships', [])));
         $exitCode = Artisan::call("model:typer-show {$model} --json --no-interaction --custom-relationships=$relationships");
 
         if ($exitCode !== 0) {

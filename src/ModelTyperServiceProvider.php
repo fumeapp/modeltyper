@@ -15,6 +15,10 @@ class ModelTyperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->publishes([
+            __DIR__ . '/../config/modeltyper.php' => config_path('modeltyper.php')
+        ]);
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ModelTyperCommand::class,

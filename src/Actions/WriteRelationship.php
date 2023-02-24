@@ -28,6 +28,14 @@ class WriteRelationship
             default => $relatedModel,
         };
 
+        if(in_array($relation['type'], config('modeltyper.custom_relationships.singular'))) {
+            $relation = Str::singular($relation['type']);
+        }
+
+        if(in_array($relation['type'], config('modeltyper.custom_relationships.plural'))) {
+            $relation = Str::plural($relation['type']);
+        }
+
         if ($jsonOutput) {
             return [
                 'name' => $name,

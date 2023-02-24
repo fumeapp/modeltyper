@@ -22,14 +22,14 @@ class GenerateJsonOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @return string
      */
-    public function __invoke(Collection $models, array $customRelationships = []): string
+    public function __invoke(Collection $models): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $customRelationships) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter) {
             [
                 'reflectionModel' => $reflectionModel,
                 'name' => $name,
@@ -37,7 +37,7 @@ class GenerateJsonOutput
                 'nonColumns' => $nonColumns,
                 'relations' => $relations,
                 'interfaces' => $interfaces,
-            ] = $modelBuilder($model, $customRelationships);
+            ] = $modelBuilder($model);
 
             $this->output['interfaces'][$name] = $columns
                 ->merge($nonColumns)
