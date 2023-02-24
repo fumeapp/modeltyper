@@ -22,27 +22,27 @@ class WriteRelationship
         $name = Str::snake($relation['name']);
         $relatedModel = $this->getClassName($relation['related']);
 
-        $relation = match ($relation['type']) {
+        $relationType = match ($relation['type']) {
             'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => Str::plural($relatedModel),
             'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
             default => $relatedModel,
         };
 
         if(in_array($relation['type'], config('modeltyper.custom_relationships.singular'))) {
-            $relation = Str::singular($relation['type']);
+            $relationType = Str::singular($relation['type']);
         }
 
         if(in_array($relation['type'], config('modeltyper.custom_relationships.plural'))) {
-            $relation = Str::plural($relation['type']);
+            $relationType = Str::singular($relation['type']);
         }
 
         if ($jsonOutput) {
             return [
                 'name' => $name,
-                'type' => $relation,
+                'type' => $relationType,
             ];
         }
 
-        return "{$indent}  {$name}: {$relation}\n";
+        return "{$indent}  {$name}: {$relationType}\n";
     }
 }
