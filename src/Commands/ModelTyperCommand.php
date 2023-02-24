@@ -26,7 +26,7 @@ class ModelTyperCommand extends Command
                             {--plurals : Output model plurals}
                             {--api-resources : Output api.MetApi interfaces}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}
-                            {--custom-relationships : Custom relationships that should be included, separated by commas}';
+                            {--custom-relationships= : Custom relationships that should be included, separated by commas}';
     /**
      * The console command description.
      *
