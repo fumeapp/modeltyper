@@ -2,7 +2,7 @@
 
 namespace FumeApp\ModelTyper\Commands;
 
-use Illuminate\Foundation\Console\ShowModelCommand as BaseCommand;
+use Illuminate\Database\Console\ShowModelCommand as BaseCommand;
 
 /**
  * A wrapper command for Laravel default model:show to add customizaton for model generation.
