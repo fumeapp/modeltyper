@@ -123,7 +123,8 @@ class GenerateCliOutput
         collect($this->imports)
             ->unique()
             ->each(function ($import) {
-                $entry = "import { {$import['type']} } from '{$import['import']}'\n";
+                $importTypeWithoutGeneric = Str::before($import['type'], '<');
+                $entry = "import { {$importTypeWithoutGeneric} } from '{$import['import']}'\n";
                 $this->output = $entry . $this->output;
             });
 
