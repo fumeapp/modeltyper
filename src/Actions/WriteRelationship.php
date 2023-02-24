@@ -28,11 +28,11 @@ class WriteRelationship
             default => $relatedModel,
         };
 
-        if(in_array($relation['type'], config('modeltyper.custom_relationships.singular'))) {
+        if(in_array($relation['type'], config('modeltyper.custom_relationships.singular', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
-        if(in_array($relation['type'], config('modeltyper.custom_relationships.plural'))) {
+        if(in_array($relation['type'], config('modeltyper.custom_relationships.plural', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
