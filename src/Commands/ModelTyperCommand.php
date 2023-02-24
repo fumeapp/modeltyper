@@ -26,6 +26,7 @@ class ModelTyperCommand extends Command
                             {--plurals : Output model plurals}
                             {--api-resources : Output api.MetApi interfaces}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
+
     /**
      * The console command description.
      *
