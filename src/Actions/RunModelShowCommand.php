@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 
 class RunModelShowCommand
@@ -19,7 +20,8 @@ class RunModelShowCommand
      */
     public function __invoke(string $model): array
     {
-        $exitCode = Artisan::call("model:show {$model} --json --no-interaction");
+        $relationships = implode(',', Arr::flatten(config('modeltyper.custom_relationships', [])));
+        $exitCode = Artisan::call("model:typer-show {$model} --json --no-interaction --custom-relationships=$relationships");
 
         if ($exitCode !== 0) {
             throw new Exception('You may need to install the doctrine/dbal package to use this command.');

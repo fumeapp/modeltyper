@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper;
 
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
+use FumeApp\ModelTyper\Commands\ShowModelCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ModelTyperServiceProvider extends ServiceProvider
@@ -14,9 +15,14 @@ class ModelTyperServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->publishes([
+            __DIR__ . '/../config/modeltyper.php' => config_path('modeltyper.php')
+        ]);
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ModelTyperCommand::class,
+                ShowModelCommand::class
             ]);
         }
     }
