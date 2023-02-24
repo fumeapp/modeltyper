@@ -20,7 +20,7 @@ class RunModelShowCommand
     public function __invoke(string $model, array $customRelationships = []): array
     {
         $relationships = implode(',', $customRelationships);
-        $exitCode = Artisan::call("model:typer-show {$model} --json --no-interaction --relationships=$relationships");
+        $exitCode = Artisan::call("model:typer-show {$model} --json --no-interaction --custom-relationships=$relationships");
 
         if ($exitCode !== 0) {
             throw new Exception('You may need to install the doctrine/dbal package to use this command.');
