@@ -17,10 +17,11 @@ class WriteRelationship
      * @param  bool  $jsonOutput
      * @return array|string
      */
-    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false): array|string
+    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false): array|string
     {
         $name = Str::snake($relation['name']);
         $relatedModel = $this->getClassName($relation['related']);
+        $optional = $optionalRelation ? '?' : '';
 
         $relationType = match ($relation['type']) {
             'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => Str::plural($relatedModel),
@@ -43,6 +44,6 @@ class WriteRelationship
             ];
         }
 
-        return "{$indent}  {$name}: {$relationType}\n";
+        return "{$indent}  {$name}{$optional}: {$relationType}\n";
     }
 }

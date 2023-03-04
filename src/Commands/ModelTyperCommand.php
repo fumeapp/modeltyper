@@ -24,6 +24,10 @@ class ModelTyperCommand extends Command
                             {--global : Generate your interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--plurals : Output model plurals}
+                            {--no-relations : Do not include relations}
+                            {--optional-relations : Make relations optional types}
+                            {--no-hidden : Do not include hidden model attributes}
+                            {--timestamp-strings : Output timestamps as strings}
                             {--api-resources : Output api.MetApi interfaces}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
 
@@ -61,7 +65,7 @@ class ModelTyperCommand extends Command
         $plurals = $this->option('plurals') || $this->option('all');
         $apiResources = $this->option('api-resources') || $this->option('all');
 
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources);
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $this->option('optional-relations'), $this->option('no-relations'), $this->option('no-hidden'), $this->option('timestamp-strings'));
 
         return Command::SUCCESS;
     }
