@@ -28,6 +28,7 @@ class ModelTyperCommand extends Command
                             {--optional-relations : Make relations optional types}
                             {--no-hidden : Do not include hidden model attributes}
                             {--timestamp-strings : Output timestamps as strings}
+                            {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
 
@@ -65,7 +66,7 @@ class ModelTyperCommand extends Command
         $plurals = $this->option('plurals') || $this->option('all');
         $apiResources = $this->option('api-resources') || $this->option('all');
 
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $this->option('optional-relations'), $this->option('no-relations'), $this->option('no-hidden'), $this->option('timestamp-strings'));
+        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $this->option('optional-relations'), $this->option('no-relations'), $this->option('no-hidden'), $this->option('timestamp-strings'), $this->option('optional-nullables'));
 
         return Command::SUCCESS;
     }

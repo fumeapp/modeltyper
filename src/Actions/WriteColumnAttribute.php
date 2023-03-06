@@ -21,7 +21,7 @@ class WriteColumnAttribute
      * @param  bool  $jsonOutput
      * @return array
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampStrings = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampStrings = false, bool $optionalNullables = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -72,9 +72,6 @@ class WriteColumnAttribute
                                 $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
 
                                 if (isset(TypescriptMappings::$mappings[$cleanStr])) {
-                                    if (Date) {
-
-                                    }
                                     $type = $returnType($cleanStr, $timestampStrings);
                                 } else {
                                     dump('Unknown cast type: ' . $attribute['cast']);
@@ -92,7 +89,7 @@ class WriteColumnAttribute
             $type .= '|null';
         }
 
-        if (isset($attribute['hidden']) && $attribute['hidden']) {
+        if ((isset($attribute['hidden']) && $attribute['hidden']) || ($optionalNullables && $attribute['nullable'])) {
             $name = "{$name}?";
         }
 

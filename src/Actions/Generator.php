@@ -13,11 +13,11 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampStrings = false)
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampStrings = false, bool $optionalNullables = false)
     {
         $models = $this->getModels($specificModel);
 
-        return $this->display($models, $global, $json, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampStrings);
+        return $this->display($models, $global, $json, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampStrings, $optionalNullables);
     }
 
     /**
@@ -41,7 +41,7 @@ class Generator
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampStrings = false): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampStrings = false, bool $optionalNullables = false): string
     {
         if ($models->isEmpty()) {
             return 'ERROR: No models found.';
@@ -51,6 +51,6 @@ class Generator
             return app(GenerateJsonOutput::class)($models);
         }
 
-        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampStrings);
+        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampStrings, $optionalNullables);
     }
 }
