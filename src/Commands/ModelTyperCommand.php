@@ -53,7 +53,7 @@ class ModelTyperCommand extends Command
         $laravelVersion = (float) app()->version();
 
         if ($laravelVersion < 9.20) {
-            $this->error('This package requires Laravel 9.2 or higher.');
+            $this->error('This package requires Laravel 9.20 or higher.');
 
             return Command::FAILURE;
         }
