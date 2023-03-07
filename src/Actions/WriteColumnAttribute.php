@@ -21,7 +21,7 @@ class WriteColumnAttribute
      * @param  bool  $jsonOutput
      * @return array
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampStrings = false, bool $optionalNullables = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -39,7 +39,7 @@ class WriteColumnAttribute
         } else {
             if (! is_null($attribute['cast']) && $attribute['cast'] !== $attribute['type']) {
                 if (isset(TypescriptMappings::$mappings[$attribute['cast']])) {
-                    $type = $returnType($attribute['cast'], $timestampStrings);
+                    $type = $returnType($attribute['cast'], $timestampsDate);
                 } else {
                     if ($attribute['type'] === 'json' || $this->getClassName($attribute['cast']) === 'AsCollection' || $this->getClassName($attribute['cast']) === 'AsArrayObject') {
                         $type = $returnType('json');
@@ -54,7 +54,7 @@ class WriteColumnAttribute
                                     if (! is_null($closure->get)) {
                                         $rf = new ReflectionFunction($closure->get);
                                         if ($rf->hasReturnType()) {
-                                            $type = $returnType($rf->getReturnType()->getName(), $timestampStrings);
+                                            $type = $returnType($rf->getReturnType()->getName(), $timestampsDate);
                                         }
                                     }
                                 } else {
@@ -72,7 +72,7 @@ class WriteColumnAttribute
                                 $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
 
                                 if (isset(TypescriptMappings::$mappings[$cleanStr])) {
-                                    $type = $returnType($cleanStr, $timestampStrings);
+                                    $type = $returnType($cleanStr, $timestampsDate);
                                 } else {
                                     dump('Unknown cast type: ' . $attribute['cast']);
                                 }
@@ -81,7 +81,7 @@ class WriteColumnAttribute
                     }
                 }
             } else {
-                $type = $returnType($attribute['type'], $timestampStrings);
+                $type = $returnType($attribute['type'], $timestampsDate);
             }
         }
 

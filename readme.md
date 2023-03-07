@@ -20,35 +20,35 @@ will output
 
 ```ts
 export interface User {
-    // columns
-    id: number;
-    email: string;
-    name: string;
-    created_at?: Date;
-    updated_at?: Date;
-    // mutators
-    first_name: string;
-    initials: string;
-    // relations
-    teams: Teams;
+  // columns
+  id: number
+  email: string
+  name: string
+  created_at?: Date
+  updated_at?: Date
+  // mutators
+  first_name: string
+  initials: string
+  // relations
+  teams: Teams
 }
-export type Users = Array<User>;
+export type Users = Array<User>
 
 export interface Team {
-    // columns
-    id: number;
-    name: string;
-    logo: string;
-    created_at?: Date;
-    updated_at?: Date;
-    // mutators
-    initials: string;
-    slug: string;
-    url: string;
-    // relations
-    users: Users;
+  // columns
+  id: number
+  name: string
+  logo: string
+  created_at?: Date
+  updated_at?: Date
+  // mutators
+  initials: string
+  slug: string
+  url: string
+  // relations
+  users: Users
 }
-export type Teams = Array<Team>;
+export type Teams = Array<Team>
 ```
 
 ### What does this do?
@@ -61,10 +61,10 @@ Starting support is for Laravel v9.21+ and PHP v8.1+
 
 > **Note**
 > This package may require you to install Doctrine DBAL. If so you can run
+
 ```bash
 composer require doctrine/dbal
 ```
-
 
 1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model relationships
 
@@ -82,6 +82,16 @@ public function getFirstNameAttribute(): string // <- this
 {
     return explode(' ', $this->name)[0];
 }
+```
+
+### Additional Options
+
+```
+--no-relations : Do not include relations
+--optional-relations : Make relations optional fields on the model type
+--no-hidden : Do not include hidden model attributes
+--timestamps-date : Output timestamps as a Date object type
+--optional-nullables : Output nullable attributes as optional fields
 ```
 
 ### Custom Interfaces
@@ -102,11 +112,11 @@ public array $interfaces = [
 And it should generate:
 
 ```ts
-import { Point } from "@/types/api";
+import { Point } from '@/types/api'
 
 export interface Location {
-    // columns
-    coordinate: Point;
+  // columns
+  coordinate: Point
 }
 ```
 
@@ -138,8 +148,8 @@ And it should generate:
 
 ```ts
 export interface Location {
-    // columns
-    choices: "good" | "bad";
+  // columns
+  choices: 'good' | 'bad'
 }
 ```
 
@@ -159,10 +169,10 @@ This will generate:
 
 ```ts
 export interface Location {
-    // ...
-    // overrides
-    state: "found" | "not_found" | "searching" | "reset";
-    // ...
+  // ...
+  // overrides
+  state: 'found' | 'not_found' | 'searching' | 'reset'
+  // ...
 }
 ```
 
@@ -192,13 +202,14 @@ declare global {
 ```bash
 artisan model:typer --plurals
 ```
+
 Exports for example, when a `User` model exists:
 
 ```ts
 export type Users = User[]
 ```
 
-### Output Api.MetApi* resources
+### Output Api.MetApi\* resources
 
 ```bash
 artisan model:typer --api-resources
@@ -207,10 +218,18 @@ artisan model:typer --api-resources
 Exports:
 
 ```ts
-export interface UserResults extends api.MetApiResults { data: Users }
-export interface UserResult extends api.MetApiResults { data: User }
-export interface UserMetApiData extends api.MetApiData { data: User }
-export interface UserResponse extends api.MetApiResponse { data: UserMetApiData }
+export interface UserResults extends api.MetApiResults {
+  data: Users
+}
+export interface UserResult extends api.MetApiResults {
+  data: User
+}
+export interface UserMetApiData extends api.MetApiData {
+  data: User
+}
+export interface UserResponse extends api.MetApiResponse {
+  data: UserMetApiData
+}
 ```
 
 ### Enable all output options
@@ -248,16 +267,16 @@ This will generate something like:
 
 ```ts
 export interface User {
-    // columns
-    id: number;
-    email: string;
-    name?: string;
-    created_at?: Date;
-    updated_at?: Date;
-    // mutators
-    is_captain: boolean;
-    // relations
-    teams: TeamUsers;
+  // columns
+  id: number
+  email: string
+  name?: string
+  created_at?: Date
+  updated_at?: Date
+  // mutators
+  is_captain: boolean
+  // relations
+  teams: TeamUsers
 }
 ```
 
@@ -292,10 +311,9 @@ namespace App\Enums;
  * @property ADMIN - Can do anything
  * @property USER - Standard read-only
  */
-enum UserRoleEnum: string
-{
-    case ADMIN = 'admin';
-    case USER = 'user';
+enum UserRoleEnum: string {
+  case ADMIN = 'admin';
+  case USER = 'user';
 }
 ```
 

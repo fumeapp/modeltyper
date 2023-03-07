@@ -27,7 +27,7 @@ class GenerateCliOutput
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampStrings = false, bool $optionalNullables = false): string
+    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -38,7 +38,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampStrings, $optionalNullables) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables) {
             $entry = '';
 
             [
@@ -57,8 +57,8 @@ class GenerateCliOutput
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
-                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampStrings, $optionalNullables) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampStrings: $timestampStrings, optionalNullables: $optionalNullables);
+                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
                     if (!empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -70,8 +70,8 @@ class GenerateCliOutput
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
-                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampStrings, $optionalNullables) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampStrings: $timestampStrings, optionalNullables: $optionalNullables);
+                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
                     if (!empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -83,8 +83,8 @@ class GenerateCliOutput
 
             if ($interfaces->isNotEmpty()) {
                 $entry .= "{$this->indent}  // overrides\n";
-                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $timestampStrings) {
-                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, indent: $this->indent, timestampStrings: $timestampStrings);
+                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $timestampsDate) {
+                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, indent: $this->indent, timestampsDate: $timestampsDate);
                     $entry .= $line;
                 });
             }

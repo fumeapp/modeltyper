@@ -12,12 +12,12 @@ class MapReturnType
      * @param  string  $returnType
      * @return string
      */
-    public function __invoke(string $returnType, bool $timestampStrings = false): string
+    public function __invoke(string $returnType, bool $timestampsDate = false): string
     {
         $mappings = TypescriptMappings::$mappings;
-        if ($timestampStrings) {
-            $mappings['datetime'] = 'string';
-            $mappings['date'] = 'string';
+        if ($timestampsDate) {
+            $mappings['datetime'] = 'Date';
+            $mappings['date'] = 'Date';
         }
 
         $returnType = explode(' ', $returnType)[0];
