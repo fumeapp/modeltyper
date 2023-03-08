@@ -84,6 +84,16 @@ public function getFirstNameAttribute(): string // <- this
 }
 ```
 
+### Additional Options
+
+```
+--no-relations : Do not include relations
+--optional-relations : Make relations optional fields on the model type
+--no-hidden : Do not include hidden model attributes
+--timestamps-date : Output timestamps as a Date object type
+--optional-nullables : Output nullable attributes as optional fields
+```
+
 ### Custom Interfaces
 
 If you have custom interfaces you are using for your models you can specify them in a reserved `interfaces` array

@@ -27,7 +27,7 @@ class GenerateCliOutput
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false): string
+    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -38,7 +38,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables) {
             $entry = '';
 
             [
@@ -57,38 +57,42 @@ class GenerateCliOutput
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
-                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    [$line, $enum] = $colAttrWriter($reflectionModel, $att, $this->indent);
-                    $entry .= $line;
-                    if ($enum) {
-                        $this->enumReflectors[] = $enum;
+                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
+                    if (!empty($line)) {
+                        $entry .= $line;
+                        if ($enum) {
+                            $this->enumReflectors[] = $enum;
+                        }
                     }
                 });
             }
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
-                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    [$line, $enum] = $colAttrWriter($reflectionModel, $att, $this->indent);
-                    $entry .= $line;
-                    if ($enum) {
-                        $this->enumReflectors[] = $enum;
+                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
+                    if (!empty($line)) {
+                        $entry .= $line;
+                        if ($enum) {
+                            $this->enumReflectors[] = $enum;
+                        }
                     }
                 });
             }
 
             if ($interfaces->isNotEmpty()) {
                 $entry .= "{$this->indent}  // overrides\n";
-                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter) {
-                    [$line] = $colAttrWriter($reflectionModel, $interface, $this->indent);
+                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $timestampsDate) {
+                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, indent: $this->indent, timestampsDate: $timestampsDate);
                     $entry .= $line;
                 });
             }
 
-            if ($relations->isNotEmpty()) {
+            if ($relations->isNotEmpty() && !$noRelations) {
                 $entry .= "{$this->indent}  // relations\n";
-                $relations->each(function ($rel) use (&$entry, $relationWriter) {
-                    $entry .= $relationWriter($rel, $this->indent);
+                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations) {
+                    $entry .= $relationWriter(relation: $rel, indent: $this->indent,  optionalRelation: $optionalRelations);
                 });
             }
 
