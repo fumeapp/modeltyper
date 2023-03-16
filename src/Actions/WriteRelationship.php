@@ -17,14 +17,14 @@ class WriteRelationship
      * @param  bool  $jsonOutput
      * @return array|string
      */
-    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false): array|string
+    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
     {
         $name = Str::snake($relation['name']);
         $relatedModel = $this->getClassName($relation['related']);
         $optional = $optionalRelation ? '?' : '';
 
         $relationType = match ($relation['type']) {
-            'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => Str::plural($relatedModel),
+            'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel) . '[]'),
             'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
             default => $relatedModel,
         };
