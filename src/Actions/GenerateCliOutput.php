@@ -91,8 +91,8 @@ class GenerateCliOutput
 
             if ($relations->isNotEmpty() && !$noRelations) {
                 $entry .= "{$this->indent}  // relations\n";
-                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations) {
-                    $entry .= $relationWriter(relation: $rel, indent: $this->indent,  optionalRelation: $optionalRelations);
+                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
+                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);
                 });
             }
 
