@@ -54,7 +54,11 @@ class WriteColumnAttribute
                                     if (! is_null($closure->get)) {
                                         $rf = new ReflectionFunction($closure->get);
                                         if ($rf->hasReturnType()) {
-                                            $type = $returnType($rf->getReturnType()->getName(), $timestampsDate);
+                                            $rt = $rf->getReturnType();
+                                            $type = $returnType($rt->getName(), $timestampsDate);
+                                            if ($rt->allowsNull()) {
+                                                $attribute['nullable'] = true;
+                                            }
                                         }
                                     }
                                 } else {
