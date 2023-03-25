@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Commands;
 
 use FumeApp\ModelTyper\Actions\Generator;
+use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 
 class ModelTyperCommand extends Command
@@ -59,14 +60,25 @@ class ModelTyperCommand extends Command
 
         if ($laravelVersion < 9.20) {
             $this->error('This package requires Laravel 9.20 or higher.');
-
             return Command::FAILURE;
         }
 
-        $plurals = $this->option('plurals') || $this->option('all');
-        $apiResources = $this->option('api-resources') || $this->option('all');
-
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $this->option('optional-relations'), $this->option('no-relations'), $this->option('no-hidden'), $this->option('timestamps-date'), $this->option('optional-nullables'));
+        try {
+            echo $generator(
+                $this->option('model'),
+                $this->option('global'),
+                $this->option('json'),
+                $this->option('plurals') || $this->option('all'),
+                $this->option('api-resources') || $this->option('all'),
+                $this->option('optional-relations'),
+                $this->option('no-relations'),
+                $this->option('no-hidden'),
+                $this->option('timestamps-date'),
+                $this->option('optional-nullables')
+            );
+        } catch(ModelTyperException $exception) {
+            $this->error($exception->getMessage());
+        }
 
         return Command::SUCCESS;
     }
