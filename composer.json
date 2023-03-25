@@ -24,7 +24,8 @@
         "laravel/pint": "^1.3",
         "nunomaduro/larastan": "^2.2",
         "consolidation/robo": "^4.0",
-        "totten/lurkerlite": "^1.3"
+        "totten/lurkerlite": "^1.3",
+        "doctrine/dbal": "^3.6"
     },
     "autoload": {
         "psr-4": {
