@@ -55,14 +55,6 @@ class ModelTyperCommand extends Command
      */
     public function handle(Generator $generator): int
     {
-        // determine Laravel version
-        $laravelVersion = (float) app()->version();
-
-        if ($laravelVersion < 9.20) {
-            $this->error('This package requires Laravel 9.20 or higher.');
-            return Command::FAILURE;
-        }
-
         try {
             echo $generator(
                 $this->option('model'),
@@ -78,6 +70,7 @@ class ModelTyperCommand extends Command
             );
         } catch(ModelTyperException $exception) {
             $this->error($exception->getMessage());
+            return Command::FAILURE;
         }
 
         return Command::SUCCESS;
