@@ -56,7 +56,7 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
-            echo $generator(
+            $this->line($generator(
                 $this->option('model'),
                 $this->option('global'),
                 $this->option('json'),
@@ -67,7 +67,7 @@ class ModelTyperCommand extends Command
                 $this->option('no-hidden'),
                 $this->option('timestamps-date'),
                 $this->option('optional-nullables')
-            );
+            ));
         } catch(ModelTyperException $exception) {
             $this->error($exception->getMessage());
             return Command::FAILURE;
