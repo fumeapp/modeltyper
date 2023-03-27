@@ -6,7 +6,7 @@ trait GeneratesOutput
 {
     public function getOutputPath(string $appends = '') : string
     {
-        $path = ROOT_PATH . '/tests/output';
+        $path = ROOT_PATH . '/test/output';
 
         if($appends) {
             $path .= str_starts_with($appends, '/') ? $appends : "/$appends";

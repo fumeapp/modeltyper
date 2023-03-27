@@ -16,7 +16,8 @@
     "require": {
         "php": "^8.1",
         "illuminate/support": "9.*|10.*",
-        "illuminate/database": "^10.0.0"
+        "illuminate/database": "^10.0.0",
+        "illuminate/console": "^10.0.0"
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
@@ -34,7 +35,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "test/Tests/",
+            "App\\": "test/laravel-skeleton/app/"
         }
     },
     "extra": {
@@ -52,7 +54,7 @@
             "vendor/bin/phpunit --colors --display-errors"
         ],
         "test-watch": [
-            "vendor/bin/robo watch 'src, tests/Feature, tests/Unit, tests/input' 'clear && composer test'"
+            "vendor/bin/robo watch 'src, test/Tests' 'clear && composer test'"
         ],
         "test-coverage": [
             "XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --testdox --coverage-text"

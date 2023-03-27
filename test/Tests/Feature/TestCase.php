@@ -15,9 +15,9 @@ abstract class TestCase extends TestbenchTestCase
     }
 
     public static function applicationBasePath()
-{
-    return ROOT_PATH . '/tests/skeleton';
-}
+    {
+        return ROOT_PATH . '/test/laravel-skeleton';
+    }
 
     protected function defineEnvironment($app)
     {

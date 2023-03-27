@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Console;
 
-use Illuminate\Support\Facades\Artisan;
 use Tests\Traits\GeneratesOutput;
 
 class ModelTyperCommandTest extends ConsoleTestCase
@@ -15,9 +14,8 @@ class ModelTyperCommandTest extends ConsoleTestCase
         $this->deleteOutput();
     }
 
-    public function testFoo()
+    public function testBaseCommandCanBeExecutedSuccessfully()
     {
-        // $foo = $this->artisan('model:typer');
-        $this->assertTrue(true);
+        $this->artisan('model:typer')->assertSuccessful();
     }
 }
