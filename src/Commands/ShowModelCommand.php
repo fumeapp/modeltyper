@@ -2,6 +2,7 @@
 
 namespace FumeApp\ModelTyper\Commands;
 
+use FumeApp\ModelTyper\Overrides\ErrorEmittingConsoleComponentFactory;
 use Illuminate\Database\Console\ShowModelCommand as BaseCommand;
 
 /**
@@ -19,11 +20,14 @@ class ShowModelCommand extends BaseCommand
 
     public function handle()
     {
+        // Override default console component factory to force parent command to return failed exit code on error.
+        $this->components = new ErrorEmittingConsoleComponentFactory($this->components);
+
         if($this->option('custom-relationships')) {
             $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn($method) => trim($method));
             $this->relationMethods = array_merge($this->relationMethods, $customRelationships->toArray());
         }
 
-        parent::handle();
+        return parent::handle();
     }
 }

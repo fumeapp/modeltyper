@@ -2,7 +2,8 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Exceptions\ModelTyperException;
+use FumeApp\ModelTyper\Commands\ShowModelCommand;
+use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Foundation\Application;
@@ -29,7 +30,7 @@ class RunModelShowCommand
      * @param  string  $model
      * @return array
      *
-     * @throws ModelTyperException
+     * @throws NestedCommandException
      *
      */
     public function __invoke(string $model): array
@@ -46,13 +47,8 @@ class RunModelShowCommand
             $commandArgs['--custom-relationships'] = $relationships;
         }
 
-        $exitCode = $this->runCommandWithoutMockOutput('model:typer-show', $commandArgs);
-
-        if ($exitCode !== Command::SUCCESS) {
-            $msg = 'You may need to install the doctrine/dbal package to use this command.';
-            throw new ModelTyperException($msg);
-        }
-
+        $command = ShowModelCommand::class;
+        $exitCode = $this->runCommandWithoutMockOutput($command, $commandArgs);
         $output = Artisan::output();
 
         // NOTE this check should not fail under normal circumstances, but might be useful to catch
@@ -60,7 +56,12 @@ class RunModelShowCommand
         if (empty($output)) {
             $msg = "Could not resolve types for model '$model', Artisan::output() is empty.";
             $msg .= PHP_EOL . 'If you are running tests, make sure to set {public $mockConsoleOutput = false;}';
-            throw new ModelTyperException($msg);
+            throw new NestedCommandException($msg);
+        }
+
+        if ($exitCode !== Command::SUCCESS) {
+            $msg = "Command '$command' failed with the following output: $output";
+            throw new NestedCommandException($msg);
         }
 
         return json_decode($output, true);
