@@ -8,7 +8,7 @@ use FumeApp\ModelTyper\Actions\RunModelShowCommand;
 use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use Tests\Feature\TestCase;
 
-class RunShowModelCommandTest extends TestCase
+class RunModelShowCommandTest extends TestCase
 {
     public function testActionCanBeResolvedByApplication()
     {
