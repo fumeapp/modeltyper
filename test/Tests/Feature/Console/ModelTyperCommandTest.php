@@ -2,9 +2,10 @@
 
 namespace Tests\Feature\Console;
 
+use Tests\Feature\TestCase;
 use Tests\Traits\GeneratesOutput;
 
-class ModelTyperCommandTest extends ConsoleTestCase
+class ModelTyperCommandTest extends TestCase
 {
     use GeneratesOutput;
 
