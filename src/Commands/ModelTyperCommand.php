@@ -21,8 +21,8 @@ class ModelTyperCommand extends Command
      * @var string
      */
     protected $signature = 'model:typer
-                            {--model= : Generate your interfaces for a specific model}
-                            {--global : Generate your interfaces in a global namespace named models}
+                            {--model= : Generate typescript interfaces for a specific model}
+                            {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--plurals : Output model plurals}
                             {--no-relations : Do not include relations}
@@ -38,7 +38,7 @@ class ModelTyperCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate interfaces for all found models';
+    protected $description = 'Generate typescript interfaces for all found models';
 
     /**
      * Create a new command instance.
