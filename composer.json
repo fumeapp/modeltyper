@@ -51,7 +51,7 @@
             "vendor/bin/pint"
         ],
         "test": [
-            "vendor/bin/phpunit --colors --display-errors"
+            "vendor/bin/phpunit --colors --display-errors --testdox"
         ],
         "test-watch": [
             "vendor/bin/robo watch 'src, test/Tests' 'clear && composer test'"
