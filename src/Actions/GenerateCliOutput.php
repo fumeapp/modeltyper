@@ -27,7 +27,7 @@ class GenerateCliOutput
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): string
+    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -38,8 +38,14 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables, $resolveAbstract) {
             $entry = '';
+            $modelDetails = $modelBuilder($model, $resolveAbstract);
+
+            if($modelDetails === null) {
+                // skip iteration if model details could not be resolved
+                return;
+            }
 
             [
                 'reflectionModel' => $reflectionModel,
@@ -49,7 +55,7 @@ class GenerateCliOutput
                 'relations' => $relations,
                 'interfaces' => $interfaces,
                 'imports' => $imports,
-            ] = $modelBuilder($model);
+            ] = $modelDetails;
 
             $this->imports = array_merge($this->imports, $imports->toArray());
 

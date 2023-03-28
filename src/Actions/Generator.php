@@ -13,11 +13,16 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false)
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false)
     {
         $models = app(GetModels::class)($specificModel);
 
-        return $this->display($models, $global, $json, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables);
+        if ($models->isEmpty()) {
+            $msg = 'No models found.';
+            throw new ModelTyperException($msg);
+        }
+
+        return $this->display($models, $global, $json, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables, $resolveAbstract);
     }
 
     /**
@@ -25,17 +30,23 @@ class Generator
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false): string
     {
-        if ($models->isEmpty()) {
-            $msg = 'No models found.';
-            throw new ModelTyperException($msg);
-        }
-
         if ($json) {
-            return app(GenerateJsonOutput::class)($models);
+            return app(GenerateJsonOutput::class)($models, $resolveAbstract);
         }
 
-        return app(GenerateCliOutput::class)($models, $global, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables);
+        return app(GenerateCliOutput::class)(
+            $models,
+            $global,
+            $plurals,
+            $apiResources,
+            $optionalRelations,
+            $noRelations,
+            $noHidden,
+            $timestampsDate,
+            $optionalNullables,
+            $resolveAbstract
+        );
     }
 }

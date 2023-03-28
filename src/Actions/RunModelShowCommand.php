@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Commands\ShowModelCommand;
+use FumeApp\ModelTyper\Exceptions\CommandException;
 use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
@@ -33,7 +34,7 @@ class RunModelShowCommand
      * @throws NestedCommandException
      *
      */
-    public function __invoke(string $model): array
+    public function __invoke(string $model, bool $resolveAbstract = false): array
     {
         $relationships = implode(',', Arr::flatten(config('modeltyper.custom_relationships', [])));
 
@@ -41,14 +42,27 @@ class RunModelShowCommand
             'model' => $model,
             '--json' => true,
             '--no-interaction' => true,
+            '--throw-exceptions' => true
         ];
+
+        if($resolveAbstract) {
+            $commandArgs['--resolve-abstract'] = true;
+        }
 
         if(! empty($relationships)) {
             $commandArgs['--custom-relationships'] = $relationships;
         }
 
         $command = ShowModelCommand::class;
-        $exitCode = $this->runCommandWithoutMockOutput($command, $commandArgs);
+
+        try {
+            $this->runCommandWithoutMockOutput($command, $commandArgs);
+        }
+        catch(CommandException $exception) {
+            $msg = "Command '$command' failed:" . PHP_EOL .  $exception->getMessage();
+            throw new NestedCommandException($msg, Command::FAILURE, $exception);
+        }
+
         $output = Artisan::output();
 
         // NOTE this check should not fail under normal circumstances, but might be useful to catch
@@ -56,11 +70,6 @@ class RunModelShowCommand
         if (empty($output)) {
             $msg = "Could not resolve types for model '$model', Artisan::output() is empty.";
             $msg .= PHP_EOL . 'If you are running tests, make sure to set {public $mockConsoleOutput = false;}';
-            throw new NestedCommandException($msg);
-        }
-
-        if ($exitCode !== Command::SUCCESS) {
-            $msg = "Command '$command' failed with the following output: $output";
             throw new NestedCommandException($msg);
         }
 

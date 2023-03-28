@@ -2,8 +2,10 @@
 
 namespace FumeApp\ModelTyper\Overrides;
 
+use FumeApp\ModelTyper\Exceptions\CommandException;
 use Illuminate\Console\Command;
 use Illuminate\Console\View\Components\Factory;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * A class ment to warp and override the default console component factory
@@ -11,11 +13,13 @@ use Illuminate\Console\View\Components\Factory;
  */
 class ErrorEmittingConsoleComponentFactory
 {
-    private $factory;
+    private Factory $factory;
+    private bool $throwExceptions;
 
-    public function __construct(Factory $factory)
+    public function __construct(Factory $factory, bool $throwExceptions = false)
     {
         $this->factory = $factory;
+        $this->throwExceptions = $throwExceptions;
     }
 
     /**
@@ -24,12 +28,19 @@ class ErrorEmittingConsoleComponentFactory
      */
     public function __call($name, $arguments)
     {
-        $result = $this->factory->$name(...$arguments);
-
         if($name === 'error') {
-            return Command::FAILURE;
+            return $this->emitError(...$arguments);
         }
 
-        return $result;
+        return $this->factory->$name(...$arguments);
+    }
+
+    private function emitError(string $message, int $verbosity = OutputInterface::VERBOSITY_NORMAL, ?string $exceptionClass = CommandException::class) : int
+    {
+        if($this->throwExceptions) {
+            throw new $exceptionClass(message: $message);
+        }
+
+        return Command::FAILURE;
     }
 }

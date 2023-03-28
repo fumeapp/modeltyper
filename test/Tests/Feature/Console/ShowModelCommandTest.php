@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Console;
 
+use App\Models\AbstractModel;
 use FumeApp\ModelTyper\Commands\ShowModelCommand;
 use Tests\Feature\TestCase;
 
