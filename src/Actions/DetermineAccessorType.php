@@ -15,10 +15,6 @@ class DetermineAccessorType
      * @see https://laravel.com/docs/9.x/eloquent-mutators#defining-an-accessor
      * @see https://laravel.com/docs/8.x/eloquent-mutators#defining-an-accessor
      *
-     * @param  ReflectionClass  $reflectionModel
-     * @param  string  $mutator
-     * @return ReflectionMethod
-     *
      * @throws Exception
      */
     public function __invoke(ReflectionClass $reflectionModel, string $mutator): ReflectionMethod

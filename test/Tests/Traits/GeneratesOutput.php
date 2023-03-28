@@ -4,11 +4,11 @@ namespace Tests\Traits;
 
 trait GeneratesOutput
 {
-    public function getOutputPath(string $appends = '') : string
+    public function getOutputPath(string $appends = ''): string
     {
         $path = ROOT_PATH . '/test/output';
 
-        if($appends) {
+        if ($appends) {
             $path .= str_starts_with($appends, '/') ? $appends : "/$appends";
         }
 
@@ -28,14 +28,14 @@ trait GeneratesOutput
 
     private function removeDirectoryContents(string $dirPath, array $ignore = [])
     {
-        foreach(array_diff(scandir($dirPath), ['.', '..', ...$ignore]) as $filename) {
+        foreach (array_diff(scandir($dirPath), ['.', '..', ...$ignore]) as $filename) {
             $filepath = "$dirPath/$filename";
 
-            if(is_file($filepath)) {
+            if (is_file($filepath)) {
                 unlink($filepath);
             }
 
-            if(is_dir($filepath)) {
+            if (is_dir($filepath)) {
                 $this->removeDirectory($filepath);
             }
         }

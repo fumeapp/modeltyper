@@ -28,11 +28,7 @@ class RunModelShowCommand
      *
      * @see https://github.com/laravel/framework/blob/9.x/src/Illuminate/Foundation/Console/ShowModelCommand.php
      *
-     * @param  string  $model
-     * @return array
-     *
      * @throws NestedCommandException
-     *
      */
     public function __invoke(string $model, bool $resolveAbstract = false): array
     {
@@ -42,14 +38,14 @@ class RunModelShowCommand
             'model' => $model,
             '--json' => true,
             '--no-interaction' => true,
-            '--throw-exceptions' => true
+            '--throw-exceptions' => true,
         ];
 
-        if($resolveAbstract) {
+        if ($resolveAbstract) {
             $commandArgs['--resolve-abstract'] = true;
         }
 
-        if(! empty($relationships)) {
+        if (! empty($relationships)) {
             $commandArgs['--custom-relationships'] = $relationships;
         }
 
@@ -57,9 +53,8 @@ class RunModelShowCommand
 
         try {
             $this->runCommandWithoutMockOutput($command, $commandArgs);
-        }
-        catch(CommandException $exception) {
-            $msg = "Command '$command' failed:" . PHP_EOL .  $exception->getMessage();
+        } catch(CommandException $exception) {
+            $msg = "Command '$command' failed:" . PHP_EOL . $exception->getMessage();
             throw new NestedCommandException($msg, Command::FAILURE, $exception);
         }
 
@@ -81,20 +76,19 @@ class RunModelShowCommand
      * from being intercepted by mock output handler. Resets the mock output handler after
      * command execution so that mock testing is not disturbed.
      *
-     * @param string $command Name of the command to run.
-     * @param array<string, mixed> $args Arguments for the command.
+     * @param  string  $command Name of the command to run.
+     * @param  array<string, mixed>  $args Arguments for the command.
      * @return int $exitCode Exit code returned by the command.
-     *
      */
-    private function runCommandWithoutMockOutput(string $command, array $args = []) : int
+    private function runCommandWithoutMockOutput(string $command, array $args = []): int
     {
         $originalOutput = $this->outputMocked() ? $this->app->get(OutputStyle::class) : false;
         $this->withoutMockingConsoleOutput();
 
         $exitCode = Artisan::call($command, $args);
 
-        if($originalOutput) {
-            $this->app->bind(OutputStyle::class, fn() => $originalOutput);
+        if ($originalOutput) {
+            $this->app->bind(OutputStyle::class, fn () => $originalOutput);
         }
 
         return $exitCode;
@@ -104,15 +98,14 @@ class RunModelShowCommand
      * Check if the console output is being mocked.
      *
      * @return bool $mocked
-     *
      */
-    private function outputMocked() : bool
+    private function outputMocked(): bool
     {
-        if(! app()->runningInConsole()) {
+        if (! app()->runningInConsole()) {
             return false;
         }
 
-        if(! config('app.env') === 'testing') {
+        if (! config('app.env') === 'testing') {
             return false;
         }
 

@@ -22,14 +22,14 @@ $createApp = function (string $workingPath) {
     );
 };
 
-$app = $createApp(realpath(__DIR__.'/../'));
+$app = $createApp(realpath(__DIR__ . '/../'));
 
 unset($createApp);
 
 /** @var \Illuminate\Routing\Router $router */
 $router = $app->make('router');
 
-collect(glob(__DIR__.'/../routes/testbench-*.php'))
+collect(glob(__DIR__ . '/../routes/testbench-*.php'))
     ->each(function ($routeFile) use ($app, $router) {
         require $routeFile;
     });

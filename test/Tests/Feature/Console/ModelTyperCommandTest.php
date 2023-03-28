@@ -12,7 +12,7 @@ class ModelTyperCommandTest extends TestCase
 {
     use GeneratesOutput, UsesInputFiles;
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         parent::tearDown();
 

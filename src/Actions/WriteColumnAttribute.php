@@ -15,11 +15,7 @@ class WriteColumnAttribute
     /**
      * Get model columns and attributes to the output.
      *
-     * @param  ReflectionClass  $reflectionModel
      * @param  array  $attribute <{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden: bool, appended: mixed, cast: string}>
-     * @param  string  $indent
-     * @param  bool  $jsonOutput
-     * @return array
      */
     public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): array
     {

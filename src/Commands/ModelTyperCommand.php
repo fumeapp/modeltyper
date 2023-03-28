@@ -72,6 +72,7 @@ class ModelTyperCommand extends Command
             ));
         } catch(ModelTyperException $exception) {
             $this->error($exception->getMessage());
+
             return Command::FAILURE;
         }
 

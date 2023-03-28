@@ -20,7 +20,6 @@ class GenerateJsonOutput
      * Output the command in the CLI as JSON.
      *
      * @param  Collection<int, SplFileInfo>  $models
-     * @return string
      */
     public function __invoke(Collection $models, bool $resolveAbstract = false): string
     {
@@ -30,10 +29,9 @@ class GenerateJsonOutput
         $enumWriter = app(WriteEnumConst::class);
 
         $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $resolveAbstract) {
-
             $modelDetails = $modelBuilder($model, $resolveAbstract);
 
-            if($modelDetails === null) {
+            if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved
                 return;
             }

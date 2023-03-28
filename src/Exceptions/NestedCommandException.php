@@ -7,7 +7,7 @@ namespace FumeApp\ModelTyper\Exceptions;
  */
 class NestedCommandException extends CommandException
 {
-    public function wasCausedBy(string $exceptionClass) : bool
+    public function wasCausedBy(string $exceptionClass): bool
     {
         return $this->getPrevious() instanceof $exceptionClass;
     }

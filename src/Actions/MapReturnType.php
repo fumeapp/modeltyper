@@ -8,9 +8,6 @@ class MapReturnType
 {
     /**
      * Map the return type to a typescript type.
-     *
-     * @param  string  $returnType
-     * @return string
      */
     public function __invoke(string $returnType, bool $timestampsDate = false): string
     {

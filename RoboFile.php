@@ -1,7 +1,6 @@
 <?php
 
 use Lurker\Event\FilesystemEvent;
-use Robo\Symfony\ConsoleIO;
 use Robo\Tasks;
 
 class RoboFile extends Tasks
@@ -10,11 +9,11 @@ class RoboFile extends Tasks
     {
         $files = array_reduce(
             explode(',', $patterns),
-            fn($array, $pattern) => [...$array, ...glob(trim($pattern))],
+            fn ($array, $pattern) => [...$array, ...glob(trim($pattern))],
             []
         );
 
-        $this->taskWatch()->monitor($files, function(FilesystemEvent $event) use ($commands) {
+        $this->taskWatch()->monitor($files, function (FilesystemEvent $event) use ($commands) {
             $this->taskExec($commands)->run();
         })->run();
     }

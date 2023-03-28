@@ -2,9 +2,9 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
 class GetModels
@@ -14,16 +14,16 @@ class GetModels
      *
      * @return Collection<int, SplFileInfo>
      */
-    public function __invoke(?string $model = null, ?array $includedModels = null, ?array $excludedModels = null) : Collection
+    public function __invoke(?string $model = null, ?array $includedModels = null, ?array $excludedModels = null): Collection
     {
         $modelShortName = $this->resolveModelFilename($model);
 
-        if(! empty($includedModels)) {
-            $includedModels = array_map(fn($includedModel) => $this->resolveModelFilename($includedModel), $includedModels);
+        if (! empty($includedModels)) {
+            $includedModels = array_map(fn ($includedModel) => $this->resolveModelFilename($includedModel), $includedModels);
         }
 
-        if(! empty($excludedModels)) {
-            $excludedModels = array_map(fn($excludedModel) => $this->resolveModelFilename($excludedModel), $excludedModels);
+        if (! empty($excludedModels)) {
+            $excludedModels = array_map(fn ($excludedModel) => $this->resolveModelFilename($excludedModel), $excludedModels);
         }
 
         return collect(File::allFiles(app_path('Models')))
@@ -40,9 +40,9 @@ class GetModels
             ->values();
     }
 
-    private function resolveModelFilename(?string $model) : string|false
+    private function resolveModelFilename(?string $model): string|false
     {
-        if($model === null) {
+        if ($model === null) {
             return false;
         }
 

@@ -3,11 +3,11 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Exceptions\AbstractModelException;
+use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
-use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 
 class BuildModelDetails
 {
@@ -17,7 +17,6 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @param  SplFileInfo  $modelFile
      * @return array
      *
      * @throws ReflectionException
@@ -26,7 +25,7 @@ class BuildModelDetails
     {
         $modelDetails = $this->getModelDetails($modelFile, $resolveAbstract);
 
-        if($modelDetails === null) {
+        if ($modelDetails === null) {
             return null;
         }
 
@@ -87,16 +86,15 @@ class BuildModelDetails
     /**
      * @throws NestedCommandException
      */
-    private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract) : ?array
+    private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array
     {
         $modelFileArg = $modelFile->getRelativePathname();
         $modelFileArg = str_replace('.php', '', $modelFileArg);
 
         try {
             return app(RunModelShowCommand::class)($modelFileArg, $resolveAbstract);
-        }
-        catch(NestedCommandException $exception) {
-            if($exception->wasCausedBy(AbstractModelException::class) && ! $resolveAbstract) {
+        } catch(NestedCommandException $exception) {
+            if ($exception->wasCausedBy(AbstractModelException::class) && ! $resolveAbstract) {
                 return null;
             }
             throw $exception;

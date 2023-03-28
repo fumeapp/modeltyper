@@ -42,7 +42,7 @@ class GenerateCliOutput
             $entry = '';
             $modelDetails = $modelBuilder($model, $resolveAbstract);
 
-            if($modelDetails === null) {
+            if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved
                 return;
             }
@@ -65,7 +65,7 @@ class GenerateCliOutput
                 $entry .= "{$this->indent}  // columns\n";
                 $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
                     [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
-                    if (!empty($line)) {
+                    if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
                             $this->enumReflectors[] = $enum;
@@ -78,7 +78,7 @@ class GenerateCliOutput
                 $entry .= "{$this->indent}  // mutators\n";
                 $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
                     [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
-                    if (!empty($line)) {
+                    if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
                             $this->enumReflectors[] = $enum;
@@ -95,7 +95,7 @@ class GenerateCliOutput
                 });
             }
 
-            if ($relations->isNotEmpty() && !$noRelations) {
+            if ($relations->isNotEmpty() && ! $noRelations) {
                 $entry .= "{$this->indent}  // relations\n";
                 $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
                     $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);

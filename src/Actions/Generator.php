@@ -5,7 +5,6 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
 
-
 class Generator
 {
     /**

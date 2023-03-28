@@ -57,7 +57,6 @@ class ModelInterface
     /**
      * Combine all instances together
      *
-     * @return string
      *
      * @throws ReflectionException
      */
@@ -86,9 +85,6 @@ class ModelInterface
 
     /**
      * Generate a list of imports from specified interfaces
-     *
-     * @param  Collection  $models
-     * @return string
      */
     private function getImports(Collection $models): string
     {
@@ -113,8 +109,6 @@ class ModelInterface
     /**
      * Build an interface from a model
      *
-     * @param  Model  $model
-     * @return TypescriptInterface
      *
      * @throws ReflectionException
      * @throws Exception
@@ -144,7 +138,6 @@ class ModelInterface
      * Get all Casts for models
      *
      * @param  Collection  $models - Collection of models
-     * @return string
      *
      * @throws ReflectionException
      */
@@ -216,9 +209,6 @@ class ModelInterface
 
     /**
      * Extract Enum DocBlock comments
-     *
-     * @param  ReflectionEnum  $enum
-     * @return array
      */
     private function getEnumDocBlock(ReflectionEnum $enum): array
     {
@@ -235,9 +225,6 @@ class ModelInterface
 
     /**
      * Build TS code from an interface
-     *
-     * @param  TypescriptInterface  $interface
-     * @return string
      */
     private function getCode(TypescriptInterface $interface): string
     {
@@ -280,8 +267,6 @@ class ModelInterface
     /**
      * Find and map relationships
      *
-     * @param  Model  $model
-     * @return array
      *
      * @throws ReflectionException
      */
@@ -350,12 +335,6 @@ class ModelInterface
 
     /**
      * Return any other remaining interfaces
-     *
-     * @param  Model  $model
-     * @param  array  $columns
-     * @param  array  $mutators
-     * @param  array  $relations
-     * @return array
      */
     private function getInterfaces(Model $model, array $columns, array $mutators, array $relations): array
     {
@@ -396,8 +375,6 @@ class ModelInterface
     /**
      * Find and map our get mutators
      *
-     * @param  Model  $model
-     * @return array
      *
      * @throws ReflectionException
      * @throws Exception
@@ -452,10 +429,6 @@ class ModelInterface
      *
      * @see https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
      *
-     * @param  Model  $model
-     * @param  string  $mutator
-     * @return ReflectionMethod
-     *
      * @throws Exception
      */
     private function determineAccessorType(Model $model, string $mutator): ReflectionMethod
@@ -481,9 +454,6 @@ class ModelInterface
 
     /**
      * Properly map a return type
-     *
-     * @param $returnType
-     * @return string
      */
     private function mapReturnType($returnType): string
     {
@@ -500,8 +470,6 @@ class ModelInterface
     /**
      * Get columns with their mappings
      *
-     * @param  Model  $model
-     * @return array
      *
      * @throws Exception
      */
@@ -543,9 +511,6 @@ class ModelInterface
 
     /**
      * Get an array of columns
-     *
-     * @param  Model  $model
-     * @return array
      */
     private function getColumnList(Model $model): array
     {
@@ -554,10 +519,6 @@ class ModelInterface
 
     /**
      * Get column details
-     *
-     * @param  Model  $model
-     * @param  string  $column
-     * @return Column
      */
     private function getColumn(Model $model, string $column): Column
     {
@@ -566,8 +527,6 @@ class ModelInterface
 
     /**
      * Get a list of all models
-     *
-     * @return Collection
      */
     private function getModels(): Collection
     {
@@ -595,9 +554,6 @@ class ModelInterface
 
     /**
      * under_scores to CamelCase
-     *
-     * @param $input
-     * @return string
      */
     private function camelize($input): string
     {

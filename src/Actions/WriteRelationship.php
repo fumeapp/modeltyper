@@ -13,9 +13,6 @@ class WriteRelationship
      * Write the relationship to the output.
      *
      * @param  array  $relation <{name: string, type: string, related:string}>
-     * @param  string  $indent
-     * @param  bool  $jsonOutput
-     * @return array|string
      */
     public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
     {
@@ -29,11 +26,11 @@ class WriteRelationship
             default => $relatedModel,
         };
 
-        if(in_array($relation['type'], config('modeltyper.custom_relationships.singular', []))) {
+        if (in_array($relation['type'], config('modeltyper.custom_relationships.singular', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
-        if(in_array($relation['type'], config('modeltyper.custom_relationships.plural', []))) {
+        if (in_array($relation['type'], config('modeltyper.custom_relationships.plural', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
