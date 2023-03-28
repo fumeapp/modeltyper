@@ -15,13 +15,13 @@ class GetModelsTest extends TestCase
 
     public function testActionReturnsOnlyOneFileWhenModelIsSpecified()
     {
-        $action = new GetModels('User');
-        $this->assertCount(1, $action());
+        $action = new GetModels;
+        $this->assertCount(1, $action('User'));
     }
 
     public function testActionAcceptsFullyQualifiedClassnameAsModel()
     {
-        $action = new GetModels(User::class);
-        $this->assertCount(1, $action());
+        $action = new GetModels;
+        $this->assertCount(1, $action(User::class));
     }
 }

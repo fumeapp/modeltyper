@@ -20,7 +20,7 @@ class GetModels
 
         return collect(File::allFiles(app_path('Models')))
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->when($modelShortName, function ($files, $model) use ($modelShortName) {
+            ->when($modelShortName, function ($files, $modelShortName) {
                 return $files->filter(fn (SplFileInfo $file) => $file->getBasename('.php') === $modelShortName);
             })
             ->values();
