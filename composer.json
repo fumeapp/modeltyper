@@ -61,9 +61,6 @@
         ],
         "stan": [
             "vendor/bin/phpstan analyse --xdebug"
-        ],
-        "post-autoload-dump": [
-            "@php vendor/bin/testbench package:discover --ansi"
         ]
     },
     "scripts-descriptions": {
