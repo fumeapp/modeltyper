@@ -1,0 +1,25 @@
+name: 🐞 Bug
+description: Report a bug/issue
+title: "[BUG] <title>"
+labels: [bug]
+body:
+- type: textarea
+  attributes:
+    label: What happened?
+    description: A concise description of what you're experiencing.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Expected Behavior
+    description: A concise description of what you expected to happen.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Steps To Reproduce
+    description: Steps to reproduce the behavior.
+    placeholder: |
+      1. '...'
+  validations:
+    required: false
