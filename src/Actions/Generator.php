@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
+use Symfony\Component\Finder\SplFileInfo;
 
 class Generator
 {
@@ -21,7 +22,19 @@ class Generator
             throw new ModelTyperException($msg);
         }
 
-        return $this->display($models, $global, $json, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables, $resolveAbstract);
+        return $this->display(
+            $models,
+            $global,
+            $json,
+            $plurals,
+            $apiResources,
+            $optionalRelations,
+            $noRelations,
+            $noHidden,
+            $timestampsDate,
+            $optionalNullables,
+            $resolveAbstract
+        );
     }
 
     /**
