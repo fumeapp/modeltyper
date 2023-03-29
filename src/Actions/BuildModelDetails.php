@@ -2,6 +2,8 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use FumeApp\ModelTyper\Exceptions\AbstractModelException;
+use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use ReflectionException;
@@ -15,17 +17,17 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @param  SplFileInfo  $modelFile
      * @return array
      *
      * @throws ReflectionException
      */
-    public function __invoke(SplFileInfo $modelFile): array
+    public function __invoke(SplFileInfo $modelFile, bool $resolveAbstract = false): ?array
     {
-        $modelFileArg = $modelFile->getRelativePathname();
-        $modelFileArg = str_replace('.php', '', $modelFileArg);
+        $modelDetails = $this->getModelDetails($modelFile, $resolveAbstract);
 
-        $modelDetails = app(RunModelShowCommand::class)($modelFileArg);
+        if ($modelDetails === null) {
+            return null;
+        }
 
         $reflectionModel = $this->getRefInterface($modelDetails);
         $laravelModel = $reflectionModel->newInstance();
@@ -79,5 +81,23 @@ class BuildModelDetails
             'interfaces' => $interfaces->values(),
             'imports' => $imports,
         ];
+    }
+
+    /**
+     * @throws NestedCommandException
+     */
+    private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array
+    {
+        $modelFileArg = $modelFile->getRelativePathname();
+        $modelFileArg = str_replace('.php', '', $modelFileArg);
+
+        try {
+            return app(RunModelShowCommand::class)($modelFileArg, $resolveAbstract);
+        } catch(NestedCommandException $exception) {
+            if ($exception->wasCausedBy(AbstractModelException::class) && ! $resolveAbstract) {
+                return null;
+            }
+            throw $exception;
+        }
     }
 }

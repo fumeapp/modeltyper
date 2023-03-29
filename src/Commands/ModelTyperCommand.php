@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Commands;
 
 use FumeApp\ModelTyper\Actions\Generator;
+use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 
 class ModelTyperCommand extends Command
@@ -20,8 +21,8 @@ class ModelTyperCommand extends Command
      * @var string
      */
     protected $signature = 'model:typer
-                            {--model= : Generate your interfaces for a specific model}
-                            {--global : Generate your interfaces in a global namespace named models}
+                            {--model= : Generate typescript interfaces for a specific model}
+                            {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--plurals : Output model plurals}
                             {--no-relations : Do not include relations}
@@ -30,6 +31,7 @@ class ModelTyperCommand extends Command
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
+                            {--resolve-abstract : Attempt to resolve abstract models)}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
 
     /**
@@ -37,7 +39,7 @@ class ModelTyperCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate interfaces for all found models';
+    protected $description = 'Generate typescript interfaces for all found models';
 
     /**
      * Create a new command instance.
@@ -54,19 +56,25 @@ class ModelTyperCommand extends Command
      */
     public function handle(Generator $generator): int
     {
-        // determine Laravel version
-        $laravelVersion = (float) app()->version();
-
-        if ($laravelVersion < 9.20) {
-            $this->error('This package requires Laravel 9.20 or higher.');
+        try {
+            $this->line($generator(
+                $this->option('model'),
+                $this->option('global'),
+                $this->option('json'),
+                $this->option('plurals') || $this->option('all'),
+                $this->option('api-resources') || $this->option('all'),
+                $this->option('optional-relations'),
+                $this->option('no-relations'),
+                $this->option('no-hidden'),
+                $this->option('timestamps-date'),
+                $this->option('optional-nullables'),
+                $this->option('resolve-abstract')
+            ));
+        } catch(ModelTyperException $exception) {
+            $this->error($exception->getMessage());
 
             return Command::FAILURE;
         }
-
-        $plurals = $this->option('plurals') || $this->option('all');
-        $apiResources = $this->option('api-resources') || $this->option('all');
-
-        echo $generator($this->option('model'), $this->option('global'), $this->option('json'), $plurals, $apiResources, $this->option('optional-relations'), $this->option('no-relations'), $this->option('no-hidden'), $this->option('timestamps-date'), $this->option('optional-nullables'));
 
         return Command::SUCCESS;
     }
