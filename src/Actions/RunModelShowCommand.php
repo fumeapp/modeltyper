@@ -7,7 +7,7 @@ use FumeApp\ModelTyper\Exceptions\CommandException;
 use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
@@ -101,11 +101,11 @@ class RunModelShowCommand
      */
     private function outputMocked(): bool
     {
-        if (! app()->runningInConsole()) {
+        if (! $this->app->runningInConsole()) {
             return false;
         }
 
-        if (! config('app.env') === 'testing') {
+        if (! $this->app->environment('testing')) {
             return false;
         }
 
