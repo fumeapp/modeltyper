@@ -21,16 +21,19 @@ class ModelTyperCommandTest extends TestCase
         $this->deleteOutput();
     }
 
+    /** @test */
     public function testCommandCanBeExecutedSuccessfully()
     {
         $this->artisan(ModelTyperCommand::class)->assertSuccessful();
     }
 
+    /** @test */
     public function testCommandFailsWhenTryingToResolveAbstractModelThatHasNoBinding()
     {
         $this->artisan(ModelTyperCommand::class, ['--resolve-abstract' => true])->assertFailed();
     }
 
+    /** @test */
     public function testCommandGeneratesExpectedOutputForUserModel()
     {
         $expected = $this->getExpectedContent('example.ts');
