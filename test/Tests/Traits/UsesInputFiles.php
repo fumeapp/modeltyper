@@ -15,13 +15,15 @@ trait UsesInputFiles
         return $path;
     }
 
-    public function getInputFileContents(string $path): string
+    public function getInputFileContents(string $path, bool $addEOL = false): string
     {
-        return file_get_contents($this->getInputPath($path));
+        $contents = file_get_contents($this->getInputPath($path));
+
+        return $addEOL ? $contents . PHP_EOL : $contents;
     }
 
-    public function getExpectedContent(string $path)
+    public function getExpectedContent(string $path, bool $addEOL = false): string
     {
-        return $this->getInputFileContents("expectations/$path");
+        return $this->getInputFileContents("expectations/$path", $addEOL);
     }
 }

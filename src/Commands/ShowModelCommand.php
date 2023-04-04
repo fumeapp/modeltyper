@@ -28,7 +28,7 @@ class ShowModelCommand extends BaseCommand
     public function handle()
     {
         // Override default console component factory to force parent command to return failed exit code on error.
-        $this->components = new ErrorEmittingConsoleComponentFactory($this->components, $this->option('throw-exceptions'));
+        $this->components = new ErrorEmittingConsoleComponentFactory($this->components, $this->option('throw-exceptions')); // @phpstan-ignore-line
 
         if ($this->option('custom-relationships')) {
             $customRelationships = collect(explode(',', $this->option('custom-relationships')))->map(fn ($method) => trim($method));
@@ -48,7 +48,7 @@ class ShowModelCommand extends BaseCommand
 
         if ($reflection->isAbstract() && ! $this->option('resolve-abstract')) {
             $msg = "Trying to resolve an abstract model '$model' when 'resolve-abstract' option is not enabled.";
-            $this->components->error($msg, OutputStyle::OUTPUT_NORMAL, AbstractModelException::class);
+            $this->components->error($msg, OutputStyle::OUTPUT_NORMAL, AbstractModelException::class); // @phpstan-ignore-line
         }
 
         return $class;

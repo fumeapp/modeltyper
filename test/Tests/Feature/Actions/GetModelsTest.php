@@ -8,20 +8,23 @@ use Tests\Feature\TestCase;
 
 class GetModelsTest extends TestCase
 {
+    /** @test */
     public function testActionCanBeResolvedByApplication()
     {
         $this->assertInstanceOf(GetModels::class, resolve(GetModels::class));
     }
 
+    /** @test */
     public function testActionReturnsOnlyOneFileWhenModelIsSpecified()
     {
-        $action = new GetModels;
+        $action = app(GetModels::class);
         $this->assertCount(1, $action('User'));
     }
 
+    /** @test */
     public function testActionAcceptsFullyQualifiedClassnameAsModel()
     {
-        $action = new GetModels;
+        $action = app(GetModels::class);
         $this->assertCount(1, $action(User::class));
     }
 }
