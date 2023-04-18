@@ -45,6 +45,11 @@ class ShowModelCommand extends BaseCommand
     {
         $class = parent::qualifyModel($model);
         $reflection = new ReflectionClass($class);
+        
+        if ($reflection->isInterface() || $reflection->isTrait() || $reflection->isEnum()) {
+            $msg = "Skipping '$model' as it is an interface/trait/enum.";
+            $this->components->error($msg, OutputStyle::OUTPUT_NORMAL, AbstractModelException::class); // @phpstan-ignore-line
+        }
 
         if ($reflection->isAbstract() && ! $this->option('resolve-abstract')) {
             $msg = "Trying to resolve an abstract model '$model' when 'resolve-abstract' option is not enabled.";
