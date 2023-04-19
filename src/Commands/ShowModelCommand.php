@@ -45,7 +45,7 @@ class ShowModelCommand extends BaseCommand
     {
         $class = parent::qualifyModel($model);
         $reflection = new ReflectionClass($class);
-        
+
         if ($reflection->isInterface() || $reflection->isTrait() || $reflection->isEnum()) {
             $msg = "Skipping '$model' as it is an interface/trait/enum.";
             $this->components->error($msg, OutputStyle::OUTPUT_NORMAL, AbstractModelException::class); // @phpstan-ignore-line

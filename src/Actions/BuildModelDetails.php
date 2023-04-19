@@ -89,11 +89,12 @@ class BuildModelDetails
     private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array
     {
         $modelFileArg = $modelFile->getRelativePathname();
+        $modelFileArg = app()->getNamespace() . $modelFileArg;
         $modelFileArg = str_replace('.php', '', $modelFileArg);
 
         try {
             return app(RunModelShowCommand::class)($modelFileArg, $resolveAbstract);
-        } catch(NestedCommandException $exception) {
+        } catch (NestedCommandException $exception) {
             if ($exception->wasCausedBy(AbstractModelException::class) && ! $resolveAbstract) {
                 return null;
             }
