@@ -53,7 +53,7 @@ class RunModelShowCommand
 
         try {
             $this->runCommandWithoutMockOutput($command, $commandArgs);
-        } catch(CommandException $exception) {
+        } catch (CommandException $exception) {
             $msg = "Command '$command' failed:" . PHP_EOL . $exception->getMessage();
             throw new NestedCommandException($msg, Command::FAILURE, $exception);
         }

@@ -70,7 +70,7 @@ class ModelTyperCommand extends Command
                 $this->option('optional-nullables'),
                 $this->option('resolve-abstract')
             ));
-        } catch(ModelTyperException $exception) {
+        } catch (ModelTyperException $exception) {
             $this->error($exception->getMessage());
 
             return Command::FAILURE;

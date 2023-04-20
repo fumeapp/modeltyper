@@ -2,9 +2,11 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
 class GetModels
@@ -26,8 +28,34 @@ class GetModels
             $excludedModels = array_map(fn ($excludedModel) => $this->resolveModelFilename($excludedModel), $excludedModels);
         }
 
-        return collect(File::allFiles(app_path('Models')))
+        return collect(File::allFiles(app_path()))
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
+            ->filter(function (SplFileInfo $file) {
+                $tokens = token_get_all(file_get_contents($file->getRealPath()));
+
+                $isClassOrAbstract = false;
+                foreach ($tokens as $token) {
+                    if ($token[0] == T_CLASS) {
+                        $isClassOrAbstract = true;
+                        break;
+                    }
+                    if ($token[0] == T_ABSTRACT) {
+                        $isClassOrAbstract = true;
+                        break;
+                    }
+                }
+
+                return $isClassOrAbstract;
+            })
+            ->filter(function (SplFileInfo $file) {
+                $class = app()->getNamespace() . str_replace(
+                    ['/', '.php'],
+                    ['\\', ''],
+                    Str::after($file->getPathname(), app_path() . DIRECTORY_SEPARATOR)
+                );
+
+                return (new ReflectionClass($class))->isSubclassOf(EloquentModel::class);
+            })
             ->when($includedModels, function ($files, $includedModels) {
                 return $files->filter(fn (SplFileInfo $file) => in_array($file->getBasename('.php'), $includedModels));
             })
