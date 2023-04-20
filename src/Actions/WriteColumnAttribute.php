@@ -6,6 +6,7 @@ use FumeApp\ModelTyper\Constants\TypescriptMappings;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionFunction;
 
 class WriteColumnAttribute
@@ -52,6 +53,7 @@ class WriteColumnAttribute
                                         if ($rf->hasReturnType()) {
                                             $rt = $rf->getReturnType();
                                             $type = $returnType($rt->getName(), $timestampsDate);
+                                            $enumRef = $this->resolveEnum($rt->getName());
                                             if ($rt->allowsNull()) {
                                                 $attribute['nullable'] = true;
                                             }
@@ -59,6 +61,7 @@ class WriteColumnAttribute
                                     }
                                 } else {
                                     $type = $this->getClassName($accessorMethod->getReturnType()->getName());
+                                    $enumRef = $this->resolveEnum($accessorMethod->getReturnType()->getName());
                                 }
                             }
                         } else {
@@ -101,5 +104,19 @@ class WriteColumnAttribute
         }
 
         return ["{$indent}  {$name}: {$type}\n", $enumRef];
+    }
+
+    protected function resolveEnum(string $returnTypeName): ?ReflectionClass
+    {
+        try {
+            $reflection = new ReflectionClass($returnTypeName);
+
+            if ($reflection->isEnum()) {
+                return $reflection;
+            }
+        } catch (ReflectionException $e) {
+        }
+
+        return null;
     }
 }
