@@ -54,7 +54,7 @@ class GetModels
                     Str::after($file->getPathname(), app_path() . DIRECTORY_SEPARATOR)
                 );
 
-                return (new ReflectionClass($class))->isSubclassOf(EloquentModel::class);
+                return class_exists($class) && (new ReflectionClass($class))->isSubclassOf(EloquentModel::class);
             })
             ->when($includedModels, function ($files, $includedModels) {
                 return $files->filter(fn (SplFileInfo $file) => in_array($file->getBasename('.php'), $includedModels));
