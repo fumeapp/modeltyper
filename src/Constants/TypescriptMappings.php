@@ -19,5 +19,6 @@ class TypescriptMappings
         'json' => 'Record<string, unknown>',
         'array' => 'string[]',
         'point' => 'Point',
+        'guid' => 'string',
     ];
 }
