@@ -54,6 +54,11 @@ class WriteColumnAttribute
                                             $rt = $rf->getReturnType();
                                             $type = $returnType($rt->getName(), $timestampsDate);
                                             $enumRef = $this->resolveEnum($rt->getName());
+
+                                            if ($enumRef) {
+                                                $type = $this->getClassName($rt->getName());
+                                            }
+
                                             if ($rt->allowsNull()) {
                                                 $attribute['nullable'] = true;
                                             }
