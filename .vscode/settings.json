@@ -1,7 +1,12 @@
 {
-    "[php]": {
-        "editor.defaultFormatter": "open-southeners.laravel-pint",
-        "editor.formatOnSave": true
+    "emeraldwalk.runonsave": {
+        "commands": [
+          {
+            "match": "\\.php$",
+            "isAsync": true,
+            "cmd": "./vendor/bin/pint ${file}"
+          },
+        ]
     },
     "cSpell.words": [
         "laravel",
