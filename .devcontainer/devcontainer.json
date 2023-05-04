@@ -1,0 +1,26 @@
+{
+	"name": "Fume ModelTyper Devcontainer",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+	"customizations": {
+        "vscode": {
+            "extensions": [
+                "aaron-bond.better-comments",
+                "EditorConfig.EditorConfig",
+                "xdebug.php-debug",
+                "MehediDracula.php-namespace-resolver",
+                "swordev.phpstan",
+                "emeraldwalk.RunOnSave",
+                "eamodio.gitlens",
+                "donjayamanne.githistory",
+                "bmewburn.vscode-intelephense-client",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+	"forwardPorts": [
+        8080,
+        9003
+    ]
+}
