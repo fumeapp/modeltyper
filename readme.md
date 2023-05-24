@@ -57,7 +57,7 @@ This command will go through all of your models and make [TypeScript Interfaces]
 
 ### Requirements
 
-Starting support is for Laravel v9.21+ and PHP v8.1+
+Starting support is for Laravel v10+ and PHP v8.1+
 
 > **Note**
 > This package may require you to install Doctrine DBAL. If so you can run
