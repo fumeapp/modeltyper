@@ -24,8 +24,10 @@ class ErrorEmittingConsoleComponentFactory
 
     /**
      * Reroute calls to underlying instance unless intercepted by override.
+     *
+     * @param  array<mixed>  $arguments
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         if ($name === 'error') {
             return $this->emitError(...$arguments);

@@ -9,6 +9,10 @@ use FumeApp\ModelTyper\Traits\ModelRefClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * @template TKey
+ * @template TValue{reflectionModel: \ReflectionClass, name: string, columns: \Illuminate\Support\Collection, nonColumns: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, interfaces: \Illuminate\Support\Collection, imports: \Illuminate\Support\Collection}
+ */
 class BuildModelDetails
 {
     use ClassBaseName;
@@ -17,7 +21,7 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @return array
+     * @return array<TKey, TValue>|null
      *
      * @throws ReflectionException
      */
@@ -84,6 +88,8 @@ class BuildModelDetails
     }
 
     /**
+     * @return array<TKey, TValue>|null
+     *
      * @throws NestedCommandException
      */
     private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array

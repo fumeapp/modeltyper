@@ -28,6 +28,8 @@ class RunModelShowCommand
      *
      * @see https://github.com/laravel/framework/blob/9.x/src/Illuminate/Foundation/Console/ShowModelCommand.php
      *
+     * @return array<string, mixed>
+     *
      * @throws NestedCommandException
      */
     public function __invoke(string $model, bool $resolveAbstract = false): array

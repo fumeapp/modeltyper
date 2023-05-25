@@ -12,7 +12,8 @@ class WriteRelationship
     /**
      * Write the relationship to the output.
      *
-     * @param  array  $relation <{name: string, type: string, related:string}>
+     * @param  array{name: string, type: string, related:string}  $relation
+     * @return array{type: string, name: string}|string
      */
     public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
     {
