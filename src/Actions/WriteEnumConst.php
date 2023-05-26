@@ -8,6 +8,8 @@ class WriteEnumConst
 {
     /**
      * Write the enum const to the output.
+     *
+     * @return array{type: string, name: string}|string
      */
     public function __invoke(ReflectionClass $reflection, string $indent = '', bool $jsonOutput = false): array|string
     {

@@ -18,8 +18,14 @@ class GenerateCliOutput
 
     protected string $indent = '';
 
+    /**
+     * @var array<int, ReflectionClass>
+     */
     protected array $enumReflectors = [];
 
+    /**
+     * @var array<int,  array<string, mixed>>
+     */
     protected array $imports = [];
 
     /**

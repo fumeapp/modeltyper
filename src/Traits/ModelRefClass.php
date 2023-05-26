@@ -9,7 +9,7 @@ trait ModelRefClass
     /**
      * Get the reflection interface.
      *
-     * @param  array  $info - The model details from the model:show command.
+     * @param  array<string, mixed>  $info
      */
     public function getRefInterface(array $info): ReflectionClass
     {

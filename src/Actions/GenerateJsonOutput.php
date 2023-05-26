@@ -5,12 +5,19 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
 class GenerateJsonOutput
 {
+    /**
+     * @var array<string, array<string, mixed>>
+     */
     protected array $output = [];
 
+    /**
+     * @var array<int, ReflectionClass>
+     */
     protected array $enumReflectors = [];
 
     use ClassBaseName;

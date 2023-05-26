@@ -4,6 +4,9 @@ namespace FumeApp\ModelTyper\Constants;
 
 class TypescriptMappings
 {
+    /**
+     * @var array<string, string>
+     */
     public static array $mappings = [
         'bigint' => 'number',
         'int' => 'number',
@@ -20,5 +23,6 @@ class TypescriptMappings
         'array' => 'string[]',
         'point' => 'Point',
         'guid' => 'string',
+        'hashed' => 'string',
     ];
 }
