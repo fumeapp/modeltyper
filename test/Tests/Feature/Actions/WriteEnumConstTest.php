@@ -11,8 +11,7 @@ use Tests\Traits\UsesInputFiles;
 
 class WriteEnumConstTest extends TestCase
 {
-    use ResolveClassAsReflection;
-    use GeneratesOutput, UsesInputFiles;
+    use GeneratesOutput, ResolveClassAsReflection,UsesInputFiles;
 
     /** @test */
     public function testActionCanBeResolvedByApplication()
