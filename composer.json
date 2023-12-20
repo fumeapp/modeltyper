@@ -61,7 +61,7 @@
             "XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --testdox --coverage-text"
         ],
         "stan": [
-            "vendor/bin/phpstan analyse --xdebug"
+            "vendor/bin/phpstan analyse"
         ]
     },
     "scripts-descriptions": {
