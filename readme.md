@@ -87,11 +87,20 @@ public function getFirstNameAttribute(): string // <- this
 ### Additional Options
 
 ```
+--model= : Generate typescript interfaces for a specific model
+--global : Generate typescript interfaces in a global namespace named models
+--json : Output the result as json
+--plurals : Output model plurals
 --no-relations : Do not include relations
 --optional-relations : Make relations optional fields on the model type
 --no-hidden : Do not include hidden model attributes
 --timestamps-date : Output timestamps as a Date object type
 --optional-nullables : Output nullable attributes as optional fields
+--api-resources : Output api.MetApi interfaces
+--resolve-abstract : Attempt to resolve abstract models)
+--fillables : Output model fillables
+--fillable-suffix=fillable
+--all : Enable all output options (equivalent to --plurals --api-resources)'
 ```
 
 ### Custom Interfaces
