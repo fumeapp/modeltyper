@@ -13,7 +13,7 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false)
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
     {
         $models = app(GetModels::class)($specificModel);
 
@@ -33,7 +33,9 @@ class Generator
             $noHidden,
             $timestampsDate,
             $optionalNullables,
-            $resolveAbstract
+            $resolveAbstract,
+            $fillables,
+            $fillableSuffix
         );
     }
 
@@ -42,7 +44,7 @@ class Generator
      *
      * @param  Collection<int, SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         if ($json) {
             return app(GenerateJsonOutput::class)($models, $resolveAbstract);
@@ -58,7 +60,9 @@ class Generator
             $noHidden,
             $timestampsDate,
             $optionalNullables,
-            $resolveAbstract
+            $resolveAbstract,
+            $fillables,
+            $fillableSuffix
         );
     }
 }

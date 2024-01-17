@@ -42,4 +42,16 @@ class ModelTyperCommandTest extends TestCase
         $expected = $this->getExpectedContent('example.ts');
         $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
     }
+
+    public function testCommandGeneratesFillablesWhenFillableOptionIsEnabled()
+    {
+        $expected = $this->getExpectedContent('user-fillables.ts');
+        $options = [
+            '--model' => User::class,
+            '--fillables' => true,
+            '--fillable-suffix' => 'Editable'
+        ];
+
+        $this->artisan(ModelTyperCommand::class, $options)->expectsOutput($expected);
+    }
 }

@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
+    protected $fillable = [
+        'role_traditional',
+        'role_new'
+    ];
+
     protected $casts = [
         'role' => Roles::class,
     ];
