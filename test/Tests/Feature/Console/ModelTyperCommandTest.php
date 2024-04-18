@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Console;
 
+use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use Tests\Feature\TestCase;
@@ -43,6 +44,7 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
     }
 
+    /** @test */
     public function testCommandGeneratesFillablesWhenFillableOptionIsEnabled()
     {
         $expected = $this->getExpectedContent('user-fillables.ts');
@@ -53,5 +55,19 @@ class ModelTyperCommandTest extends TestCase
         ];
 
         $this->artisan(ModelTyperCommand::class, $options)->expectsOutput($expected);
+    }
+
+    /** @test */
+    public function testCommandGeneratesExpectedOutputForComplexModel()
+    {
+        // Migrate database
+        $this->artisan('migrate:fresh')->assertSuccessful();
+
+        // assert table complex_model_table exists
+        $this->assertDatabaseEmpty('complex_model_table');
+
+        // check if Complex::class generates expected interface
+        $expected = $this->getExpectedContent('complex-model.ts');
+        $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
     }
 }
