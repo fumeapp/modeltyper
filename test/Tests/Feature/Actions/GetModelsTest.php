@@ -35,9 +35,10 @@ class GetModelsTest extends TestCase
 
         $foundModels = $action();
 
-        $this->assertCount(3, $foundModels);
-        $this->assertStringContainsString('Pivot.php', $foundModels[0]->getRelativePathname());
-        $this->assertStringContainsString('User.php', $foundModels[1]->getRelativePathname());
-        $this->assertStringContainsString('Team.php', $foundModels[2]->getRelativePathname());
+        $this->assertCount(4, $foundModels);
+        $this->assertStringContainsString('Complex.php', $foundModels[0]->getRelativePathname());
+        $this->assertStringContainsString('Pivot.php', $foundModels[1]->getRelativePathname());
+        $this->assertStringContainsString('User.php', $foundModels[2]->getRelativePathname());
+        $this->assertStringContainsString('Team.php', $foundModels[3]->getRelativePathname());
     }
 }
