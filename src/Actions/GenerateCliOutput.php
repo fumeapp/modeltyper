@@ -125,9 +125,9 @@ class GenerateCliOutput
                 $entry .= "{$this->indent}export interface {$name}Response extends api.MetApiResponse { data: {$name}MetApiData }\n";
             }
 
-            if($fillables) {
+            if ($fillables) {
                 $fillableAttributes = $reflectionModel->newInstanceWithoutConstructor()->getFillable();
-                $fillablesUnion = implode('|', array_map(fn($fillableAttribute) => "'$fillableAttribute'" ,$fillableAttributes));
+                $fillablesUnion = implode('|', array_map(fn ($fillableAttribute) => "'$fillableAttribute'", $fillableAttributes));
                 $entry .= "{$this->indent}export type {$name}{$fillableSuffix} = Pick<$name, $fillablesUnion>\n";
             }
 

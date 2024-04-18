@@ -51,7 +51,7 @@ class ModelTyperCommandTest extends TestCase
         $options = [
             '--model' => User::class,
             '--fillables' => true,
-            '--fillable-suffix' => 'Editable'
+            '--fillable-suffix' => 'Editable',
         ];
 
         $this->artisan(ModelTyperCommand::class, $options)->expectsOutput($expected);
