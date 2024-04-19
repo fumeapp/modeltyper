@@ -64,12 +64,10 @@ class BuildModelDetails
         $columns = $columns->map(function ($column) use (&$interfaces) {
             $interfaces->each(function ($interface, $key) use (&$column, &$interfaces) {
                 if ($key === $column['name']) {
-                    if (isset($interface['type'])) {
-                        $column['type'] = $interface['type'];
-                        $column['forceType'] = true;
+                    $column['type'] = $interface['type'];
+                    $column['forceType'] = true;
 
-                        $interfaces->forget($key);
-                    }
+                    $interfaces->forget($key);
                 }
             });
 

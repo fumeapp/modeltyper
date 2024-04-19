@@ -137,7 +137,7 @@ class ModelInterface
     /**
      * Get all Casts for models
      *
-     * @param  Collection  $models - Collection of models
+     * @param  Collection  $models  - Collection of models
      *
      * @throws ReflectionException
      */

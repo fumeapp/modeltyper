@@ -78,8 +78,8 @@ class RunModelShowCommand
      * from being intercepted by mock output handler. Resets the mock output handler after
      * command execution so that mock testing is not disturbed.
      *
-     * @param  string  $command Name of the command to run.
-     * @param  array<string, mixed>  $args Arguments for the command.
+     * @param  string  $command  Name of the command to run.
+     * @param  array<string, mixed>  $args  Arguments for the command.
      * @return int $exitCode Exit code returned by the command.
      */
     private function runCommandWithoutMockOutput(string $command, array $args = []): int
