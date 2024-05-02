@@ -74,7 +74,7 @@ export interface Team {
 export type Teams = Array<Team>;
 ```
 
-### What does this do?
+### How does it work?
 
 This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships. You can then pipe the output into your preferred `???.d.ts`
 
@@ -203,13 +203,16 @@ export interface Location {
 
 You can override the default mappings provided by Model Typer or add new ones by [publishing the config](#installation)
 
-Then inside `custom_mappings` add the laravel type as the key and the TS type as a value
+Then inside `custom_mappings` add the Laravel type as the key and assign the TypeScript type as its value
+
+You can also add mappings for your [Custom Casts](https://laravel.com/docs/11.x/eloquent-mutators#custom-casts)
 
 
 ```php
 'custom_mappings' => [
-    'bool' => 'boolean',
+    'App\Casts\YourCustomCast' => 'string|null',
     'binary' => 'Blob',
+    'bool' => 'boolean',
     'point' => 'CustomPointInterface',
     'year' => 'string',
 ],
