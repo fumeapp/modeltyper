@@ -11,8 +11,31 @@
 [![Latest Stable Version](https://poser.pugx.org/fumeapp/modeltyper/version.png)](https://packagist.org/packages/fumeapp/modeltyper)
 [![Total Downloads](https://poser.pugx.org/fumeapp/modeltyper/d/total.png)](https://packagist.org/packages/fumeapp/modeltyper)
 
+## Installation
+
+Starting support is for Laravel v10+ and PHP v8.1+
+
+Require this package with composer using the following command:
+
 ```bash
 composer require --dev fumeapp/modeltyper
+```
+
+Optionally, you can publish the config file using the following command:
+
+```bash
+php artisan vendor:publish --provider="FumeApp\ModelTyper\ModelTyperServiceProvider" --tag=config
+```
+
+> **Note**
+> This package may require you to install Doctrine DBAL. If so you can run:
+> ```bash
+> composer require --dev doctrine/dbal
+> ```
+
+## Usage
+
+```bash
 php artisan model:typer
 ```
 
@@ -56,15 +79,6 @@ export type Teams = Array<Team>;
 This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships. You can then pipe the output into your preferred `???.d.ts`
 
 ### Requirements
-
-Starting support is for Laravel v10+ and PHP v8.1+
-
-> **Note**
-> This package may require you to install Doctrine DBAL. If so you can run
-```bash
-composer require doctrine/dbal
-```
-
 
 1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model relationships
 
@@ -134,23 +148,23 @@ This will override all columns, mutators and relationships
 You can also specify an interface is nullable:
 
 ```php
-    public array $interfaces = [
-        'choices' => [
-            'import' => '@/types/api',
-            'type' => 'ChoicesWithPivot',
-            'nullable' => true,
-        ],
-    ];
+public array $interfaces = [
+    'choices' => [
+        'import' => '@/types/api',
+        'type' => 'ChoicesWithPivot',
+        'nullable' => true,
+    ],
+];
 ```
 
 You can also choose to leave off the import and just use the type:
 
 ```php
-    public array $interfaces = [
-        'choices' => [
-            'type' => "'good' | 'bad'",
-        ],
-    ];
+public array $interfaces = [
+    'choices' => [
+        'type' => "'good' | 'bad'",
+    ],
+];
 ```
 
 And it should generate:
@@ -183,6 +197,22 @@ export interface Location {
     state: "found" | "not_found" | "searching" | "reset";
     // ...
 }
+```
+
+### Override default mappings / add new ones
+
+You can override the default mappings provided by Model Typer or add new ones by [publishing the config](#installation)
+
+Then inside `custom_mappings` add the laravel type as the key and the TS type as a value
+
+
+```php
+'custom_mappings' => [
+    'bool' => 'boolean',
+    'binary' => 'Blob',
+    'point' => 'CustomPointInterface',
+    'year' => 'string',
+],
 ```
 
 ### Declare global
