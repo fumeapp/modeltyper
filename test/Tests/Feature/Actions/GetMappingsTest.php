@@ -1,0 +1,64 @@
+<?php
+
+namespace Tests\Feature\Actions;
+
+use FumeApp\ModelTyper\Actions\GetMappings;
+use Illuminate\Support\Facades\Config;
+use Tests\Feature\TestCase;
+
+class GetMappingsTest extends TestCase
+{
+    /** @test */
+    public function testActionCanBeResolvedByApplication()
+    {
+        $this->assertInstanceOf(GetMappings::class, resolve(GetMappings::class));
+    }
+
+    /** @test */
+    public function testActionCanSetTimestampsAsDate()
+    {
+        $action = app(GetMappings::class);
+
+        $mappings = $action(setTimestampsToDate: true);
+
+        $this->assertArrayHasKey('date', $mappings);
+        $this->assertArrayHasKey('datetime', $mappings);
+
+        $this->assertEquals('Date', $mappings['date']);
+        $this->assertEquals('Date', $mappings['datetime']);
+    }
+
+    /** @test */
+    public function testActionCanMergeUserConfig()
+    {
+        Config::set('modeltyper.custom_mappings', [
+            'userDefinedConfig' => 'SomeType',
+        ]);
+
+        $action = app(GetMappings::class);
+
+        $mappings = $action();
+
+        $this->assertArrayHasKey('userdefinedconfig', $mappings);
+        $this->assertEquals('SomeType', $mappings['userdefinedconfig']);
+    }
+
+    /** @test */
+    public function testActionCanUseUserConfigToOverrideDefaultMappings()
+    {
+        $action = app(GetMappings::class);
+
+        $mappings = $action();
+
+        $this->assertArrayHasKey('text', $mappings);
+        $this->assertEquals('string', $mappings['text']);
+
+        Config::set('modeltyper.custom_mappings', [
+            'text' => 'number',
+        ]);
+
+        $mappings = $action();
+
+        $this->assertEquals('number', $mappings['text']);
+    }
+}

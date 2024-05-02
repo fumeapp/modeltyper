@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\UpperCast;
 use Illuminate\Database\Eloquent\Model;
 
 class Complex extends Model
@@ -12,5 +13,6 @@ class Complex extends Model
         'json' => 'json',
         'jsonb' => 'json',
         'year' => 'int',
+        'casted_uppercase_string' => UpperCast::class,
     ];
 }

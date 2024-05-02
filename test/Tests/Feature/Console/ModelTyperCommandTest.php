@@ -6,13 +6,14 @@ use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Tests\Feature\TestCase;
 use Tests\Traits\GeneratesOutput;
 use Tests\Traits\UsesInputFiles;
 
 class ModelTyperCommandTest extends TestCase
 {
-    use GeneratesOutput, UsesInputFiles, LazilyRefreshDatabase;
+    use GeneratesOutput, LazilyRefreshDatabase, UsesInputFiles;
 
     protected function tearDown(): void
     {
@@ -66,6 +67,22 @@ class ModelTyperCommandTest extends TestCase
 
         // check if Complex::class generates expected interface
         $expected = $this->getExpectedContent('complex-model.ts');
+        $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
+    }
+
+    /** @test */
+    public function testCommandGeneratesExpectedOutputForComplexModelWhenUserTypesUnknownCustomCast()
+    {
+        // set UpperCast return type in config
+        Config::set('modeltyper.custom_mappings', [
+            'App\Casts\UpperCast' => 'string',
+        ]);
+
+        // assert table complex_model_table exists
+        $this->assertDatabaseEmpty('complex_model_table');
+
+        // check if Complex::class generates expected interface
+        $expected = $this->getExpectedContent('complex-model-with-cast.ts');
         $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
     }
 }

@@ -21,7 +21,7 @@ export interface Complex {
   medium_text: string
   small_integer: number
   string: string
-  casted_uppercase_string: unknown
+  casted_uppercase_string: string
   text: string
   time: string
   timestamp: string
