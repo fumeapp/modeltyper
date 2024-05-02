@@ -32,8 +32,9 @@ class GenerateCliOutput
      * Output the command in the CLI.
      *
      * @param  Collection<int, SplFileInfo>  $models
+     * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -44,7 +45,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $timestampsDate, $optionalNullables, $resolveAbstract, $fillables, $fillableSuffix) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $resolveAbstract, $fillables, $fillableSuffix) {
             $entry = '';
             $modelDetails = $modelBuilder($model, $resolveAbstract);
 
@@ -69,8 +70,8 @@ class GenerateCliOutput
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
-                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
+                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -82,8 +83,8 @@ class GenerateCliOutput
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
-                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $timestampsDate, $optionalNullables) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, indent: $this->indent, noHidden: $noHidden, timestampsDate: $timestampsDate, optionalNullables: $optionalNullables);
+                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -95,8 +96,8 @@ class GenerateCliOutput
 
             if ($interfaces->isNotEmpty()) {
                 $entry .= "{$this->indent}  // overrides\n";
-                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $timestampsDate) {
-                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, indent: $this->indent, timestampsDate: $timestampsDate);
+                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $mappings) {
+                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, mappings: $mappings, indent: $this->indent);
                     $entry .= $line;
                 });
             }

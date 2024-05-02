@@ -2,7 +2,6 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Constants\TypescriptMappings;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -17,9 +16,10 @@ class WriteColumnAttribute
      * Get model columns and attributes to the output.
      *
      * @param  array{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool}  $attribute
+     * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -31,18 +31,16 @@ class WriteColumnAttribute
             return [null, null];
         }
 
-        $mappings = TypescriptMappings::getMappings();
-
         if (isset($attribute['forceType'])) {
             $name = $attribute['name'];
             $type = $attribute['type'];
         } else {
             if (! is_null($attribute['cast']) && $attribute['cast'] !== $attribute['type']) {
-                if (isset($mappings[$attribute['cast']])) {
-                    $type = $returnType($attribute['cast'], $timestampsDate);
+                if (isset($mappings[strtolower($attribute['cast'])])) {
+                    $type = $returnType($attribute['cast'], $mappings);
                 } else {
                     if ($attribute['type'] === 'json' || $this->getClassName($attribute['cast']) === 'AsCollection' || $this->getClassName($attribute['cast']) === 'AsArrayObject') {
-                        $type = $returnType('json');
+                        $type = $returnType('json', $mappings);
                     } else {
                         if ($attribute['cast'] === 'accessor' || $attribute['cast'] === 'attribute') {
                             $accessorMethod = app(DetermineAccessorType::class)($reflectionModel, $name);
@@ -55,7 +53,7 @@ class WriteColumnAttribute
                                         $rf = new ReflectionFunction($closure->get);
                                         if ($rf->hasReturnType()) {
                                             $rt = $rf->getReturnType();
-                                            $type = $returnType($rt->getName(), $timestampsDate);
+                                            $type = $returnType($rt->getName(), $mappings);
                                             $enumRef = $this->resolveEnum($rt->getName());
 
                                             if ($enumRef) {
@@ -80,10 +78,10 @@ class WriteColumnAttribute
                                     $enumRef = $reflection;
                                 }
                             } else {
-                                $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
+                                $cleanStr = Str::of($attribute['cast'])->before(':')->lower()->toString();
 
                                 if (isset($mappings[$cleanStr])) {
-                                    $type = $returnType($cleanStr, $timestampsDate);
+                                    $type = $returnType($cleanStr, $mappings);
                                 } else {
                                     dump('Unknown cast type: ' . $attribute['cast']);
                                 }
@@ -92,7 +90,7 @@ class WriteColumnAttribute
                     }
                 }
             } else {
-                $type = $returnType($attribute['type'], $timestampsDate);
+                $type = $returnType($attribute['type'], $mappings);
             }
         }
 
