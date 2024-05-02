@@ -6,11 +6,13 @@ use FumeApp\ModelTyper\Exceptions\AbstractModelException;
 use FumeApp\ModelTyper\Overrides\ErrorEmittingConsoleComponentFactory;
 use Illuminate\Database\Console\ShowModelCommand as BaseCommand;
 use ReflectionClass;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Style\OutputStyle;
 
 /**
- * A wrapper command for Laravel default model:show to add customizaton for model generation.
+ * A wrapper command for Laravel default model:show to add customization for model generation.
  */
+#[AsCommand(name: 'model:typer-show')]
 class ShowModelCommand extends BaseCommand
 {
     protected $name = 'model:typer-show {model}';
