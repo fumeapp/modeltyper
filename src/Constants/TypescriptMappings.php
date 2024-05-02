@@ -45,15 +45,4 @@ class TypescriptMappings
         'varchar' => 'string',
         'year' => 'number',
     ];
-
-    /**
-     * @return array<string, string>
-     */
-    public static function getMappings(): array
-    {
-        return array_change_key_case(array_merge(
-            self::$mappings,
-            config('modeltyper.custom_mappings', []),
-        ), CASE_LOWER);
-    }
 }
