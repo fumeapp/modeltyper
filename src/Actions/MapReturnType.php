@@ -11,7 +11,8 @@ class MapReturnType
      */
     public function __invoke(string $returnType, bool $timestampsDate = false): string
     {
-        $mappings = TypescriptMappings::$mappings;
+        $mappings = TypescriptMappings::getMappings();
+
         if ($timestampsDate) {
             $mappings['datetime'] = 'Date';
             $mappings['date'] = 'Date';
@@ -24,6 +25,7 @@ class MapReturnType
         if ($returnType[0] === '?') {
             return $mappings[str_replace('?', '', $returnType)] . '|null';
         }
+
         if (! isset($mappings[$returnType])) {
             return 'unknown';
         }

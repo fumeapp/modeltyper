@@ -31,12 +31,14 @@ class WriteColumnAttribute
             return [null, null];
         }
 
+        $mappings = TypescriptMappings::getMappings();
+
         if (isset($attribute['forceType'])) {
             $name = $attribute['name'];
             $type = $attribute['type'];
         } else {
             if (! is_null($attribute['cast']) && $attribute['cast'] !== $attribute['type']) {
-                if (isset(TypescriptMappings::$mappings[$attribute['cast']])) {
+                if (isset($mappings[$attribute['cast']])) {
                     $type = $returnType($attribute['cast'], $timestampsDate);
                 } else {
                     if ($attribute['type'] === 'json' || $this->getClassName($attribute['cast']) === 'AsCollection' || $this->getClassName($attribute['cast']) === 'AsArrayObject') {
@@ -80,7 +82,7 @@ class WriteColumnAttribute
                             } else {
                                 $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
 
-                                if (isset(TypescriptMappings::$mappings[$cleanStr])) {
+                                if (isset($mappings[$cleanStr])) {
                                     $type = $returnType($cleanStr, $timestampsDate);
                                 } else {
                                     dump('Unknown cast type: ' . $attribute['cast']);
