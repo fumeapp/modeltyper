@@ -5,13 +5,14 @@ namespace Tests\Feature\Console;
 use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\Feature\TestCase;
 use Tests\Traits\GeneratesOutput;
 use Tests\Traits\UsesInputFiles;
 
 class ModelTyperCommandTest extends TestCase
 {
-    use GeneratesOutput, UsesInputFiles;
+    use GeneratesOutput, UsesInputFiles, LazilyRefreshDatabase;
 
     protected function tearDown(): void
     {
@@ -60,9 +61,6 @@ class ModelTyperCommandTest extends TestCase
     /** @test */
     public function testCommandGeneratesExpectedOutputForComplexModel()
     {
-        // Migrate database
-        $this->artisan('migrate:fresh')->assertSuccessful();
-
         // assert table complex_model_table exists
         $this->assertDatabaseEmpty('complex_model_table');
 
