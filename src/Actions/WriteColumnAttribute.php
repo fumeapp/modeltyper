@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionNamedType;
 
 class WriteColumnAttribute
 {
@@ -43,16 +44,19 @@ class WriteColumnAttribute
                         $type = $returnType('json', $mappings);
                     } else {
                         if ($attribute['cast'] === 'accessor' || $attribute['cast'] === 'attribute') {
+                            /** @var \ReflectionMethod $accessorMethod */
                             $accessorMethod = app(DetermineAccessorType::class)($reflectionModel, $name);
 
-                            if ($accessorMethod->getReturnType()) {
-                                if ($accessorMethod->getReturnType()->getName() === 'Illuminate\Database\Eloquent\Casts\Attribute') {
+                            $accessorMethodReturnType = $accessorMethod->getReturnType();
+
+                            if (! is_null($accessorMethodReturnType) && $accessorMethodReturnType instanceof ReflectionNamedType) {
+                                if ($accessorMethodReturnType->getName() === 'Illuminate\Database\Eloquent\Casts\Attribute') {
                                     $closure = call_user_func($accessorMethod->getClosure($reflectionModel->newInstance()), 1);
 
                                     if (! is_null($closure->get)) {
-                                        $rf = new ReflectionFunction($closure->get);
-                                        if ($rf->hasReturnType()) {
-                                            $rt = $rf->getReturnType();
+                                        $rt = (new ReflectionFunction($closure->get))->getReturnType();
+
+                                        if (! is_null($rt) && $rt instanceof ReflectionNamedType) {
                                             $type = $returnType($rt->getName(), $mappings);
                                             $enumRef = $this->resolveEnum($rt->getName());
 
@@ -66,8 +70,8 @@ class WriteColumnAttribute
                                         }
                                     }
                                 } else {
-                                    $type = $this->getClassName($accessorMethod->getReturnType()->getName());
-                                    $enumRef = $this->resolveEnum($accessorMethod->getReturnType()->getName());
+                                    $type = $this->getClassName($accessorMethodReturnType->getName());
+                                    $enumRef = $this->resolveEnum($accessorMethodReturnType->getName());
                                 }
                             }
                         } else {
