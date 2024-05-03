@@ -18,6 +18,7 @@ class GetMappings
         if ($setTimestampsToDate) {
             $mappings['datetime'] = 'Date';
             $mappings['date'] = 'Date';
+            $mappings['timestamp'] = 'Date';
         }
 
         return array_change_key_case(array_merge(

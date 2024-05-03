@@ -23,9 +23,11 @@ class GetMappingsTest extends TestCase
 
         $this->assertArrayHasKey('date', $mappings);
         $this->assertArrayHasKey('datetime', $mappings);
+        $this->assertArrayHasKey('timestamp', $mappings);
 
         $this->assertEquals('Date', $mappings['date']);
         $this->assertEquals('Date', $mappings['datetime']);
+        $this->assertEquals('Date', $mappings['timestamp']);
     }
 
     /** @test */
