@@ -1,0 +1,26 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    # Determines the level of checking. 5 is a good starter point 8 is max
+    level: 5
+
+    checkGenericClassInNonGenericObjectType: false
+
+    excludePaths:
+        - vendor/*
+        - src/ModelInterface.php # This is a legacy file that will be removed soon
+
+    editorUrlTitle: '%%relFile%%:%%line%%'
+
+    # Opening file in an editor
+    #
+    # see https://phpstan.org/user-guide/output-format#opening-file-in-an-editor
+    # for overriding see https://phpstan.org/config-reference#multiple-files
+    #
+    # editorUrl: 'vscode://file/%%relFile%%:%%line%%' # Visual Studio Code
+    # editorUrl: 'phpstorm://open?file=%%relFile%%&line=%%line%%' # PhpStorm
+    # editorUrl: 'atom://core/open/file?filename=%%relFile%%&line=%%line%%' # Atom
