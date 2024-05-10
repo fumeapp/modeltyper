@@ -15,7 +15,7 @@ class ModelTyperServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/modeltyper.php' => config_path('modeltyper.php'),
-        ]);
+        ], 'config');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

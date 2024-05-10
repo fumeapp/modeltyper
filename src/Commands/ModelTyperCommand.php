@@ -5,7 +5,9 @@ namespace FumeApp\ModelTyper\Commands;
 use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(name: 'model:typer')]
 class ModelTyperCommand extends Command
 {
     /**

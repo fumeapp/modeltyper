@@ -2,12 +2,12 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Constants\TypescriptMappings;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionNamedType;
 
 class WriteColumnAttribute
 {
@@ -17,9 +17,10 @@ class WriteColumnAttribute
      * Get model columns and attributes to the output.
      *
      * @param  array{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool}  $attribute
+     * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -36,24 +37,27 @@ class WriteColumnAttribute
             $type = $attribute['type'];
         } else {
             if (! is_null($attribute['cast']) && $attribute['cast'] !== $attribute['type']) {
-                if (isset(TypescriptMappings::$mappings[$attribute['cast']])) {
-                    $type = $returnType($attribute['cast'], $timestampsDate);
+                if (isset($mappings[strtolower($attribute['cast'])])) {
+                    $type = $returnType($attribute['cast'], $mappings);
                 } else {
                     if ($attribute['type'] === 'json' || $this->getClassName($attribute['cast']) === 'AsCollection' || $this->getClassName($attribute['cast']) === 'AsArrayObject') {
-                        $type = $returnType('json');
+                        $type = $returnType('json', $mappings);
                     } else {
                         if ($attribute['cast'] === 'accessor' || $attribute['cast'] === 'attribute') {
+                            /** @var \ReflectionMethod $accessorMethod */
                             $accessorMethod = app(DetermineAccessorType::class)($reflectionModel, $name);
 
-                            if ($accessorMethod->getReturnType()) {
-                                if ($accessorMethod->getReturnType()->getName() === 'Illuminate\Database\Eloquent\Casts\Attribute') {
+                            $accessorMethodReturnType = $accessorMethod->getReturnType();
+
+                            if (! is_null($accessorMethodReturnType) && $accessorMethodReturnType instanceof ReflectionNamedType) {
+                                if ($accessorMethodReturnType->getName() === 'Illuminate\Database\Eloquent\Casts\Attribute') {
                                     $closure = call_user_func($accessorMethod->getClosure($reflectionModel->newInstance()), 1);
 
                                     if (! is_null($closure->get)) {
-                                        $rf = new ReflectionFunction($closure->get);
-                                        if ($rf->hasReturnType()) {
-                                            $rt = $rf->getReturnType();
-                                            $type = $returnType($rt->getName(), $timestampsDate);
+                                        $rt = (new ReflectionFunction($closure->get))->getReturnType();
+
+                                        if (! is_null($rt) && $rt instanceof ReflectionNamedType) {
+                                            $type = $returnType($rt->getName(), $mappings);
                                             $enumRef = $this->resolveEnum($rt->getName());
 
                                             if ($enumRef) {
@@ -66,8 +70,8 @@ class WriteColumnAttribute
                                         }
                                     }
                                 } else {
-                                    $type = $this->getClassName($accessorMethod->getReturnType()->getName());
-                                    $enumRef = $this->resolveEnum($accessorMethod->getReturnType()->getName());
+                                    $type = $this->getClassName($accessorMethodReturnType->getName());
+                                    $enumRef = $this->resolveEnum($accessorMethodReturnType->getName());
                                 }
                             }
                         } else {
@@ -78,10 +82,10 @@ class WriteColumnAttribute
                                     $enumRef = $reflection;
                                 }
                             } else {
-                                $cleanStr = Str::of($attribute['cast'])->before(':')->__toString();
+                                $cleanStr = Str::of($attribute['cast'])->before(':')->lower()->toString();
 
-                                if (isset(TypescriptMappings::$mappings[$cleanStr])) {
-                                    $type = $returnType($cleanStr, $timestampsDate);
+                                if (isset($mappings[$cleanStr])) {
+                                    $type = $returnType($cleanStr, $mappings);
                                 } else {
                                     dump('Unknown cast type: ' . $attribute['cast']);
                                 }
@@ -90,7 +94,7 @@ class WriteColumnAttribute
                     }
                 }
             } else {
-                $type = $returnType($attribute['type'], $timestampsDate);
+                $type = $returnType($attribute['type'], $mappings);
             }
         }
 

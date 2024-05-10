@@ -33,6 +33,7 @@ return new class extends Migration
             $table->mediumText('mediumText');
             $table->smallInteger('smallInteger');
             $table->string('string');
+            $table->string('casted_uppercase_string');
             $table->text('text');
             $table->time('time');
             $table->timestamp('timestamp');

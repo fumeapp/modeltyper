@@ -34,6 +34,7 @@ class TypescriptMappings
 
         // mappings for Laravel 11
         'char' => 'string',
+        'character' => 'string',
         'enum' => 'string',
         'int' => 'number',
         'longtext' => 'string',
