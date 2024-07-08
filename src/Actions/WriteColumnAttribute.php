@@ -113,7 +113,7 @@ class WriteColumnAttribute
             ], $enumRef];
         }
 
-        return ["{$indent}  {$name}: {$type}\n", $enumRef];
+        return ["{$indent}  {$this->ensurePropertyIsValid($name)}: {$type}\n", $enumRef];
     }
 
     protected function resolveEnum(string $returnTypeName): ?ReflectionClass
@@ -128,5 +128,26 @@ class WriteColumnAttribute
         }
 
         return null;
+    }
+
+    /**
+     * Transforms invalid javascript property to valid one by surrounding it with quotes.
+     *
+     * This function checks if the property starts with a number or symbols. If it does, it
+     * surrounds the identifier with double quotes to make it a valid string key.
+     */
+    private function ensurePropertyIsValid(string $identifier): string
+    {
+        $firstCharacter = substr($identifier, 0, 1);
+        
+        if (! ctype_digit($identifier) && ctype_digit($firstCharacter)) {
+            return "'$identifier'";
+        }
+
+        if (preg_match('/^[^a-zA-Z0-9_$]/', $firstCharacter)) {
+            return "'$identifier'";
+        }
+
+        return $identifier;
     }
 }
