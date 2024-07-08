@@ -6,6 +6,7 @@ use FumeApp\ModelTyper\Exceptions\AbstractModelException;
 use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
+use Illuminate\Support\Collection;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -61,18 +62,12 @@ class BuildModelDetails
             ->unique()
             ->values();
 
-        $columns = $columns->map(function ($column) use (&$interfaces) {
-            $interfaces->each(function ($interface, $key) use (&$column, &$interfaces) {
-                if ($key === $column['name']) {
-                    $column['type'] = $interface['type'];
-                    $column['forceType'] = true;
+        // Override all columns, mutators and relationships with custom interfaces
+        $columns = $this->overrideCollectionWithInterfaces($columns, $interfaces);
 
-                    $interfaces->forget($key);
-                }
-            });
+        $nonColumns = $this->overrideCollectionWithInterfaces($nonColumns, $interfaces);
 
-            return $column;
-        });
+        $relations = $this->overrideCollectionWithInterfaces($relations, $interfaces);
 
         return [
             'reflectionModel' => $reflectionModel,
@@ -104,5 +99,21 @@ class BuildModelDetails
             }
             throw $exception;
         }
+    }
+
+    private function overrideCollectionWithInterfaces(Collection $columns, Collection $interfaces): Collection
+    {
+        return $columns->map(function ($column) use ($interfaces) {
+            $interfaces->each(function ($interface, $key) use (&$column, $interfaces) {
+                if ($key === $column['name']) {
+                    $column['type'] = $interface['type'];
+                    $column['forceType'] = true;
+
+                    $interfaces->forget($key);
+                }
+            });
+
+            return $column;
+        });
     }
 }
