@@ -103,17 +103,16 @@ class BuildModelDetails
 
     private function overrideCollectionWithInterfaces(Collection $columns, Collection $interfaces): Collection
     {
-        return $columns->map(function ($column) use ($interfaces) {
-            $interfaces->each(function ($interface, $key) use (&$column, $interfaces) {
-                if ($key === $column['name']) {
-                    $column['type'] = $interface['type'];
-                    $column['forceType'] = true;
+        return $columns->filter(function ($column) use ($interfaces) {
+            $includeColumn = true;
 
-                    $interfaces->forget($key);
+            $interfaces->each(function ($interface, $key) use ($column, &$includeColumn) {
+                if ($key === $column['name']) {
+                    $includeColumn = false;
                 }
             });
 
-            return $column;
+            return $includeColumn;
         });
     }
 }
