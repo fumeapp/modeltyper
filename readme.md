@@ -104,6 +104,7 @@ public function getFirstNameAttribute(): string // <- this
 --model= : Generate typescript interfaces for a specific model
 --global : Generate typescript interfaces in a global namespace named models
 --json : Output the result as json
+--use-enums : Use typescript enums instead of object literals
 --plurals : Output model plurals
 --no-relations : Do not include relations
 --optional-relations : Make relations optional fields on the model type
@@ -378,6 +379,6 @@ export interface User {
 }
 ```
 
-> ModelTyper uses Object Literals instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1)
+> ModelTyper uses Object Literals by default instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can use `--use-enums` option to use TS Enums instead of Object Literals.
 
 > Notice how the comments are found and parsed - they must follow the specified format
