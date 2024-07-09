@@ -20,7 +20,7 @@ class WriteColumnAttribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false, bool $useEnums = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
@@ -98,6 +98,10 @@ class WriteColumnAttribute
             }
         }
 
+        if ($useEnums) {
+            $type = $enumRef && $type ? ($type . 'Enum') : $type;
+        }
+
         if ($attribute['nullable']) {
             $type .= '|null';
         }
@@ -139,7 +143,7 @@ class WriteColumnAttribute
     private function ensurePropertyIsValid(string $identifier): string
     {
         $firstCharacter = substr($identifier, 0, 1);
-        
+
         if (! ctype_digit($identifier) && ctype_digit($firstCharacter)) {
             return "'$identifier'";
         }

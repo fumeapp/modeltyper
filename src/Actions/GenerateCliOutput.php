@@ -34,7 +34,7 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -45,7 +45,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $resolveAbstract, $fillables, $fillableSuffix) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $resolveAbstract, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
             $modelDetails = $modelBuilder($model, $resolveAbstract);
 
@@ -70,8 +70,8 @@ class GenerateCliOutput
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns\n";
-                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables);
+                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -83,8 +83,8 @@ class GenerateCliOutput
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators\n";
-                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables);
+                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -139,8 +139,8 @@ class GenerateCliOutput
 
         collect($this->enumReflectors)
             ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
-            ->each(function (ReflectionClass $reflector) {
-                $this->output .= app(WriteEnumConst::class)($reflector, $this->indent);
+            ->each(function (ReflectionClass $reflector) use ($useEnums) {
+                $this->output .= app(WriteEnumConst::class)($reflector, $this->indent, false, $useEnums);
             });
 
         collect($this->imports)
