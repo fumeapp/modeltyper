@@ -49,7 +49,7 @@ class Generator
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
         if ($json) {
-            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, resolveAbstract: $resolveAbstract);
+            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, resolveAbstract: $resolveAbstract, useEnums: $useEnums);
         }
 
         return app(GenerateCliOutput::class)(
