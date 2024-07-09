@@ -29,14 +29,14 @@ class GenerateJsonOutput
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $resolveAbstract = false): string
+    public function __invoke(Collection $models, array $mappings, bool $resolveAbstract = false, bool $useEnums = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $resolveAbstract, $mappings) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $resolveAbstract, $mappings, $useEnums) {
             $modelDetails = $modelBuilder($model, $resolveAbstract);
 
             if ($modelDetails === null) {
@@ -56,8 +56,8 @@ class GenerateJsonOutput
             $this->output['interfaces'][$name] = $columns
                 ->merge($nonColumns)
                 ->merge($interfaces)
-                ->map(function ($att) use ($reflectionModel, $colAttrWriter, $mappings) {
-                    [$property, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, mappings: $mappings, attribute: $att, jsonOutput: true);
+                ->map(function ($att) use ($reflectionModel, $colAttrWriter, $mappings, $useEnums) {
+                    [$property, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, mappings: $mappings, attribute: $att, jsonOutput: true, useEnums: $useEnums);
                     if ($enum) {
                         $this->enumReflectors[] = $enum;
                     }
@@ -77,8 +77,8 @@ class GenerateJsonOutput
             });
         });
 
-        $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter) {
-            $enumConst = $enumWriter(reflection: $enum, jsonOutput: true);
+        $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter, $useEnums) {
+            $enumConst = $enumWriter(reflection: $enum, jsonOutput: true, useEnums: $useEnums);
 
             return [
                 $enumConst['name'] => [

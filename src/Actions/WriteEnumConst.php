@@ -11,7 +11,7 @@ class WriteEnumConst
      *
      * @return array{type: string, name: string}|string
      */
-    public function __invoke(ReflectionClass $reflection, string $indent = '', bool $jsonOutput = false): array|string
+    public function __invoke(ReflectionClass $reflection, string $indent = '', bool $jsonOutput = false, bool $useEnums = false): array|string
     {
         $entry = '';
 
@@ -28,9 +28,13 @@ class WriteEnumConst
         $cases = collect($reflection->getConstants());
 
         if ($cases->isNotEmpty()) {
-            $entry .= "{$indent}const {$reflection->getShortName()} = {\n";
+            if ($useEnums) {
+                $entry .= "{$indent}export const enum {$reflection->getShortName()} {\n";
+            } else {
+                $entry .= "{$indent}const {$reflection->getShortName()} = {\n";
+            }
 
-            $cases->each(function ($case) use ($indent, &$entry, $comments) {
+            $cases->each(function ($case) use ($indent, &$entry, $comments, $useEnums) {
                 $name = $case->name;
                 $value = is_string($case->value) ? "'{$case->value}'" : $case->value;
 
@@ -47,11 +51,21 @@ class WriteEnumConst
                     }
                 }
 
-                $entry .= "{$indent}  {$name}: {$value},\n";
+                if ($useEnums) {
+                    $entry .= "{$indent}  {$name} = {$value},\n";
+                } else {
+                    $entry .= "{$indent}  {$name}: {$value},\n";
+                }
             });
 
-            $entry .= "{$indent}} as const;\n\n";
-            $entry .= "{$indent}export type {$reflection->getShortName()} = typeof {$reflection->getShortName()}[keyof typeof {$reflection->getShortName()}]\n\n";
+            if ($useEnums) {
+                $entry .= "{$indent}}\n\n";
+                $entry .= "{$indent}export type {$reflection->getShortName()}Enum = `\${{$reflection->getShortName()}}`\n\n";
+            } else {
+                $entry .= "{$indent}} as const;\n\n";
+                $entry .= "{$indent}export type {$reflection->getShortName()} = typeof {$reflection->getShortName()}[keyof typeof {$reflection->getShortName()}]\n\n";
+            }
+
         }
 
         if ($jsonOutput) {
