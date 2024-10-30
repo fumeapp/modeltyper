@@ -17,7 +17,10 @@ class GetMappings
 
         if ($setTimestampsToDate) {
             $mappings['datetime'] = 'Date';
+            $mappings['immutable_datetime'] = 'Date';
+            $mappings['immutable_custom_datetime'] = 'Date';
             $mappings['date'] = 'Date';
+            $mappings['immutable_date'] = 'Date';
             $mappings['timestamp'] = 'Date';
         }
 

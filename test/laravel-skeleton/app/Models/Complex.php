@@ -14,5 +14,8 @@ class Complex extends Model
         'jsonb' => 'json',
         'year' => 'int',
         'casted_uppercase_string' => UpperCast::class,
+        'immutableDateTime' => 'immutable_date',
+        'immutableDate' => 'immutable_datetime',
+        'immutableCustomDateTime' => 'immutable_custom_datetime',
     ];
 }

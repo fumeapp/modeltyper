@@ -6,7 +6,10 @@ export interface Complex {
   boolean: boolean
   char: string
   date_time: string
+  immutable_date_time: string
+  immutable_custom_date_time: string
   date: string
+  immutable_date: string
   decimal: number
   double: number
   enum: string

@@ -18,7 +18,10 @@ return new class extends Migration
             $table->boolean('boolean');
             $table->char('char');
             $table->dateTime('dateTime');
+            $table->dateTime('immutableDateTime');
+            $table->dateTime('immutableCustomDateTime');
             $table->date('date');
+            $table->date('immutable_date');
             $table->decimal('decimal');
             $table->double('double');
             $table->enum('enum', [1, 2, 3, 'A', 'B']);
