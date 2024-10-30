@@ -22,11 +22,17 @@ class GetMappingsTest extends TestCase
         $mappings = $action(setTimestampsToDate: true);
 
         $this->assertArrayHasKey('date', $mappings);
+        $this->assertArrayHasKey('immutable_date', $mappings);
         $this->assertArrayHasKey('datetime', $mappings);
+        $this->assertArrayHasKey('immutable_datetime', $mappings);
+        $this->assertArrayHasKey('immutable_custom_datetime', $mappings);
         $this->assertArrayHasKey('timestamp', $mappings);
 
         $this->assertEquals('Date', $mappings['date']);
+        $this->assertEquals('Date', $mappings['immutable_date']);
         $this->assertEquals('Date', $mappings['datetime']);
+        $this->assertEquals('Date', $mappings['immutable_datetime']);
+        $this->assertEquals('Date', $mappings['immutable_custom_datetime']);
         $this->assertEquals('Date', $mappings['timestamp']);
     }
 
