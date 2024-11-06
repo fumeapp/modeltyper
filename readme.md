@@ -98,6 +98,12 @@ public function getFirstNameAttribute(): string // <- this
 }
 ```
 
+### Optional Arguments
+
+```
+output-file=./resources/js/types/models.d.ts : Echo the definitions into a file
+```
+
 ### Additional Options
 
 ```
