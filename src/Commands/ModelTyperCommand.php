@@ -5,6 +5,7 @@ namespace FumeApp\ModelTyper\Commands;
 use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer')]
@@ -16,6 +17,13 @@ class ModelTyperCommand extends Command
      * @var string
      */
     protected $name = 'model:typer';
+
+    /**
+     * Facade for Filesystem-Access
+     *
+     * @var Filesystem
+     */
+    protected $files;
 
     /**
      * The name and signature of the console command.
@@ -52,9 +60,11 @@ class ModelTyperCommand extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Filesystem $files)
     {
         parent::__construct();
+
+        $this->files = $files;
     }
 
     /**
