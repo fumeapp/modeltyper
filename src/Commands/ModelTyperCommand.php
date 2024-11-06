@@ -23,6 +23,7 @@ class ModelTyperCommand extends Command
      * @var string
      */
     protected $signature = 'model:typer
+                            {output-file=./resources/js/types/models.d.ts : Echo the definitions into a file}
                             {--model= : Generate typescript interfaces for a specific model}
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
@@ -62,7 +63,8 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
-            $this->line($generator(
+            $path = $this->argument('output-file');
+            $output = $generator(
                 $this->option('model'),
                 $this->option('global'),
                 $this->option('json'),
@@ -77,7 +79,14 @@ class ModelTyperCommand extends Command
                 $this->option('resolve-abstract'),
                 $this->option('fillables'),
                 $this->option('fillable-suffix')
-            ));
+            );
+
+            if ($path) {
+                $this->files->ensureDirectoryExists(dirname($path));
+                $this->files->put($path, $output);
+            }
+
+            $this->line($output);
         } catch (ModelTyperException $exception) {
             $this->error($exception->getMessage());
 
