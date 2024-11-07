@@ -23,6 +23,10 @@ class ModelTyperServiceProvider extends ServiceProvider
                 ShowModelCommand::class,
             ]);
         }
+
+        $this->app->singleton(ModelTyperCommand::class, function ($app) {
+            return new ModelTyperCommand($app['files']);
+        });
     }
 
     /**

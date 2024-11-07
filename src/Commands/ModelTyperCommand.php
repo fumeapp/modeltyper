@@ -5,6 +5,7 @@ namespace FumeApp\ModelTyper\Commands;
 use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer')]
@@ -18,11 +19,19 @@ class ModelTyperCommand extends Command
     protected $name = 'model:typer';
 
     /**
+     * Facade for Filesystem-Access
+     *
+     * @var Filesystem
+     */
+    protected $files;
+
+    /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $signature = 'model:typer
+                            {output-file=./resources/js/types/models.d.ts : Echo the definitions into a file}
                             {--model= : Generate typescript interfaces for a specific model}
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
@@ -51,9 +60,11 @@ class ModelTyperCommand extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Filesystem $files)
     {
         parent::__construct();
+
+        $this->files = $files;
     }
 
     /**
@@ -62,7 +73,8 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
-            $this->line($generator(
+            $path = $this->argument('output-file');
+            $output = $generator(
                 $this->option('model'),
                 $this->option('global'),
                 $this->option('json'),
@@ -77,7 +89,14 @@ class ModelTyperCommand extends Command
                 $this->option('resolve-abstract'),
                 $this->option('fillables'),
                 $this->option('fillable-suffix')
-            ));
+            );
+
+            if ($path) {
+                $this->files->ensureDirectoryExists(dirname($path));
+                $this->files->put($path, $output);
+            }
+
+            $this->line($output);
         } catch (ModelTyperException $exception) {
             $this->error($exception->getMessage());
 
