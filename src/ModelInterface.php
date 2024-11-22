@@ -73,7 +73,7 @@ class ModelInterface
         $allCode .= $this->getCasts($models);
 
         foreach ($models as $model) {
-            $interface = $this->getInterface(new $model());
+            $interface = $this->getInterface(new $model);
             $allCode .= $this->getCode($interface);
         }
         if ($this->global) {
@@ -91,7 +91,7 @@ class ModelInterface
         $code = '';
         $imports = [];
         foreach ($models as $model) {
-            if ($interfaces = (new $model())->interfaces) {
+            if ($interfaces = (new $model)->interfaces) {
                 foreach ($interfaces as $interface) {
                     if (isset($interface['import'])) {
                         $imports[$interface['import']][] = $interface['name'];
@@ -146,7 +146,7 @@ class ModelInterface
         $code = '';
         $casts = [];
         foreach ($models as $model) {
-            $model = new $model();
+            $model = new $model;
             foreach ($model->getCasts() as $key => $value) {
                 if (! class_exists($value)) {
                     continue;

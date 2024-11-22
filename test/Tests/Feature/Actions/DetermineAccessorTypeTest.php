@@ -11,13 +11,13 @@ class DetermineAccessorTypeTest extends TestCase
     use ResolveClassAsReflection;
 
     /** @test */
-    public function testActionCanBeResolvedByApplication()
+    public function test_action_can_be_resolved_by_application()
     {
         $this->assertInstanceOf(DetermineAccessorType::class, resolve(DetermineAccessorType::class));
     }
 
     /** @test */
-    public function testActionCanBeExecuted()
+    public function test_action_can_be_executed()
     {
         // TODO
         $this->assertTrue(true);

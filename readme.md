@@ -118,7 +118,7 @@ output-file=./resources/js/types/models.d.ts : Echo the definitions into a file
 --timestamps-date : Output timestamps as a Date object type
 --optional-nullables : Output nullable attributes as optional fields
 --api-resources : Output api.MetApi interfaces
---resolve-abstract : Attempt to resolve abstract models)
+--resolve-abstract : Attempt to resolve abstract models
 --fillables : Output model fillables
 --fillable-suffix=fillable
 --all : Enable all output options (equivalent to --plurals --api-resources)'
