@@ -14,24 +14,23 @@
         "tanner Campbell <tcamp022@gmail.com>"
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0.0|^11.0",
-        "illuminate/database": "^10.0.0|^11.0",
-        "illuminate/console": "^10.0.0|^11.0"
+        "php": "^8.2",
+        "illuminate/support": "^11.0",
+        "illuminate/database": "^11.0",
+        "illuminate/console": "^11.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^8.0|^9.0",
-        "phpunit/phpunit": "^10.1",
-        "laravel/pint": "^1.7",
-        "larastan/larastan": "^2.2",
-        "consolidation/robo": "^4.0",
-        "totten/lurkerlite": "^1.3",
-        "doctrine/dbal": "^3.6",
-        "spatie/laravel-ray": "^1.32",
-        "phpstan/phpstan-deprecation-rules": "^1.2"
+        "orchestra/testbench": "^9.0.0",
+        "phpunit/phpunit": "^11.0.0",
+        "laravel/pint": "^1.18.3",
+        "larastan/larastan": "^2.9.12",
+        "consolidation/robo": "^5.1.0",
+        "spatie/laravel-ray": "^1.37.1",
+        "phpstan/phpstan-deprecation-rules": "^1.2.1",
+        "totten/lurkerlite": "^1.3"
     },
     "conflict": {
-        "laravel/framework": "<10.43.0 || >=11.33.0"
+        "laravel/framework": ">=11.33.0"
     },
     "autoload": {
         "psr-4": {
@@ -41,7 +40,9 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "test/Tests/",
-            "App\\": "test/laravel-skeleton/app/"
+            "App\\": "test/laravel-skeleton/app/",
+            "Database\\Factories\\": "test/laravel-skeleton/database/factories/",
+            "Database\\Seeders\\": "test/laravel-skeleton/database/seeders/"
         }
     },
     "extra": {
@@ -53,25 +54,31 @@
     },
     "scripts": {
         "pint": [
-            "vendor/bin/pint"
+            "@php vendor/bin/pint --ansi"
         ],
         "test": [
-            "vendor/bin/phpunit --colors --display-errors --testdox"
+            "@php vendor/bin/phpunit --colors --display-errors --testdox"
         ],
         "test-watch": [
-            "vendor/bin/robo watch 'src, test/Tests' 'clear && composer test'"
+            "@php vendor/bin/robo watch 'src, test/Tests' 'clear && composer test'"
         ],
         "test-coverage": [
-            "XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --testdox --coverage-text"
+            "@php XDEBUG_MODE=coverage ./vendor/bin/phpunit --colors=always --testdox --coverage-text"
         ],
         "stan": [
-            "vendor/bin/phpstan analyse"
-        ]
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ],
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi"
     },
     "scripts-descriptions": {
         "pint": "Run the Pint Linter and Fixer.",
         "test": "Run the PHPUnit tests.",
         "test-coverage": "Run the PHPUnit tests with code coverage.",
-        "stan": "Run the PHPStan analyser."
+        "stan": "Run PHPStan analyzer."
     }
 }

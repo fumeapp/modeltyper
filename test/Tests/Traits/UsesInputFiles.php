@@ -4,11 +4,13 @@ namespace Tests\Traits;
 
 use Illuminate\Support\Str;
 
+use function Orchestra\Testbench\package_path;
+
 trait UsesInputFiles
 {
     public function getInputPath(string $appends = ''): string
     {
-        $path = ROOT_PATH . '/test/input';
+        $path = package_path('test/input');
 
         if ($appends) {
             $path .= str_starts_with($appends, '/') ? $appends : "/$appends";
@@ -17,7 +19,7 @@ trait UsesInputFiles
         return $path;
     }
 
-    function normalizeLineEndings(string $string): string
+    public function normalizeLineEndings(string $string): string
     {
         if (PHP_OS_FAMILY === 'Windows') {
             return Str::replace("\r\n", "\n", $string);

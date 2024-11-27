@@ -5,15 +5,15 @@ namespace Tests\Feature\Console;
 use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
-use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
-use Tests\Feature\TestCase;
+use Tests\TestCase;
 use Tests\Traits\GeneratesOutput;
 use Tests\Traits\UsesInputFiles;
 
 class ModelTyperCommandTest extends TestCase
 {
-    use GeneratesOutput, LazilyRefreshDatabase, UsesInputFiles;
+    use GeneratesOutput, RefreshDatabase, UsesInputFiles;
 
     protected function tearDown(): void
     {
@@ -24,13 +24,11 @@ class ModelTyperCommandTest extends TestCase
         $this->deleteOutput();
     }
 
-    /** @test */
     public function test_command_can_be_executed_successfully()
     {
         $this->artisan(ModelTyperCommand::class)->assertSuccessful();
     }
 
-    /** @test */
     public function test_command_fails_when_trying_to_resolve_abstract_model_that_has_no_binding()
     {
         $this->markTestSkipped('Do dont think is needed anymore, since only files that extend Eloquent\Model are considered');
@@ -39,14 +37,12 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class, ['--resolve-abstract' => true])->assertFailed();
     }
 
-    /** @test */
     public function test_command_generates_expected_output_for_user_model()
     {
         $expected = $this->getExpectedContent('example.ts');
         $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
     }
 
-    /** @test */
     public function test_command_generates_fillables_when_fillable_option_is_enabled()
     {
         $expected = $this->getExpectedContent('user-fillables.ts');
@@ -59,7 +55,6 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class, $options)->expectsOutput($expected);
     }
 
-    /** @test */
     public function test_command_generates_expected_output_for_complex_model()
     {
         // assert table complex_model_table exists
@@ -70,7 +65,6 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
     }
 
-    /** @test */
     public function test_command_generates_expected_output_for_complex_model_when_user_types_unknown_custom_cast()
     {
         // set UpperCast return type in config

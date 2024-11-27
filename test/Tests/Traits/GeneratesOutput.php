@@ -2,11 +2,13 @@
 
 namespace Tests\Traits;
 
+use function Orchestra\Testbench\package_path;
+
 trait GeneratesOutput
 {
     public function getOutputPath(string $appends = ''): string
     {
-        $path = ROOT_PATH . '/test/output';
+        $path = package_path('test/output');
 
         if ($appends) {
             $path .= str_starts_with($appends, '/') ? $appends : "/$appends";
