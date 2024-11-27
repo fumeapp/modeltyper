@@ -16,6 +16,5 @@ class TypescriptInterface
         public array $mutators,
         public array $relations,
         public array $interfaces,
-    ) {
-    }
+    ) {}
 }

@@ -10,13 +10,13 @@ use Tests\Feature\TestCase;
 class GenerateJsonOutputTest extends TestCase
 {
     /** @test */
-    public function testActionCanBeResolvedByApplication()
+    public function test_action_can_be_resolved_by_application()
     {
         $this->assertInstanceOf(GenerateJsonOutput::class, resolve(GenerateJsonOutput::class));
     }
 
     /** @test */
-    public function testActionCanBeExecuted()
+    public function test_action_can_be_executed()
     {
         $action = app(GenerateJsonOutput::class);
         $result = $action(app(GetModels::class)(), app(GetMappings::class)());

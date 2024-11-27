@@ -86,7 +86,7 @@ class GenerateJsonOutput
                     'type' => $enumConst['type'],
                 ],
             ];
-        });
+        })->toArray();
 
         return json_encode($this->output) . PHP_EOL;
     }

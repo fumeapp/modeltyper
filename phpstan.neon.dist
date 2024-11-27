@@ -1,5 +1,8 @@
 includes:
     - ./vendor/larastan/larastan/extension.neon
+    - ./vendor/nesbot/carbon/extension.neon
+    - ./vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
 
 parameters:
     paths:
@@ -7,8 +10,6 @@ parameters:
 
     # Determines the level of checking. 5 is a good starter point 8 is max
     level: 5
-
-    checkGenericClassInNonGenericObjectType: false
 
     excludePaths:
         - vendor/*

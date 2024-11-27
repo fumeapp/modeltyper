@@ -14,9 +14,9 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.1, 8.2, 8.3]
+        php: ['8.1', '8.2', '8.3']
         laravel: ['10.*', '11.*']
-        stability: [prefer-lowest, prefer-stable]
+        stability: ['highest', 'lowest']
         include:
           - laravel: 10.*
             testbench: 8.*
@@ -24,9 +24,9 @@ jobs:
             testbench: 9.*
         exclude:
           - laravel: 11.*
-            php: 8.1
+            php: '8.1'
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} ${{ matrix.stability }} stability
 
     steps:
       - name: 🔨 Checkout code
@@ -37,10 +37,11 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-          tools: composer:v2
 
-      - name: 🔨 Install dependencies
-        run: composer update --prefer-dist --no-interaction --no-progress
+      - name: 🔨 Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          dependency-versions: ${{ matrix.stability }}
 
-      - name: 🧪 Run Execute PHPUnit Tests
+      - name: 🧪 Run Unit Tests
         run: composer test

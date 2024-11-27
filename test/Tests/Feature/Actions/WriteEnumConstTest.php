@@ -11,16 +11,16 @@ use Tests\Traits\UsesInputFiles;
 
 class WriteEnumConstTest extends TestCase
 {
-    use GeneratesOutput, ResolveClassAsReflection,UsesInputFiles;
+    use GeneratesOutput, ResolveClassAsReflection, UsesInputFiles;
 
     /** @test */
-    public function testActionCanBeResolvedByApplication()
+    public function test_action_can_be_resolved_by_application()
     {
         $this->assertInstanceOf(WriteEnumConst::class, resolve(WriteEnumConst::class));
     }
 
     /** @test */
-    public function testActionCanBeExecutedAndReturnsString()
+    public function test_action_can_be_executed_and_returns_string()
     {
         $action = app(WriteEnumConst::class);
         $reflectionModel = $this->resolveClassAsReflection(Roles::class);
@@ -35,7 +35,7 @@ class WriteEnumConstTest extends TestCase
     }
 
     /** @test */
-    public function testActionCanBeExecutedAndReturnsArray()
+    public function test_action_can_be_executed_and_returns_array()
     {
         $action = app(WriteEnumConst::class);
         $reflectionModel = $this->resolveClassAsReflection(Roles::class);

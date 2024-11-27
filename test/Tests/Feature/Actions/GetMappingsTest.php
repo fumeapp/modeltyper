@@ -9,13 +9,13 @@ use Tests\Feature\TestCase;
 class GetMappingsTest extends TestCase
 {
     /** @test */
-    public function testActionCanBeResolvedByApplication()
+    public function test_action_can_be_resolved_by_application()
     {
         $this->assertInstanceOf(GetMappings::class, resolve(GetMappings::class));
     }
 
     /** @test */
-    public function testActionCanSetTimestampsAsDate()
+    public function test_action_can_set_timestamps_as_date()
     {
         $action = app(GetMappings::class);
 
@@ -37,7 +37,7 @@ class GetMappingsTest extends TestCase
     }
 
     /** @test */
-    public function testActionCanMergeUserConfig()
+    public function test_action_can_merge_user_config()
     {
         Config::set('modeltyper.custom_mappings', [
             'userDefinedConfig' => 'SomeType',
@@ -52,7 +52,7 @@ class GetMappingsTest extends TestCase
     }
 
     /** @test */
-    public function testActionCanUseUserConfigToOverrideDefaultMappings()
+    public function test_action_can_use_user_config_to_override_default_mappings()
     {
         $action = app(GetMappings::class);
 

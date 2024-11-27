@@ -3,3 +3,4 @@ vendor
 notes.md
 .phpunit.cache
 phpstan.neon
+resources

@@ -25,13 +25,13 @@ class ModelTyperCommandTest extends TestCase
     }
 
     /** @test */
-    public function testCommandCanBeExecutedSuccessfully()
+    public function test_command_can_be_executed_successfully()
     {
         $this->artisan(ModelTyperCommand::class)->assertSuccessful();
     }
 
     /** @test */
-    public function testCommandFailsWhenTryingToResolveAbstractModelThatHasNoBinding()
+    public function test_command_fails_when_trying_to_resolve_abstract_model_that_has_no_binding()
     {
         $this->markTestSkipped('Do dont think is needed anymore, since only files that extend Eloquent\Model are considered');
 
@@ -40,14 +40,14 @@ class ModelTyperCommandTest extends TestCase
     }
 
     /** @test */
-    public function testCommandGeneratesExpectedOutputForUserModel()
+    public function test_command_generates_expected_output_for_user_model()
     {
         $expected = $this->getExpectedContent('example.ts');
         $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
     }
 
     /** @test */
-    public function testCommandGeneratesFillablesWhenFillableOptionIsEnabled()
+    public function test_command_generates_fillables_when_fillable_option_is_enabled()
     {
         $expected = $this->getExpectedContent('user-fillables.ts');
         $options = [
@@ -60,7 +60,7 @@ class ModelTyperCommandTest extends TestCase
     }
 
     /** @test */
-    public function testCommandGeneratesExpectedOutputForComplexModel()
+    public function test_command_generates_expected_output_for_complex_model()
     {
         // assert table complex_model_table exists
         $this->assertDatabaseEmpty('complex_model_table');
@@ -71,7 +71,7 @@ class ModelTyperCommandTest extends TestCase
     }
 
     /** @test */
-    public function testCommandGeneratesExpectedOutputForComplexModelWhenUserTypesUnknownCustomCast()
+    public function test_command_generates_expected_output_for_complex_model_when_user_types_unknown_custom_cast()
     {
         // set UpperCast return type in config
         Config::set('modeltyper.custom_mappings', [
