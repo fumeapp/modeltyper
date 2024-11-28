@@ -63,7 +63,7 @@ class GenerateJsonOutput
                     }
 
                     return $property;
-                });
+                })->toArray();
 
             $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
                 $relation = $relationWriter(relation: $rel, jsonOutput: true);
@@ -74,7 +74,7 @@ class GenerateJsonOutput
                         'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . $name . '>',
                     ],
                 ];
-            });
+            })->toArray();
         });
 
         $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter, $useEnums) {

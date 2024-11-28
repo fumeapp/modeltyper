@@ -8,7 +8,7 @@ parameters:
     paths:
         - src
 
-    # Determines the level of checking. 5 is a good starter point 9 is max
+    # Determines the level of checking. 5 is a good starter point 10 is max
     level: 5
 
     excludePaths:
