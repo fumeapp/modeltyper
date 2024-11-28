@@ -3,7 +3,6 @@
 namespace FumeApp\ModelTyper;
 
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
-use FumeApp\ModelTyper\Commands\ShowModelCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ModelTyperServiceProvider extends ServiceProvider
@@ -20,7 +19,6 @@ class ModelTyperServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ModelTyperCommand::class,
-                ShowModelCommand::class,
             ]);
         }
 

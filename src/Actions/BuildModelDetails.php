@@ -2,11 +2,10 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Exceptions\AbstractModelException;
-use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -38,7 +37,8 @@ class BuildModelDetails
         $columns = collect($modelDetails['attributes'])->filter(fn ($att) => in_array($att['name'], $databaseColumns));
         $nonColumns = collect($modelDetails['attributes'])->filter(fn ($att) => ! in_array($att['name'], $databaseColumns));
         $relations = collect($modelDetails['relations']);
-        $interfaces = collect($laravelModel->interfaces)->map(fn ($interface, $key) => [
+
+        $interfaces = collect($laravelModel->interfaces ?? [])->map(fn ($interface, $key) => [
             'name' => $key,
             'type' => $interface['type'] ?? 'unknown',
             'nullable' => $interface['nullable'] ?? false,
@@ -46,15 +46,9 @@ class BuildModelDetails
             'forceType' => true,
         ]);
 
-        $imports = $interfaces->filter(function ($interface) {
-            return isset($interface['import']);
-        })
-            ->map(function ($interface) {
-                return [
-                    'import' => $interface['import'],
-                    'type' => $interface['type'],
-                ];
-            })
+        $imports = $interfaces
+            ->filter(fn (array $interface): bool => isset($interface['import']))
+            ->map(fn (array $interface): array => ['import' => $interface['import'], 'type' => $interface['type']])
             ->unique()
             ->values();
 
@@ -71,28 +65,22 @@ class BuildModelDetails
             'columns' => $columns,
             'nonColumns' => $nonColumns,
             'relations' => $relations,
-            'interfaces' => $interfaces->values(),
+            'interfaces' => $interfaces,
             'imports' => $imports,
         ];
     }
 
     /**
-     * @throws NestedCommandException
+     * @return array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>}|null
      */
     private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array
     {
-        $modelFileArg = $modelFile->getRelativePathname();
-        $modelFileArg = app()->getNamespace() . $modelFileArg;
-        $modelFileArg = str_replace('.php', '', $modelFileArg);
+        $modelFile = Str::of(app()->getNamespace())
+            ->append($modelFile->getRelativePathname())
+            ->replace('.php', '')
+            ->toString();
 
-        try {
-            return app(RunModelShowCommand::class)($modelFileArg, $resolveAbstract);
-        } catch (NestedCommandException $exception) {
-            if ($exception->wasCausedBy(AbstractModelException::class) && ! $resolveAbstract) {
-                return null;
-            }
-            throw $exception;
-        }
+        return app(RunModelInspector::class)($modelFile, $resolveAbstract);
     }
 
     private function overrideCollectionWithInterfaces(Collection $columns, Collection $interfaces): Collection
