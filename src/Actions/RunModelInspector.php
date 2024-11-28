@@ -2,8 +2,8 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use FumeApp\ModelTyper\Overrides\ModelInspector;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\ModelInspector;
 
 class RunModelInspector
 {
