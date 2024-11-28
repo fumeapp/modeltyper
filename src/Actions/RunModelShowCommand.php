@@ -2,12 +2,12 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
-use FumeApp\ModelTyper\Commands\ShowModelCommand;
 use FumeApp\ModelTyper\Exceptions\CommandException;
 use FumeApp\ModelTyper\Exceptions\NestedCommandException;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Console\ShowModelCommand;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithConsole;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
@@ -34,22 +34,21 @@ class RunModelShowCommand
      */
     public function __invoke(string $model, bool $resolveAbstract = false): array
     {
-        $relationships = implode(',', Arr::flatten(config('modeltyper.custom_relationships', [])));
+        // $relationships = implode(',', Arr::flatten(config('modeltyper.custom_relationships', [])));
 
         $commandArgs = [
             'model' => $model,
             '--json' => true,
             '--no-interaction' => true,
-            '--throw-exceptions' => true,
         ];
 
         if ($resolveAbstract) {
             $commandArgs['--resolve-abstract'] = true;
         }
 
-        if (! empty($relationships)) {
-            $commandArgs['--custom-relationships'] = $relationships;
-        }
+        // if (! empty($relationships)) {
+        //     $commandArgs['--custom-relationships'] = $relationships;
+        // }
 
         $command = ShowModelCommand::class;
 

@@ -15,13 +15,13 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/support": "^11.0",
-        "illuminate/database": "^11.0",
-        "illuminate/console": "^11.0"
+        "illuminate/support": "^11.33.0",
+        "illuminate/database": "^11.33.0",
+        "illuminate/console": "^11.33.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0.0",
-        "phpunit/phpunit": "^11.0.0",
+        "orchestra/testbench": "^9.6.1",
+        "phpunit/phpunit": "^11.4.4",
         "laravel/pint": "^1.18.3",
         "larastan/larastan": "^3.0.2",
         "consolidation/robo": "^5.1.0",
@@ -29,7 +29,7 @@
         "totten/lurkerlite": "^1.3"
     },
     "conflict": {
-        "laravel/framework": ">=11.33.0"
+        "laravel/framework": "<11.33.0"
     },
     "autoload": {
         "psr-4": {
