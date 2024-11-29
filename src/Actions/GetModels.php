@@ -14,8 +14,8 @@ class GetModels
     /**
      * Return collection of models.
      *
-     * @param  array<string>|null  $includedModels
-     * @param  array<string>|null  $excludedModels
+     * @param  list<string>|null  $includedModels
+     * @param  list<string>|null  $excludedModels
      * @return Collection<int, SplFileInfo>
      */
     public function __invoke(?string $model = null, ?array $includedModels = null, ?array $excludedModels = null): Collection
