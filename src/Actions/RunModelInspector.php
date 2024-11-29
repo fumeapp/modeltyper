@@ -22,6 +22,10 @@ class RunModelInspector
      */
     public function __invoke(string $model, bool $resolveAbstract = false): ?array
     {
-        return app(ModelInspector::class)->inspect($model);
+        try {
+            return app(ModelInspector::class)->inspect($model);
+        } catch (\Illuminate\Contracts\Container\BindingResolutionException $th) {
+            return null;
+        }
     }
 }

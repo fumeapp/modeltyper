@@ -16,19 +16,33 @@ class RunModelInspectorTest extends TestCase
 
     public function test_action_can_be_executed()
     {
-        $action = app(RunModelInspector::class);
-        $result = $action(User::class);
+        $result = app(RunModelInspector::class)(User::class);
 
-        $this->assertNotEmpty($result);
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('class', $result);
+        $this->assertArrayHasKey('database', $result);
+        $this->assertArrayHasKey('table', $result);
+        $this->assertArrayHasKey('policy', $result);
+        $this->assertArrayHasKey('attributes', $result);
+        $this->assertArrayHasKey('relations', $result);
+        $this->assertArrayHasKey('events', $result);
+        $this->assertArrayHasKey('observers', $result);
+        $this->assertArrayHasKey('collection', $result);
+        $this->assertArrayHasKey('builder', $result);
     }
 
-    public function test_trying_to_execute_action_with_an_abstract_model_results_in_exception()
+    public function test_action_returns_null_on_abstract_model()
     {
-        $this->markTestIncomplete();
+        $result = app(RunModelInspector::class)(AbstractModel::class);
 
-        // $action = app(RunModelInspector::class);
+        $this->assertNull($result);
+    }
 
-        // $this->expectException(NestedCommandException::class);
-        // $action(AbstractModel::class);
+    public function test_action_returns_null_on_non_existing_model()
+    {
+        $result = app(RunModelInspector::class)('NoExistsModel');
+
+        $this->assertNull($result);
     }
 }

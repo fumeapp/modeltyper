@@ -19,19 +19,12 @@ class ModelTyperCommand extends Command
     protected $name = 'model:typer';
 
     /**
-     * Facade for Filesystem-Access
-     *
-     * @var Filesystem
-     */
-    protected $files;
-
-    /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $signature = 'model:typer
-                            {output-file=./resources/js/types/models.d.ts : Echo the definitions into a file}
+                            {output-file? : Echo the definitions into a file}
                             {--model= : Generate typescript interfaces for a specific model}
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
@@ -57,14 +50,10 @@ class ModelTyperCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct(Filesystem $files)
+    public function __construct(protected Filesystem $files)
     {
         parent::__construct();
-
-        $this->files = $files;
     }
 
     /**
@@ -73,7 +62,6 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
-            $path = $this->argument('output-file');
             $output = $generator(
                 $this->option('model'),
                 $this->option('global'),
@@ -91,9 +79,16 @@ class ModelTyperCommand extends Command
                 $this->option('fillable-suffix')
             );
 
-            if ($path) {
+            /** @var string|null $path */
+            $path = $this->argument('output-file');
+
+            if (! is_null($path)) {
                 $this->files->ensureDirectoryExists(dirname($path));
                 $this->files->put($path, $output);
+
+                $this->info('Typescript interfaces generated in ' . $path . ' file');
+
+                return Command::SUCCESS;
             }
 
             $this->line($output);

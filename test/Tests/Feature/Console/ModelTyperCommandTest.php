@@ -19,8 +19,6 @@ class ModelTyperCommandTest extends TestCase
     {
         parent::tearDown();
 
-        // NOTE Not really necessary at the moment, but might be useful in the future
-        // if something like --outputfile option is added to the command
         $this->deleteOutput();
     }
 
@@ -41,6 +39,18 @@ class ModelTyperCommandTest extends TestCase
     {
         $expected = $this->getExpectedContent('example.ts');
         $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_expected_output_for_user_model_when_output_file_argument_is_set()
+    {
+        $expected = $this->getExpectedContent('example.ts');
+
+        $this->artisan(ModelTyperCommand::class, ['output-file' => './test/output/models.d.ts', '--model' => User::class])
+            ->expectsOutput('Typescript interfaces generated in ./test/output/models.d.ts file');
+
+        $actual = $this->getGeneratedFileContents('models.d.ts');
+
+        $this->assertSame($expected, $actual);
     }
 
     public function test_command_generates_fillables_when_fillable_option_is_enabled()

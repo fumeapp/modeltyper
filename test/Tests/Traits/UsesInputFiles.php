@@ -2,13 +2,13 @@
 
 namespace Tests\Traits;
 
-use Illuminate\Support\Str;
-
 use function Orchestra\Testbench\package_path;
 
 trait UsesInputFiles
 {
-    public function getInputPath(string $appends = ''): string
+    use GetsFilesContent;
+
+    public function getInputPath(?string $appends = null): string
     {
         $path = package_path('test/input');
 
@@ -19,20 +19,9 @@ trait UsesInputFiles
         return $path;
     }
 
-    public function normalizeLineEndings(string $string): string
-    {
-        if (PHP_OS_FAMILY === 'Windows') {
-            return Str::replace("\r\n", "\n", $string);
-        }
-
-        return $string;
-    }
-
     public function getInputFileContents(string $path, bool $addEOL = false): string
     {
-        $contents = file_get_contents($this->getInputPath($path));
-
-        return $this->normalizeLineEndings($addEOL ? $contents . PHP_EOL : $contents);
+        return $this->getFileContents($this->getInputPath($path), $addEOL);
     }
 
     public function getExpectedContent(string $path, bool $addEOL = false): string
