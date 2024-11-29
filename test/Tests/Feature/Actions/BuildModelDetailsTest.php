@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Actions;
 
+use App\Models\User;
 use FumeApp\ModelTyper\Actions\BuildModelDetails;
+use FumeApp\ModelTyper\Actions\GetModels;
 use Tests\TestCase;
 
 class BuildModelDetailsTest extends TestCase
@@ -14,6 +16,19 @@ class BuildModelDetailsTest extends TestCase
 
     public function test_action_can_be_executed()
     {
-        $this->markTestIncomplete();
+        $models = app(GetModels::class)(User::class);
+        $action = app(BuildModelDetails::class);
+
+        $result = $action($models->first());
+
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('reflectionModel', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('columns', $result);
+        $this->assertArrayHasKey('nonColumns', $result);
+        $this->assertArrayHasKey('relations', $result);
+        $this->assertArrayHasKey('interfaces', $result);
+        $this->assertArrayHasKey('imports', $result);
     }
 }
