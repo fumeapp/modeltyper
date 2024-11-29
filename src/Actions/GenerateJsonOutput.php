@@ -29,15 +29,15 @@ class GenerateJsonOutput
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $resolveAbstract = false, bool $useEnums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $resolveAbstract, $mappings, $useEnums) {
-            $modelDetails = $modelBuilder($model, $resolveAbstract);
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums) {
+            $modelDetails = $modelBuilder($model);
 
             if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved

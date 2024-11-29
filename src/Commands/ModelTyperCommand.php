@@ -36,7 +36,6 @@ class ModelTyperCommand extends Command
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
-                            {--resolve-abstract : Attempt to resolve abstract models)}
                             {--fillables : Output model fillables}
                             {--fillable-suffix=fillable}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
@@ -74,7 +73,6 @@ class ModelTyperCommand extends Command
                 $this->option('no-hidden'),
                 $this->option('timestamps-date'),
                 $this->option('optional-nullables'),
-                $this->option('resolve-abstract'),
                 $this->option('fillables'),
                 $this->option('fillable-suffix')
             );

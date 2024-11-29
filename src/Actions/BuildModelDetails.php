@@ -21,9 +21,9 @@ class BuildModelDetails
      *
      * @throws ReflectionException
      */
-    public function __invoke(SplFileInfo $modelFile, bool $resolveAbstract = false): ?array
+    public function __invoke(SplFileInfo $modelFile): ?array
     {
-        $modelDetails = $this->getModelDetails($modelFile, $resolveAbstract);
+        $modelDetails = $this->getModelDetails($modelFile);
 
         if ($modelDetails === null) {
             return null;
@@ -73,14 +73,14 @@ class BuildModelDetails
     /**
      * @return array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>}|null
      */
-    private function getModelDetails(SplFileInfo $modelFile, bool $resolveAbstract): ?array
+    private function getModelDetails(SplFileInfo $modelFile): ?array
     {
         $modelFile = Str::of(app()->getNamespace())
             ->append($modelFile->getRelativePathname())
             ->replace('.php', '')
             ->toString();
 
-        return app(RunModelInspector::class)($modelFile, $resolveAbstract);
+        return app(RunModelInspector::class)($modelFile);
     }
 
     private function overrideCollectionWithInterfaces(Collection $columns, Collection $interfaces): Collection

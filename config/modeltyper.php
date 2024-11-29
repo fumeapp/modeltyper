@@ -144,17 +144,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Resolve Abstract Model Classes
-    |--------------------------------------------------------------------------
-    |
-    | Determines whether to attempt to resolve abstract model classes. This can
-    | be useful for generating TypeScript definitions for models that extend
-    | abstract base classes.
-    */
-    'resolve-abstract' => false,
-
-    /*
-    |--------------------------------------------------------------------------
     | Output Fillable Model Attributes
     |--------------------------------------------------------------------------
     |

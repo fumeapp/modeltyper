@@ -34,7 +34,7 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $resolveAbstract = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -45,9 +45,9 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $resolveAbstract, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
-            $modelDetails = $modelBuilder($model, $resolveAbstract);
+            $modelDetails = $modelBuilder($model);
 
             if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved
