@@ -37,7 +37,7 @@ class WriteRelationship
 
         if ($jsonOutput) {
             return [
-                'name' => $name,
+                'name' => "{$name}{$optional}",
                 'type' => $relationType,
             ];
         }

@@ -11,8 +11,7 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class BuildModelDetails
 {
-    use ClassBaseName;
-    use ModelRefClass;
+    use ClassBaseName, ModelRefClass;
 
     /**
      * Build the model details.

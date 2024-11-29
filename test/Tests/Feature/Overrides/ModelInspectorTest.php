@@ -22,7 +22,7 @@ class ModelInspectorTest extends TestCase
             'belongsToCustomRelationship',
         ]);
 
-        $override = resolve(ModelInspector::class);
+        $override = app(ModelInspector::class);
 
         $relationMethods = (new ReflectionClass($override))
             ->getProperty('relationMethods')

@@ -5,6 +5,9 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
 
+/**
+ * @throws \FumeApp\ModelTyper\Exceptions\ModelTyperException
+ */
 class Generator
 {
     /**
@@ -17,8 +20,7 @@ class Generator
         $models = app(GetModels::class)($specificModel);
 
         if ($models->isEmpty()) {
-            $msg = 'No models found.';
-            throw new ModelTyperException($msg);
+            throw new ModelTyperException('No models found.');
         }
 
         return $this->display(
