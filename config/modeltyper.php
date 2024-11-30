@@ -161,7 +161,7 @@ return [
     | definitions. This can help in distinguishing fillable attributes from
     | other attributes.
     */
-    'fillable-suffix' => '',
+    'fillable-suffix' => 'fillable',
 
     /*
     |--------------------------------------------------------------------------

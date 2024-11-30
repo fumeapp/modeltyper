@@ -6,6 +6,7 @@ use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer')]
@@ -37,7 +38,7 @@ class ModelTyperCommand extends Command
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
-                            {--fillable-suffix=fillable}
+                            {--fillable-suffix=}
                             {--all : Enable all output options (equivalent to --plurals --api-resources)}';
 
     /**
@@ -63,24 +64,28 @@ class ModelTyperCommand extends Command
         try {
             $output = $generator(
                 $this->option('model'),
-                $this->option('global'),
-                $this->option('json'),
-                $this->option('use-enums'),
-                $this->option('plurals') || $this->option('all'),
-                $this->option('api-resources') || $this->option('all'),
-                $this->option('optional-relations'),
-                $this->option('no-relations'),
-                $this->option('no-hidden'),
-                $this->option('timestamps-date'),
-                $this->option('optional-nullables'),
-                $this->option('fillables'),
-                $this->option('fillable-suffix')
+                $this->option('global') ?: Config::get('modeltyper.global', false),
+                $this->option('json') ?: Config::get('modeltyper.json', false),
+                $this->option('use-enums') ?: Config::get('modeltyper.use-enums', false),
+                ($this->option('plurals') || $this->option('all')) ?: Config::get('modeltyper.plurals', false),
+                ($this->option('api-resources') || $this->option('all')) ?: Config::get('modeltyper.api-resources', false),
+                $this->option('optional-relations') ?: Config::get('modeltyper.optional-relations', false),
+                $this->option('no-relations') ?: Config::get('modeltyper.no-relations', false),
+                $this->option('no-hidden') ?: Config::get('modeltyper.no-hidden', false),
+                $this->option('timestamps-date') ?: Config::get('modeltyper.timestamps-date', false),
+                $this->option('optional-nullables') ?: Config::get('modeltyper.optional-nullables', false),
+                $this->option('fillables') ?: Config::get('modeltyper.fillables', false),
+                $this->option('fillable-suffix') ?: Config::get('modeltyper.fillable-suffix', 'fillable'),
             );
 
             /** @var string|null $path */
             $path = $this->argument('output-file');
 
-            if (! is_null($path)) {
+            if (is_null($path) && Config::get('modeltyper.output-file', false)) {
+                $path = (string) Config::get('modeltyper.output-file-path', '');
+            }
+
+            if (! is_null($path) && strlen($path) > 0) {
                 $this->files->ensureDirectoryExists(dirname($path));
                 $this->files->put($path, $output);
 

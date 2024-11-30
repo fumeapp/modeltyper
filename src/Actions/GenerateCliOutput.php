@@ -5,6 +5,7 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
@@ -41,7 +42,8 @@ class GenerateCliOutput
         $relationWriter = app(WriteRelationship::class);
 
         if ($global) {
-            $this->output .= "export {}\ndeclare global {\n  export namespace models {\n\n";
+            $namespace = Config::get('modeltyper.global-namespace', 'models');
+            $this->output .= "export {}\ndeclare global {\n  export namespace {$namespace} {\n\n";
             $this->indent = '    ';
         }
 
