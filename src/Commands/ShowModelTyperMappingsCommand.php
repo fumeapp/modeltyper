@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Commands;
 
 use FumeApp\ModelTyper\Actions\GetMappings;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer-mappings')]
@@ -38,7 +39,7 @@ class ShowModelTyperMappingsCommand extends Command
     public function handle(): int
     {
         try {
-            $timestampsAsDate = (bool) $this->option('timestamps-date');
+            $timestampsAsDate = (bool) $this->option('timestamps-date') ?: Config::get('modeltyper.timestamps-date', false);
 
             $mappings = collect(app(GetMappings::class)(setTimestampsToDate: $timestampsAsDate))
                 ->map(fn (string $mappings, string $key): array => [$key, $mappings])
