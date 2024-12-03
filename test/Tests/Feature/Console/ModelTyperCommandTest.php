@@ -27,14 +27,6 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class)->assertSuccessful();
     }
 
-    public function test_command_fails_when_trying_to_resolve_abstract_model_that_has_no_binding()
-    {
-        $this->markTestSkipped('Do dont think is needed anymore, since only files that extend Eloquent\Model are considered');
-
-        // ignoring for now
-        $this->artisan(ModelTyperCommand::class, ['--resolve-abstract' => true])->assertFailed();
-    }
-
     public function test_command_generates_expected_output_for_user_model()
     {
         $expected = $this->getExpectedContent('example.ts');
