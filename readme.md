@@ -5,15 +5,20 @@
 
 # Model Typer
 
-> Generate TypeScript interfaces from Laravel Models
+Generate TypeScript interfaces from Laravel Models
 
-[![Packagist License](https://poser.pugx.org/fumeapp/modeltyper/license.png)](https://choosealicense.com/licenses/apache-2.0/)
-[![Latest Stable Version](https://poser.pugx.org/fumeapp/modeltyper/version.png)](https://packagist.org/packages/fumeapp/modeltyper)
-[![Total Downloads](https://poser.pugx.org/fumeapp/modeltyper/d/total.png)](https://packagist.org/packages/fumeapp/modeltyper)
+[![Github actions](https://github.com/fumeapp/modeltyper/actions/workflows/phpstan.yml/badge.svg)](https://packagist.org/packages/fumeapp/modeltyper)
+[![Latest Stable Version](https://poser.pugx.org/fumeapp/modeltyper/v)](https://packagist.org/packages/fumeapp/modeltyper)
+[![Total Downloads](https://poser.pugx.org/fumeapp/modeltyper/downloads)](https://packagist.org/packages/fumeapp/modeltyper)
+[![License](https://poser.pugx.org/fumeapp/modeltyper/license)](https://choosealicense.com/licenses/mit/)
+[![PHP Version Require](https://poser.pugx.org/fumeapp/modeltyper/require/php)](https://packagist.org/packages/fumeapp/modeltyper)
 
 ## Installation
 
-Starting support is for Laravel v10+ and PHP v8.1+
+Starting support is for Laravel >=v11.33.0 and PHP v8.2+
+
+> [!NOTE]
+> For Laravel >=10.43.0 || <11.33.0, use v2 instead
 
 Require this package with composer using the following command:
 
@@ -26,12 +31,6 @@ Optionally, you can publish the config file using the following command:
 ```bash
 php artisan vendor:publish --provider="FumeApp\ModelTyper\ModelTyperServiceProvider" --tag=config
 ```
-
-> **Note**
-> This package may require you to install Doctrine DBAL. If so you can run:
-> ```bash
-> composer require --dev doctrine/dbal
-> ```
 
 ## Usage
 
@@ -76,7 +75,9 @@ export type Teams = Array<Team>;
 
 ### How does it work?
 
-This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html) based on the columns, mutators, and relationships. You can then pipe the output into your preferred `???.d.ts`
+This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#interfaces) based on the database columns, mutators, and relationships.
+
+You can then pipe the output into your preferred `???.d.ts`, or set the [optional argument](#optional-arguments) `output-file` to generate it
 
 ### Requirements
 
@@ -92,16 +93,18 @@ public function providers(): HasMany // <- this
 2. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model mutations
 
 ```php
-public function getFirstNameAttribute(): string // <- this
+protected function firstName(): Attribute
 {
-    return explode(' ', $this->name)[0];
+    return Attribute::make(
+        get: fn (string $value): string => ucfirst($value), // <- this
+    );
 }
 ```
 
 ### Optional Arguments
 
 ```
-output-file=./resources/js/types/models.d.ts : Echo the definitions into a file
+output-file : Echo the definitions into a file
 ```
 
 ### Additional Options
@@ -118,7 +121,6 @@ output-file=./resources/js/types/models.d.ts : Echo the definitions into a file
 --timestamps-date : Output timestamps as a Date object type
 --optional-nullables : Output nullable attributes as optional fields
 --api-resources : Output api.MetApi interfaces
---resolve-abstract : Attempt to resolve abstract models
 --fillables : Output model fillables
 --fillable-suffix=fillable
 --all : Enable all output options (equivalent to --plurals --api-resources)'
@@ -139,13 +141,13 @@ public array $interfaces = [
 ];
 ```
 
-And it should generate:
+And it will generate:
 
 ```ts
 import { Point } from "@/types/api";
 
 export interface Location {
-    // columns
+    // override
     coordinate: Point;
 }
 ```
@@ -284,42 +286,6 @@ Exports both plurals & api-resources. i.e. it is equivalent to:
 artisan model:typer --plurals --api-resources
 ```
 
-### Laravel V9 Attribute support
-
-Laravel now has a very different way of specifying [accessors and mutators](https://laravel.com/docs/9.x/eloquent-mutators#accessors-and-mutators).
-In order to tell ModelTyper the types of your attributes - be sure to add the type the attribute returns:
-
-```php
-    /**
-     * Determine if the user is a captain of a team
-     *
-     * @return Attribute
-     */
-    public function isCaptain(): Attribute
-    {
-        return Attribute::make(
-            get: fn (): bool => $this->teams[0]->pivot->captain ?? false,
-        );
-    }
-```
-
-This will generate something like:
-
-```ts
-export interface User {
-    // columns
-    id: number;
-    email: string;
-    name?: string;
-    created_at?: Date;
-    updated_at?: Date;
-    // mutators
-    is_captain: boolean;
-    // relations
-    teams: TeamUsers;
-}
-```
-
 ### For Single Model
 
 Generate your interfaces for a single model
@@ -338,9 +304,12 @@ artisan model:typer --json
 
 ### Enum Eloquent Attribute Casting
 
-Laravel now lets you cast [Enums in your models](https://laravel.com/docs/9.x/releases#enum-casting). This will get detected and bring in your enum class with your comments:
+Laravel lets you cast [Enums in your models](https://laravel.com/docs/11.x/eloquent-mutators#enum-casting). This will get detected and bring in your enum class with your comments:
 
-> `app/Enums/UserRoleEnum.php`
+> [!NOTE]
+> ModelTyper uses Object Literals by default instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can use `--use-enums` option to use TS Enums instead of Object Literals.
+
+`app/Enums/UserRoleEnum.php`
 
 ```php
 <?php
@@ -360,7 +329,7 @@ enum UserRoleEnum: string
 
 Then inside our User model
 
-> `app/Models/User.php`
+`app/Models/User.php`
 
 ```php
 protected $casts = [
@@ -385,6 +354,5 @@ export interface User {
 }
 ```
 
-> ModelTyper uses Object Literals by default instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can use `--use-enums` option to use TS Enums instead of Object Literals.
-
+> [!NOTE]
 > Notice how the comments are found and parsed - they must follow the specified format
