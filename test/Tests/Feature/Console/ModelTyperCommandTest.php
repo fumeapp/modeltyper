@@ -80,7 +80,7 @@ class ModelTyperCommandTest extends TestCase
             $this->markTestSkipped('Fails on windows because of /r/n characters');
         }
 
-        $expected = $this->getExpectedContent('user.json');
+        $expected = $this->getExpectedContent('user.json', true);
 
         $this->artisan(ModelTyperCommand::class, [
             'output-file' => './test/output/user.json',
