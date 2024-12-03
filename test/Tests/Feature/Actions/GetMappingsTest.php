@@ -4,17 +4,15 @@ namespace Tests\Feature\Actions;
 
 use FumeApp\ModelTyper\Actions\GetMappings;
 use Illuminate\Support\Facades\Config;
-use Tests\Feature\TestCase;
+use Tests\TestCase;
 
 class GetMappingsTest extends TestCase
 {
-    /** @test */
     public function test_action_can_be_resolved_by_application()
     {
         $this->assertInstanceOf(GetMappings::class, resolve(GetMappings::class));
     }
 
-    /** @test */
     public function test_action_can_set_timestamps_as_date()
     {
         $action = app(GetMappings::class);
@@ -36,7 +34,6 @@ class GetMappingsTest extends TestCase
         $this->assertEquals('Date', $mappings['timestamp']);
     }
 
-    /** @test */
     public function test_action_can_merge_user_config()
     {
         Config::set('modeltyper.custom_mappings', [
@@ -51,7 +48,6 @@ class GetMappingsTest extends TestCase
         $this->assertEquals('SomeType', $mappings['userdefinedconfig']);
     }
 
-    /** @test */
     public function test_action_can_use_user_config_to_override_default_mappings()
     {
         $action = app(GetMappings::class);

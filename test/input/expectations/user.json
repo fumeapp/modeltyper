@@ -1,0 +1,76 @@
+{
+    "interfaces": {
+        "User": [
+            {
+                "name": "id",
+                "type": "number"
+            },
+            {
+                "name": "name",
+                "type": "string"
+            },
+            {
+                "name": "email",
+                "type": "string"
+            },
+            {
+                "name": "email_verified_at",
+                "type": "string | null"
+            },
+            {
+                "name": "password?",
+                "type": "string"
+            },
+            {
+                "name": "remember_token?",
+                "type": "string | null"
+            },
+            {
+                "name": "created_at",
+                "type": "string | null"
+            },
+            {
+                "name": "updated_at",
+                "type": "string | null"
+            },
+            {
+                "name": "role_traditional",
+                "type": "string"
+            },
+            {
+                "name": "role_new",
+                "type": "string"
+            },
+            {
+                "name": "role_enum",
+                "type": "RolesEnum"
+            },
+            {
+                "name": "role_enum_traditional",
+                "type": "RolesEnum"
+            }
+        ]
+    },
+    "relations": [
+        {
+            "DatabaseNotification[]": {
+                "name": "notifications",
+                "type": "export type DatabaseNotification[] = Array<User>"
+            }
+        }
+    ],
+    "enums": [
+        {
+            "Roles": {
+                "name": "Roles",
+                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
+            }
+        },
+        {
+            "Roles": {
+                "name": "Roles",
+                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
+            }
+        }
+    ]
+}

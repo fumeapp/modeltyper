@@ -5,72 +5,198 @@ namespace Tests\Feature\Console;
 use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
-use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
-use Tests\Feature\TestCase;
+use Tests\TestCase;
 use Tests\Traits\GeneratesOutput;
 use Tests\Traits\UsesInputFiles;
 
 class ModelTyperCommandTest extends TestCase
 {
-    use GeneratesOutput, LazilyRefreshDatabase, UsesInputFiles;
+    use GeneratesOutput, RefreshDatabase, UsesInputFiles;
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        // NOTE Not really necessary at the moment, but might be useful in the future
-        // if something like --outputfile option is added to the command
         $this->deleteOutput();
     }
 
-    /** @test */
     public function test_command_can_be_executed_successfully()
     {
         $this->artisan(ModelTyperCommand::class)->assertSuccessful();
     }
 
-    /** @test */
-    public function test_command_fails_when_trying_to_resolve_abstract_model_that_has_no_binding()
-    {
-        $this->markTestSkipped('Do dont think is needed anymore, since only files that extend Eloquent\Model are considered');
-
-        // ignoring for now
-        $this->artisan(ModelTyperCommand::class, ['--resolve-abstract' => true])->assertFailed();
-    }
-
-    /** @test */
     public function test_command_generates_expected_output_for_user_model()
     {
-        $expected = $this->getExpectedContent('example.ts');
-        $this->artisan(ModelTyperCommand::class, ['--model' => User::class])->expectsOutput($expected);
+        $expected = $this->getExpectedContent('user.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+        ])->expectsOutput($expected);
     }
 
-    /** @test */
-    public function test_command_generates_fillables_when_fillable_option_is_enabled()
+    public function test_command_generates_expected_output_for_user_model_when_output_file_argument_is_set()
+    {
+        $expected = $this->getExpectedContent('user.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            'output-file' => './test/output/models.d.ts',
+            '--model' => User::class,
+        ])
+            ->expectsOutput('Typescript interfaces generated in ./test/output/models.d.ts file');
+
+        $actual = $this->getGeneratedFileContents('models.d.ts');
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function test_command_generates_fillables_when_option_is_enabled()
     {
         $expected = $this->getExpectedContent('user-fillables.ts');
-        $options = [
+
+        $this->artisan(ModelTyperCommand::class, [
             '--model' => User::class,
             '--fillables' => true,
             '--fillable-suffix' => 'Editable',
-        ];
-
-        $this->artisan(ModelTyperCommand::class, $options)->expectsOutput($expected);
+        ])->expectsOutput($expected);
     }
 
-    /** @test */
+    public function test_command_generates_global_when_option_is_enabled()
+    {
+        // set global-namespace config
+        Config::set('modeltyper.global-namespace', 'App.Models');
+
+        $expected = $this->getExpectedContent('user-global.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--global' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_json_when_option_is_enabled()
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('Fails on windows because of /r/n characters');
+        }
+
+        $expected = $this->getExpectedContent('user.json', true);
+
+        $this->artisan(ModelTyperCommand::class, [
+            'output-file' => './test/output/user.json',
+            '--model' => User::class,
+            '--json' => true,
+            '--use-enums' => true,
+        ])->expectsOutput('Typescript interfaces generated in ./test/output/user.json file');
+
+        $actual = $this->getGeneratedFileContents('user.json');
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function test_command_generates_use_enums_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-enums.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--use-enums' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_plurals_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-plurals.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--plurals' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_no_relations_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-no-relations.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--no-relations' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_optional_relations_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-optional-relations.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--optional-relations' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_no_hidden_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-no-hidden.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--no-hidden' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_timestamps_date_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-timestamps-date.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--timestamps-date' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_optional_nullables_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-optional-nullables.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--optional-nullables' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_api_resources_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-api-resource.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--api-resources' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_can_ignore_config_when_option_is_enabled()
+    {
+        Config::set('modeltyper.global', true);
+        Config::set('modeltyper.fillables', false);
+        Config::set('modeltyper.fillable-suffix', 'FillableSuffix');
+
+        $expected = $this->getExpectedContent('user-fillables.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--fillables' => true,
+            '--fillable-suffix' => 'Editable',
+            '--ignore-config' => true,
+        ])->expectsOutput($expected);
+    }
+
     public function test_command_generates_expected_output_for_complex_model()
     {
-        // assert table complex_model_table exists
-        $this->assertDatabaseEmpty('complex_model_table');
-
-        // check if Complex::class generates expected interface
         $expected = $this->getExpectedContent('complex-model.ts');
-        $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+        ])->expectsOutput($expected);
     }
 
-    /** @test */
     public function test_command_generates_expected_output_for_complex_model_when_user_types_unknown_custom_cast()
     {
         // set UpperCast return type in config
@@ -78,11 +204,9 @@ class ModelTyperCommandTest extends TestCase
             'App\Casts\UpperCast' => 'string',
         ]);
 
-        // assert table complex_model_table exists
-        $this->assertDatabaseEmpty('complex_model_table');
-
-        // check if Complex::class generates expected interface
         $expected = $this->getExpectedContent('complex-model-with-cast.ts');
-        $this->artisan(ModelTyperCommand::class, ['--model' => Complex::class])->expectsOutput($expected);
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+        ])->expectsOutput($expected);
     }
 }

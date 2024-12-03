@@ -16,6 +16,7 @@ class WriteColumnAttribute
     /**
      * Get model columns and attributes to the output.
      *
+     * @param  \ReflectionClass<\Illuminate\Database\Eloquent\Model>  $reflectionModel
      * @param  array{name: string, type: string, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool}  $attribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
@@ -103,7 +104,7 @@ class WriteColumnAttribute
         }
 
         if ($attribute['nullable']) {
-            $type .= '|null';
+            $type .= ' | null';
         }
 
         if ((isset($attribute['hidden']) && $attribute['hidden']) || ($optionalNullables && $attribute['nullable'])) {
@@ -117,7 +118,7 @@ class WriteColumnAttribute
             ], $enumRef];
         }
 
-        return ["{$indent}  {$this->ensurePropertyIsValid($name)}: {$type}\n", $enumRef];
+        return ["{$indent}  {$this->ensurePropertyIsValid($name)}: {$type}" . PHP_EOL, $enumRef];
     }
 
     protected function resolveEnum(string $returnTypeName): ?ReflectionClass

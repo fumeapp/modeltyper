@@ -11,22 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: ['8.1', '8.2', '8.3']
-        laravel: ['10.*', '11.*']
+        php: ['8.2', '8.3', '8.4']
+        laravel: ['11.*']
         stability: ['highest', 'lowest']
-        include:
-          - laravel: 10.*
-            testbench: 8.*
-          - laravel: 11.*
-            testbench: 9.*
-        exclude:
-          - laravel: 11.*
-            php: '8.1'
+        # include:
+        #   - laravel: 11.*
+        #     testbench: 9.*
+        # exclude:
+        #   - laravel: 11.*
+        #     php: '8.1'
 
-    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} ${{ matrix.stability }} stability
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }} stability
 
     steps:
       - name: 🔨 Checkout code

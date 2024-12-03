@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Constants\TypescriptMappings;
+use Illuminate\Support\Facades\Config;
 
 class GetMappings
 {
@@ -26,7 +27,7 @@ class GetMappings
 
         return array_change_key_case(array_merge(
             $mappings,
-            config('modeltyper.custom_mappings', []),
+            Config::get('modeltyper.custom_mappings', []),
         ), CASE_LOWER);
     }
 }

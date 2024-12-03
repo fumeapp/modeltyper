@@ -8,12 +8,11 @@ parameters:
     paths:
         - src
 
-    # Determines the level of checking. 5 is a good starter point 8 is max
+    # Determines the level of checking. 5 is a good starter point 10 is max
     level: 5
 
     excludePaths:
         - vendor/*
-        - src/ModelInterface.php # This is a legacy file that will be removed soon
 
     editorUrlTitle: '%%relFile%%:%%line%%'
 

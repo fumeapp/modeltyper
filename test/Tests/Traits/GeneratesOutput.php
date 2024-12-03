@@ -2,11 +2,15 @@
 
 namespace Tests\Traits;
 
+use function Orchestra\Testbench\package_path;
+
 trait GeneratesOutput
 {
-    public function getOutputPath(string $appends = ''): string
+    use GetsFilesContent;
+
+    public function getOutputPath(?string $appends = null): string
     {
-        $path = ROOT_PATH . '/test/output';
+        $path = package_path('test/output');
 
         if ($appends) {
             $path .= str_starts_with($appends, '/') ? $appends : "/$appends";
@@ -15,9 +19,14 @@ trait GeneratesOutput
         return $path;
     }
 
+    public function getGeneratedFileContents(string $path, bool $addEOL = false): string
+    {
+        return $this->getFileContents($this->getOutputPath($path), $addEOL);
+    }
+
     public function deleteOutput()
     {
-        $this->removeDirectoryContents($this->getOutputPath(), ['.keep']);
+        $this->removeDirectoryContents($this->getOutputPath(), ['.gitignore']);
     }
 
     private function removeDirectory(string $dirPath)
