@@ -43,6 +43,6 @@ class WriteRelationship
             ];
         }
 
-        return "{$indent}  {$name}{$optional}: {$relationType}\n";
+        return "{$indent}  {$name}{$optional}: {$relationType}" . PHP_EOL;
     }
 }

@@ -11,18 +11,17 @@ export interface User {
   // mutators
   role_traditional: string
   role_new: string
-  role_enum: Roles
-  role_enum_traditional: Roles
+  role_enum: RolesEnum
+  role_enum_traditional: RolesEnum
   // relations
   notifications: DatabaseNotification[]
 }
-export type UserEditable = Pick<User, 'name' | 'email' | 'password' | 'role_traditional' | 'role_new'>
 
-const Roles = {
+export const enum Roles {
   /** Can do anything */
-  ADMIN: 'admin',
+  ADMIN = 'admin',
   /** Standard readonly */
-  USER: 'user',
-} as const;
+  USER = 'user',
+}
 
-export type Roles = typeof Roles[keyof typeof Roles]
+export type RolesEnum = `${Roles}`

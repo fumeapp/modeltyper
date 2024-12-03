@@ -16,7 +16,6 @@ export interface User {
   // relations
   notifications: DatabaseNotification[]
 }
-export type UserEditable = Pick<User, 'name' | 'email' | 'password' | 'role_traditional' | 'role_new'>
 
 const Roles = {
   /** Can do anything */

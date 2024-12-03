@@ -104,7 +104,7 @@ class WriteColumnAttribute
         }
 
         if ($attribute['nullable']) {
-            $type .= '|null';
+            $type .= ' | null';
         }
 
         if ((isset($attribute['hidden']) && $attribute['hidden']) || ($optionalNullables && $attribute['nullable'])) {
@@ -118,7 +118,7 @@ class WriteColumnAttribute
             ], $enumRef];
         }
 
-        return ["{$indent}  {$this->ensurePropertyIsValid($name)}: {$type}\n", $enumRef];
+        return ["{$indent}  {$this->ensurePropertyIsValid($name)}: {$type}" . PHP_EOL, $enumRef];
     }
 
     protected function resolveEnum(string $returnTypeName): ?ReflectionClass

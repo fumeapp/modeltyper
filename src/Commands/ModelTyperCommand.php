@@ -38,8 +38,8 @@ class ModelTyperCommand extends Command
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
-                            {--fillable-suffix=}
-                            {--all : Enable all output options (equivalent to --plurals --api-resources)}';
+                            {--fillable-suffix= : Appends to fillables}
+                            {--ignore-config : Ignore options set in config}';
 
     /**
      * The console command description.
@@ -63,19 +63,19 @@ class ModelTyperCommand extends Command
     {
         try {
             $output = $generator(
-                $this->option('model'),
-                $this->option('global') ?: Config::get('modeltyper.global', false),
-                $this->option('json') ?: Config::get('modeltyper.json', false),
-                $this->option('use-enums') ?: Config::get('modeltyper.use-enums', false),
-                ($this->option('plurals') || $this->option('all')) ?: Config::get('modeltyper.plurals', false),
-                ($this->option('api-resources') || $this->option('all')) ?: Config::get('modeltyper.api-resources', false),
-                $this->option('optional-relations') ?: Config::get('modeltyper.optional-relations', false),
-                $this->option('no-relations') ?: Config::get('modeltyper.no-relations', false),
-                $this->option('no-hidden') ?: Config::get('modeltyper.no-hidden', false),
-                $this->option('timestamps-date') ?: Config::get('modeltyper.timestamps-date', false),
-                $this->option('optional-nullables') ?: Config::get('modeltyper.optional-nullables', false),
-                $this->option('fillables') ?: Config::get('modeltyper.fillables', false),
-                $this->option('fillable-suffix') ?: Config::get('modeltyper.fillable-suffix', 'fillable'),
+                specificModel: $this->option('model'),
+                global: $this->getConfig('global'),
+                json: $this->getConfig('json'),
+                useEnums: $this->getConfig('use-enums'),
+                plurals: $this->getConfig('plurals'),
+                apiResources: $this->getConfig('api-resources'),
+                optionalRelations: $this->getConfig('optional-relations'),
+                noRelations: $this->getConfig('no-relations'),
+                noHidden: $this->getConfig('no-hidden'),
+                timestampsDate: $this->getConfig('timestamps-date'),
+                optionalNullables: $this->getConfig('optional-nullables'),
+                fillables: $this->getConfig('fillables'),
+                fillableSuffix: $this->getConfig('fillable-suffix'),
             );
 
             /** @var string|null $path */
@@ -102,5 +102,14 @@ class ModelTyperCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    private function getConfig(string $key): string|bool
+    {
+        if ($this->option('ignore-config')) {
+            return $this->option($key);
+        }
+
+        return $this->option($key) ?: Config::get("modeltyper.{$key}");
     }
 }

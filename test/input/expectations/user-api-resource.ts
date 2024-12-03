@@ -16,7 +16,9 @@ export interface User {
   // relations
   notifications: DatabaseNotification[]
 }
-export type UserEditable = Pick<User, 'name' | 'email' | 'password' | 'role_traditional' | 'role_new'>
+export interface UserResult extends api.MetApiResults { data: User }
+export interface UserMetApiData extends api.MetApiData { data: User }
+export interface UserResponse extends api.MetApiResponse { data: UserMetApiData }
 
 const Roles = {
   /** Can do anything */

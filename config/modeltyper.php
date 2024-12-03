@@ -3,6 +3,40 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Run After Migrate
+    |--------------------------------------------------------------------------
+    |
+    | Specifies whether to execute modeltyper after running database migrations.
+    | This can be useful for keeping your models definition in sync with your
+    | database schema.
+    |
+    | Requires output-file set to true
+    */
+    'run-after-migrate' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Output TypeScript Definitions to a File
+    |--------------------------------------------------------------------------
+    |
+    | Specifies whether to output the TypeScript definitions to a file. If set
+    | to true, the definitions will be saved to the specified file path.
+    */
+    'output-file' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Path for Output TypeScript Definitions File
+    |--------------------------------------------------------------------------
+    |
+    | Defines the file path where the TypeScript definitions will be saved.
+    |
+    | Requires output-file set to true
+    */
+    'output-file-path' => './resources/js/types/models.d.ts',
+
+    /*
+    |--------------------------------------------------------------------------
     | Generate TypeScript Interfaces in a Global Namespace
     |--------------------------------------------------------------------------
     |
@@ -22,28 +56,10 @@ return [
     | Defines the name of the global namespace where the TypeScript interfaces
     | will be generated. This helps in maintaining a clear structure for the
     | TypeScript codebase.
+    |
+    | Requires global set to true
     */
     'global-namespace' => 'models',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Output TypeScript Definitions to a File
-    |--------------------------------------------------------------------------
-    |
-    | Specifies whether to output the TypeScript definitions to a file. If set
-    | to true, the definitions will be saved to the specified file path.
-    */
-    'output-file' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Path for Output TypeScript Definitions File
-    |--------------------------------------------------------------------------
-    |
-    | Defines the file path where the TypeScript definitions will be saved. This
-    | path is used only if 'output-file' is set to true.
-    */
-    'output-file-path' => './resources/js/types/models.d.ts',
 
     /*
     |--------------------------------------------------------------------------
@@ -160,6 +176,8 @@ return [
     | Defines a suffix to be added to fillable model attributes in the TypeScript
     | definitions. This can help in distinguishing fillable attributes from
     | other attributes.
+    |
+    | Requires fillables set to true
     */
     'fillable-suffix' => 'fillable',
 
@@ -173,7 +191,7 @@ return [
     | custom casts.
     |
     | Example:
-    | 'App\Casts\YourCustomCast' => 'string|null',
+    | 'App\Casts\YourCustomCast' => 'string | null',
     | 'binary' => 'Blob',
     | 'bool' => 'boolean',
     | 'point' => 'CustomPointInterface',

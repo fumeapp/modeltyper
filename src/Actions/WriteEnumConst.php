@@ -29,9 +29,9 @@ class WriteEnumConst
 
         if ($cases->isNotEmpty()) {
             if ($useEnums) {
-                $entry .= "{$indent}export const enum {$reflection->getShortName()} {\n";
+                $entry .= "{$indent}export const enum {$reflection->getShortName()} {" . PHP_EOL;
             } else {
-                $entry .= "{$indent}const {$reflection->getShortName()} = {\n";
+                $entry .= "{$indent}const {$reflection->getShortName()} = {" . PHP_EOL;
             }
 
             $cases->each(function ($case) use ($indent, &$entry, $comments, $useEnums) {
@@ -45,27 +45,26 @@ class WriteEnumConst
                             $comment = str_replace($name, '', $comment);
                             $comment = preg_replace('/[^a-zA-Z0-9\s]/', '', $comment);
                             $comment = trim($comment);
-                            $entry .= "{$indent}  /** $comment */\n";
+                            $entry .= "{$indent}  /** $comment */" . PHP_EOL;
                             break;
                         }
                     }
                 }
 
                 if ($useEnums) {
-                    $entry .= "{$indent}  {$name} = {$value},\n";
+                    $entry .= "{$indent}  {$name} = {$value}," . PHP_EOL;
                 } else {
-                    $entry .= "{$indent}  {$name}: {$value},\n";
+                    $entry .= "{$indent}  {$name}: {$value}," . PHP_EOL;
                 }
             });
 
             if ($useEnums) {
-                $entry .= "{$indent}}\n\n";
-                $entry .= "{$indent}export type {$reflection->getShortName()}Enum = `\${{$reflection->getShortName()}}`\n\n";
+                $entry .= "{$indent}}" . PHP_EOL . PHP_EOL;
+                $entry .= "{$indent}export type {$reflection->getShortName()}Enum = `\${{$reflection->getShortName()}}`" . PHP_EOL . PHP_EOL;
             } else {
-                $entry .= "{$indent}} as const;\n\n";
-                $entry .= "{$indent}export type {$reflection->getShortName()} = typeof {$reflection->getShortName()}[keyof typeof {$reflection->getShortName()}]\n\n";
+                $entry .= "{$indent}} as const;" . PHP_EOL . PHP_EOL;
+                $entry .= "{$indent}export type {$reflection->getShortName()} = typeof {$reflection->getShortName()}[keyof typeof {$reflection->getShortName()}]" . PHP_EOL . PHP_EOL;
             }
-
         }
 
         if ($jsonOutput) {

@@ -88,6 +88,6 @@ class GenerateJsonOutput
             ];
         })->toArray();
 
-        return json_encode($this->output) . PHP_EOL;
+        return json_encode($this->output, \JSON_PRETTY_PRINT) . PHP_EOL;
     }
 }

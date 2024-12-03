@@ -1,11 +1,4 @@
-<p align="center">
-  <a href="https://laravel.com"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Laravel.svg/1200px-Laravel.svg.png" width="92" height="92" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="92" height="92" /></a>
-</p>
-
 # Model Typer
-
-Generate TypeScript interfaces from Laravel Models
 
 [![Github actions](https://github.com/fumeapp/modeltyper/actions/workflows/phpstan.yml/badge.svg)](https://packagist.org/packages/fumeapp/modeltyper)
 [![Latest Stable Version](https://poser.pugx.org/fumeapp/modeltyper/v)](https://packagist.org/packages/fumeapp/modeltyper)
@@ -13,11 +6,22 @@ Generate TypeScript interfaces from Laravel Models
 [![License](https://poser.pugx.org/fumeapp/modeltyper/license)](https://choosealicense.com/licenses/mit/)
 [![PHP Version Require](https://poser.pugx.org/fumeapp/modeltyper/require/php)](https://packagist.org/packages/fumeapp/modeltyper)
 
+<p align="center">
+  <a href="https://laravel.com"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Laravel.svg/1200px-Laravel.svg.png" width="92" height="92" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="92" height="92" /></a>
+</p>
+
+Model Typer is a powerful tool designed for developers working with Laravel and TypeScript. Its primary purpose is to simplify the generation of TypeScript interfaces from Laravel models, enhancing type safety and consistency in your applications.
+
+## Upgrade Guide
+
+Please read the upgrade guide [here](https://github.com/fumeapp/modeltyper/UPGRADE.md)
+
 ## Installation
 
 Starting support is for Laravel >=v11.33.0 and PHP v8.2+
 
-> [!NOTE]
+> [!IMPORTANT]
 > For Laravel >=10.43.0 || <11.33.0, use v2 instead
 
 Require this package with composer using the following command:
@@ -34,11 +38,13 @@ php artisan vendor:publish --provider="FumeApp\ModelTyper\ModelTyperServiceProvi
 
 ## Usage
 
+You can simply run the following command to generate TypeScript interfaces:
+
 ```bash
 php artisan model:typer
 ```
 
-will output
+The output is an accurate, type-safe representation of Laravel models in TypeScript, such as:
 
 ```ts
 export interface User {
@@ -79,6 +85,15 @@ This command will go through all of your models and make [TypeScript Interfaces]
 
 You can then pipe the output into your preferred `???.d.ts`, or set the [optional argument](#optional-arguments) `output-file` to generate it
 
+> [!TIP]
+> To view the current mappings that are being used, use the following command:
+>
+> ```bash
+> php artisan model:typer-mappings
+> ```
+>
+> These mappings can be [extended or overridden](#override-default-mappings--add-new-ones) in the config
+
 ### Requirements
 
 1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model relationships
@@ -103,28 +118,25 @@ protected function firstName(): Attribute
 
 ### Optional Arguments
 
-```
-output-file : Echo the definitions into a file
-```
+- output-file : Echo the definitions into a file
+
 
 ### Additional Options
 
-```
---model= : Generate typescript interfaces for a specific model
---global : Generate typescript interfaces in a global namespace named models
---json : Output the result as json
---use-enums : Use typescript enums instead of object literals
---plurals : Output model plurals
---no-relations : Do not include relations
---optional-relations : Make relations optional fields on the model type
---no-hidden : Do not include hidden model attributes
---timestamps-date : Output timestamps as a Date object type
---optional-nullables : Output nullable attributes as optional fields
---api-resources : Output api.MetApi interfaces
---fillables : Output model fillables
---fillable-suffix=fillable
---all : Enable all output options (equivalent to --plurals --api-resources)'
-```
+- --model= : Generate typescript interfaces for a specific model
+- --global : Generate typescript interfaces in a global namespace named models
+- --json : Output the result as json
+- --use-enums : Use typescript enums instead of object literals
+- --plurals : Output model plurals
+- --no-relations : Do not include relations
+- --optional-relations : Make relations optional fields on the model type
+- --no-hidden : Do not include hidden model attributes
+- --timestamps-date : Output timestamps as a Date object type
+- --optional-nullables : Output nullable attributes as optional fields
+- --api-resources : Output api.MetApi interfaces
+- --fillables : Output model fillables
+- --fillable-suffix= : Appends to fillables
+- --ignore-config : Ignore options set in config
 
 ### Custom Interfaces
 
@@ -219,7 +231,7 @@ You can also add mappings for your [Custom Casts](https://laravel.com/docs/11.x/
 
 ```php
 'custom_mappings' => [
-    'App\Casts\YourCustomCast' => 'string|null',
+    'App\Casts\YourCustomCast' => 'string | null',
     'binary' => 'Blob',
     'bool' => 'boolean',
     'point' => 'CustomPointInterface',

@@ -4,6 +4,9 @@ namespace FumeApp\ModelTyper;
 
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use FumeApp\ModelTyper\Commands\ShowModelTyperMappingsCommand;
+use FumeApp\ModelTyper\Listeners\RunModelTyperCommand;
+use Illuminate\Console\Events\CommandFinished;
+use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Support\ServiceProvider;
 
 class ModelTyperServiceProvider extends ServiceProvider
@@ -27,6 +30,13 @@ class ModelTyperServiceProvider extends ServiceProvider
         $this->app->singleton(ModelTyperCommand::class, function ($app) {
             return new ModelTyperCommand($app['files']);
         });
+
+        if (! $this->app->runningUnitTests() && $this->app['config']->get('modeltyper.run-after-migrate', false) && $this->app['config']->get('modeltyper.output-file', false)) {
+            $this->app['events']->listen(CommandFinished::class, RunModelTyperCommand::class);
+            $this->app['events']->listen(MigrationsEnded::class, function () {
+                RunModelTyperCommand::$shouldRun = true;
+            });
+        }
     }
 
     /**

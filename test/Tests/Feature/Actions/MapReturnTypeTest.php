@@ -28,7 +28,7 @@ class MapReturnTypeTest extends TestCase
     public function test_action_can_return_correct_nullable_type()
     {
         $action = app(MapReturnType::class);
-        $this->assertEquals('1|null', $action('?A', ['a' => '1', 'b' => '2']));
+        $this->assertEquals('1 | null', $action('?A', ['a' => '1', 'b' => '2']));
     }
 
     public function test_action_can_return_unknown_type()

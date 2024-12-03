@@ -14,9 +14,9 @@ export interface User {
   role_enum: Roles
   role_enum_traditional: Roles
   // relations
-  notifications: DatabaseNotification[]
+  notifications: DatabaseNotifications
 }
-export type UserEditable = Pick<User, 'name' | 'email' | 'password' | 'role_traditional' | 'role_new'>
+export type Users = User[]
 
 const Roles = {
   /** Can do anything */
