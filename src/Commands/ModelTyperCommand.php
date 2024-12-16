@@ -6,6 +6,7 @@ use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer')]
@@ -19,19 +20,12 @@ class ModelTyperCommand extends Command
     protected $name = 'model:typer';
 
     /**
-     * Facade for Filesystem-Access
-     *
-     * @var Filesystem
-     */
-    protected $files;
-
-    /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $signature = 'model:typer
-                            {output-file=./resources/js/types/models.d.ts : Echo the definitions into a file}
+                            {output-file? : Echo the definitions into a file}
                             {--model= : Generate typescript interfaces for a specific model}
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
@@ -43,10 +37,9 @@ class ModelTyperCommand extends Command
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
-                            {--resolve-abstract : Attempt to resolve abstract models)}
                             {--fillables : Output model fillables}
-                            {--fillable-suffix=fillable}
-                            {--all : Enable all output options (equivalent to --plurals --api-resources)}';
+                            {--fillable-suffix= : Appends to fillables}
+                            {--ignore-config : Ignore options set in config}';
 
     /**
      * The console command description.
@@ -57,14 +50,10 @@ class ModelTyperCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct(Filesystem $files)
+    public function __construct(protected Filesystem $files)
     {
         parent::__construct();
-
-        $this->files = $files;
     }
 
     /**
@@ -73,27 +62,36 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
-            $path = $this->argument('output-file');
             $output = $generator(
-                $this->option('model'),
-                $this->option('global'),
-                $this->option('json'),
-                $this->option('use-enums'),
-                $this->option('plurals') || $this->option('all'),
-                $this->option('api-resources') || $this->option('all'),
-                $this->option('optional-relations'),
-                $this->option('no-relations'),
-                $this->option('no-hidden'),
-                $this->option('timestamps-date'),
-                $this->option('optional-nullables'),
-                $this->option('resolve-abstract'),
-                $this->option('fillables'),
-                $this->option('fillable-suffix')
+                specificModel: $this->option('model'),
+                global: $this->getConfig('global'),
+                json: $this->getConfig('json'),
+                useEnums: $this->getConfig('use-enums'),
+                plurals: $this->getConfig('plurals'),
+                apiResources: $this->getConfig('api-resources'),
+                optionalRelations: $this->getConfig('optional-relations'),
+                noRelations: $this->getConfig('no-relations'),
+                noHidden: $this->getConfig('no-hidden'),
+                timestampsDate: $this->getConfig('timestamps-date'),
+                optionalNullables: $this->getConfig('optional-nullables'),
+                fillables: $this->getConfig('fillables'),
+                fillableSuffix: $this->getConfig('fillable-suffix'),
             );
 
-            if ($path) {
+            /** @var string|null $path */
+            $path = $this->argument('output-file');
+
+            if (is_null($path) && Config::get('modeltyper.output-file', false)) {
+                $path = (string) Config::get('modeltyper.output-file-path', '');
+            }
+
+            if (! is_null($path) && strlen($path) > 0) {
                 $this->files->ensureDirectoryExists(dirname($path));
                 $this->files->put($path, $output);
+
+                $this->info('Typescript interfaces generated in ' . $path . ' file');
+
+                return Command::SUCCESS;
             }
 
             $this->line($output);
@@ -104,5 +102,14 @@ class ModelTyperCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    private function getConfig(string $key): string|bool
+    {
+        if ($this->option('ignore-config')) {
+            return $this->option($key);
+        }
+
+        return $this->option($key) ?: Config::get("modeltyper.{$key}");
     }
 }

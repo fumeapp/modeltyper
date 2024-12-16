@@ -29,15 +29,15 @@ class GenerateJsonOutput
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $resolveAbstract = false, bool $useEnums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $resolveAbstract, $mappings, $useEnums) {
-            $modelDetails = $modelBuilder($model, $resolveAbstract);
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums) {
+            $modelDetails = $modelBuilder($model);
 
             if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved
@@ -63,7 +63,7 @@ class GenerateJsonOutput
                     }
 
                     return $property;
-                });
+                })->toArray();
 
             $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
                 $relation = $relationWriter(relation: $rel, jsonOutput: true);
@@ -74,7 +74,7 @@ class GenerateJsonOutput
                         'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . $name . '>',
                     ],
                 ];
-            });
+            })->toArray();
         });
 
         $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter, $useEnums) {
@@ -88,6 +88,6 @@ class GenerateJsonOutput
             ];
         })->toArray();
 
-        return json_encode($this->output) . PHP_EOL;
+        return json_encode($this->output, \JSON_PRETTY_PRINT) . PHP_EOL;
     }
 }

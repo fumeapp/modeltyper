@@ -1,0 +1,18 @@
+# This file was partly modified by the lean package validator (http://git.io/lean-package-validator).
+
+* text=auto eol=lf
+
+.devcontainer/ export-ignore
+.editorconfig export-ignore
+.gitattributes export-ignore
+.github/ export-ignore
+.gitignore export-ignore
+.vscode/ export-ignore
+composer.lock export-ignore
+LICENSE export-ignore
+phpstan.neon.dist export-ignore
+phpunit.xml export-ignore
+pint.json export-ignore
+readme.md export-ignore
+test/ export-ignore
+UPGRADE.md export-ignore

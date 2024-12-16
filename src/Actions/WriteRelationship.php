@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class WriteRelationship
@@ -27,21 +28,21 @@ class WriteRelationship
             default => $relatedModel,
         };
 
-        if (in_array($relation['type'], config('modeltyper.custom_relationships.singular', []))) {
+        if (in_array($relation['type'], Config::get('modeltyper.custom_relationships.singular', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
-        if (in_array($relation['type'], config('modeltyper.custom_relationships.plural', []))) {
+        if (in_array($relation['type'], Config::get('modeltyper.custom_relationships.plural', []))) {
             $relationType = Str::singular($relation['type']);
         }
 
         if ($jsonOutput) {
             return [
-                'name' => $name,
+                'name' => "{$name}{$optional}",
                 'type' => $relationType,
             ];
         }
 
-        return "{$indent}  {$name}{$optional}: {$relationType}\n";
+        return "{$indent}  {$name}{$optional}: {$relationType}" . PHP_EOL;
     }
 }
