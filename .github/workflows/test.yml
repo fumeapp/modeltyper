@@ -15,14 +15,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: ['8.2', '8.3', '8.4']
-        laravel: ['11.*']
-        stability: ['highest', 'lowest']
-        # include:
-        #   - laravel: 11.*
-        #     testbench: 9.*
-        # exclude:
-        #   - laravel: 11.*
-        #     php: '8.1'
+        laravel: ['11.*', '12.*']
+        stability: [highest, lowest]
 
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }} stability
 
@@ -37,7 +31,7 @@ jobs:
           coverage: none
 
       - name: 🔨 Install composer dependencies
-        uses: "ramsey/composer-install@v3"
+        uses: ramsey/composer-install@v3
         with:
           dependency-versions: ${{ matrix.stability }}
 

@@ -3,16 +3,17 @@ name: PHPStan
 on:
   push:
     paths:
-      - '**.php'
-      - 'phpstan.neon.dist'
+      - **.php
+      - phpstan.neon.dist
 
 jobs:
   phpstan:
     runs-on: ubuntu-latest
+
     strategy:
-        fail-fast: true
-        matrix:
-          php: [8.3]
+      fail-fast: true
+      matrix:
+        php: ['8.2', 8.3, '8.3', '8.4']
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +27,7 @@ jobs:
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
         with:
-          dependency-versions: "highest"
+          dependency-versions: highest
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan --error-format=github

@@ -3,16 +3,17 @@ name: Lint
 on:
   push:
     paths:
-      - '**.php'
-      - 'pint.json'
+      - **.php
+      - pint.json
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     strategy:
-        fail-fast: true
-        matrix:
-          php: [8.3]
+      fail-fast: true
+      matrix:
+        php: ['8.2', 8.3, '8.3', '8.4']
 
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +28,7 @@ jobs:
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
         with:
-          dependency-versions: "highest"
+          dependency-versions: highest
 
       - name: Run Pint
         run: ./vendor/bin/pint
@@ -35,4 +36,4 @@ jobs:
       - name: Commit linted files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Fixes coding style"
+          commit_message: Fixes coding style
