@@ -15,15 +15,15 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/support": "^11.33.0",
-        "illuminate/database": "^11.33.0",
-        "illuminate/console": "^11.33.0"
+        "illuminate/support": "^11.33.0|^12.0",
+        "illuminate/database": "^11.33.0|^12.0",
+        "illuminate/console": "^11.33.0|^12.0"
     },
     "require-dev": {
         "consolidation/robo": "^5.1.0",
         "larastan/larastan": "^3.0.2",
         "laravel/pint": "^1.18.3",
-        "orchestra/testbench": "^9.6.1",
+        "orchestra/testbench": "^9.6.1|^10.0",
         "phpstan/phpstan-deprecation-rules": "^2.0.1",
         "phpunit/phpunit": "^11.4.4",
         "totten/lurkerlite": "^1.3"
