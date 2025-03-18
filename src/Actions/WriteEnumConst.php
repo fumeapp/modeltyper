@@ -36,7 +36,7 @@ class WriteEnumConst
 
             $cases->each(function ($case) use ($indent, &$entry, $comments, $useEnums) {
                 $name = $case->name;
-                $value = is_string($case->value) ? "'{$case->value}'" : $case->value;
+                $value = is_string($case->value) ? "'" . addslashes($case->value) . "'" : $case->value;
 
                 // write comments if they exist
                 if (! empty($comments)) {

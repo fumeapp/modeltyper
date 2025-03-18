@@ -63,13 +63,13 @@
         {
             "Roles": {
                 "name": "Roles",
-                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
+                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n  \/** Value that needs string escaping *\/\n  USERCLASS = 'App\\\\Models\\\\User',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
             }
         },
         {
             "Roles": {
                 "name": "Roles",
-                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
+                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n  \/** Value that needs string escaping *\/\n  USERCLASS = 'App\\\\Models\\\\User',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
             }
         }
     ]
