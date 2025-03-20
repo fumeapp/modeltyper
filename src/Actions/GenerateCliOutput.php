@@ -35,7 +35,7 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', bool $extendInterface = false, string $baseInterface = 'BaseModel', string $baseModelImportPath = '@/types'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -47,7 +47,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $extendInterface, $baseInterface, $baseModelImportPath) {
             $entry = '';
             $modelDetails = $modelBuilder($model);
 
@@ -68,7 +68,11 @@ class GenerateCliOutput
 
             $this->imports = array_merge($this->imports, $imports->toArray());
 
-            $entry .= "{$this->indent}export interface {$name} {" . PHP_EOL;
+            if ($extendInterface) {
+                $entry .= "{$this->indent}export interface {$name} extends {$baseInterface} {" . PHP_EOL;
+            } else {
+                $entry .= "{$this->indent}export interface {$name} {" . PHP_EOL;
+            }
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns" . PHP_EOL;
@@ -152,6 +156,12 @@ class GenerateCliOutput
                 $entry = "import { {$importTypeWithoutGeneric} } from '{$import['import']}'" . PHP_EOL;
                 $this->output = $entry . $this->output;
             });
+
+        // Add import for base interface if needed
+        if ($extendInterface) {
+            $baseInterfaceImport = "import { {$baseInterface} } from '{$baseModelImportPath}'" . PHP_EOL;
+            $this->output = $baseInterfaceImport . $this->output;
+        }
 
         if ($global) {
             $this->output .= '  }' . PHP_EOL . '}' . PHP_EOL . PHP_EOL;

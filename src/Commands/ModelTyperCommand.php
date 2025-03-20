@@ -39,6 +39,9 @@ class ModelTyperCommand extends Command
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
                             {--fillable-suffix= : Appends to fillables}
+                            {--extend-interface : Extend generated interfaces with a base interface}
+                            {--base-interface= : Name of the base interface to extend}
+                            {--base-model-import-path= : Import path for the base interface}
                             {--ignore-config : Ignore options set in config}';
 
     /**
@@ -76,6 +79,9 @@ class ModelTyperCommand extends Command
                 optionalNullables: $this->getConfig('optional-nullables'),
                 fillables: $this->getConfig('fillables'),
                 fillableSuffix: $this->getConfig('fillable-suffix'),
+                extendInterface: $this->getConfig('extend-interface'),
+                baseInterface: $this->getConfig('base-interface'),
+                baseModelImportPath: $this->getConfig('base-model-import-path'),
             );
 
             /** @var string|null $path */

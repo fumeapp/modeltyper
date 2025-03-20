@@ -63,6 +63,42 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Extend Generated Interfaces
+    |--------------------------------------------------------------------------
+    |
+    | Specifies whether to extend the generated TypeScript interfaces with a
+    | custom base interface. This is useful for adding common properties or
+    | methods to all model interfaces.
+    */
+    'extend-interface' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base Interface Name
+    |--------------------------------------------------------------------------
+    |
+    | Defines the name of the base interface that generated TypeScript interfaces
+    | will extend. This should be an interface that exists in your TypeScript 
+    | codebase.
+    |
+    | Requires extend-interface set to true
+    */
+    'base-interface' => 'BaseModel',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base Model Import Path
+    |--------------------------------------------------------------------------
+    |
+    | Defines the import path for the base interface that generated TypeScript
+    | interfaces will extend. This allows proper TypeScript imports to be generated.
+    |
+    | Requires extend-interface set to true
+    */
+    'base-model-import-path' => '@/types',
+
+    /*
+    |--------------------------------------------------------------------------
     | Output the Result in JSON Format
     |--------------------------------------------------------------------------
     |
