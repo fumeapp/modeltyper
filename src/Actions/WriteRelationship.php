@@ -16,9 +16,10 @@ class WriteRelationship
      * @param  array{name: string, type: string, related:string}  $relation
      * @return array{type: string, name: string}|string
      */
-    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
+    public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false, string $case = 'snake'): array|string
     {
-        $name = Str::snake($relation['name']);
+        $name = app(MatchCase::class)($case, $relation['name']);
+
         $relatedModel = $this->getClassName($relation['related']);
         $optional = $optionalRelation ? '?' : '';
 

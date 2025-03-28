@@ -21,12 +21,13 @@ class WriteColumnAttribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false, bool $useEnums = false): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false, bool $useEnums = false, string $case = 'snake'): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
 
-        $name = Str::snake($attribute['name']);
+        $name = app(MatchCase::class)($case, $attribute['name']);
+
         $type = 'unknown';
 
         if ($noHidden && isset($attribute['hidden']) && $attribute['hidden']) {

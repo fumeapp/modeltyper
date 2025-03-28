@@ -7,6 +7,7 @@ use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'model:typer')]
@@ -39,6 +40,7 @@ class ModelTyperCommand extends Command
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
                             {--fillable-suffix= : Appends to fillables}
+                            {--case=snake : Output model attributes in a specific case: snake, camel, pascal}
                             {--ignore-config : Ignore options set in config}';
 
     /**
@@ -62,6 +64,15 @@ class ModelTyperCommand extends Command
     public function handle(Generator $generator): int
     {
         try {
+            $caseOption = Str::lower($this->option('case')) ?: 'snake';
+
+            // Validate the case option
+            if (! in_array($caseOption, ['snake', 'camel', 'pascal'])) {
+                $this->error("Invalid case option: '{$caseOption}'. Allowed values are: snake, camel, pascal.");
+
+                return Command::FAILURE;
+            }
+
             $output = $generator(
                 specificModel: $this->option('model'),
                 global: $this->getConfig('global'),
@@ -76,6 +87,7 @@ class ModelTyperCommand extends Command
                 optionalNullables: $this->getConfig('optional-nullables'),
                 fillables: $this->getConfig('fillables'),
                 fillableSuffix: $this->getConfig('fillable-suffix'),
+                case: $caseOption,
             );
 
             /** @var string|null $path */
