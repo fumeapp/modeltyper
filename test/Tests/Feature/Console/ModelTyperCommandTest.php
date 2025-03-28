@@ -209,4 +209,30 @@ class ModelTyperCommandTest extends TestCase
             '--model' => Complex::class,
         ])->expectsOutput($expected);
     }
+
+    public function test_command_generates_expected_output_for_camel_case()
+    {
+        $expected = $this->getExpectedContent('complex-model-camel-case.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+            '--case' => 'camel',
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_expected_output_for_pascal_case()
+    {
+        $expected = $this->getExpectedContent('complex-model-pascal-case.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+            '--case' => 'pascal',
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_throws_error_when_invalid_case_option_is_provided()
+    {
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+            '--case' => 'invalid-case',
+        ])->expectsOutput('Invalid case option: \'invalid-case\'. Allowed values are: snake, camel, pascal.');
+    }
 }

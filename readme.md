@@ -137,6 +137,7 @@ protected function firstName(): Attribute
 - --fillables : Output model fillables
 - --fillable-suffix= : Appends to fillables
 - --ignore-config : Ignore options set in config
+- --case= : Set the case for the output file: snake (default), camel, pascal
 
 ### Custom Interfaces
 
