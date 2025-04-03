@@ -36,7 +36,8 @@ class Generator
             optionalNullables: $optionalNullables,
             useEnums: $useEnums,
             fillables: $fillables,
-            fillableSuffix: $fillableSuffix);
+            fillableSuffix: $fillableSuffix
+        );
     }
 
     /**
