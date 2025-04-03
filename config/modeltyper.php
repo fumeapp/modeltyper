@@ -227,4 +227,19 @@ return [
             //
         ],
     ],
+
+    // case // options: snake, camel, pascal
+    /*
+    |--------------------------------------------------------------------------
+    | Case for Model Attributes and Relationships
+    |--------------------------------------------------------------------------
+    |
+    | Defines the case style for model attributes and relationships in the
+    | TypeScript definitions. Fo keeping a consistent naming
+    | convention throughout the codebase.
+    */
+    'case' => [
+        'columns' => 'snake',
+        'relations' => 'snake',
+    ],
 ];

@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
@@ -21,11 +22,12 @@ class WriteColumnAttribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
-    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false, bool $useEnums = false, string $case = 'snake'): array
+    public function __invoke(ReflectionClass $reflectionModel, array $attribute, array $mappings, string $indent = '', bool $jsonOutput = false, bool $noHidden = false, bool $optionalNullables = false, bool $useEnums = false): array
     {
         $enumRef = null;
         $returnType = app(MapReturnType::class);
 
+        $case = Config::get('modeltyper.case.columns', 'snake');
         $name = app(MatchCase::class)($case, $attribute['name']);
 
         $type = 'unknown';

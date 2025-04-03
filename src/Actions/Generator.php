@@ -15,7 +15,7 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', string $case = 'snake')
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
     {
         $models = app(GetModels::class)($specificModel);
 
@@ -36,9 +36,7 @@ class Generator
             optionalNullables: $optionalNullables,
             useEnums: $useEnums,
             fillables: $fillables,
-            fillableSuffix: $fillableSuffix,
-            case: $case
-        );
+            fillableSuffix: $fillableSuffix);
     }
 
     /**
@@ -46,7 +44,7 @@ class Generator
      *
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', string $case = 'snake'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
@@ -66,8 +64,7 @@ class Generator
             noHidden: $noHidden,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
-            fillableSuffix: $fillableSuffix,
-            case: $case
+            fillableSuffix: $fillableSuffix
         );
     }
 }

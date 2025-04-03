@@ -35,7 +35,7 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', string $case = 'snake'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -47,7 +47,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $case) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
             $modelDetails = $modelBuilder($model);
 
@@ -72,8 +72,8 @@ class GenerateCliOutput
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns" . PHP_EOL;
-                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums, $case) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums, case: $case);
+                $columns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -85,8 +85,8 @@ class GenerateCliOutput
 
             if ($nonColumns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // mutators" . PHP_EOL;
-                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums, $case) {
-                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums, case: $case);
+                $nonColumns->each(function ($att) use (&$entry, $reflectionModel, $colAttrWriter, $noHidden, $optionalNullables, $mappings, $useEnums) {
+                    [$line, $enum] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $att, mappings: $mappings, indent: $this->indent, noHidden: $noHidden, optionalNullables: $optionalNullables, useEnums: $useEnums);
                     if (! empty($line)) {
                         $entry .= $line;
                         if ($enum) {
@@ -98,16 +98,16 @@ class GenerateCliOutput
 
             if ($interfaces->isNotEmpty()) {
                 $entry .= "{$this->indent}  // overrides" . PHP_EOL;
-                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $mappings, $case) {
-                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, mappings: $mappings, indent: $this->indent, case: $case);
+                $interfaces->each(function ($interface) use (&$entry, $reflectionModel, $colAttrWriter, $mappings) {
+                    [$line] = $colAttrWriter(reflectionModel: $reflectionModel, attribute: $interface, mappings: $mappings, indent: $this->indent);
                     $entry .= $line;
                 });
             }
 
             if ($relations->isNotEmpty() && ! $noRelations) {
                 $entry .= "{$this->indent}  // relations" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals, $case) {
-                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals, case: $case);
+                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
+                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);
                 });
             }
 
