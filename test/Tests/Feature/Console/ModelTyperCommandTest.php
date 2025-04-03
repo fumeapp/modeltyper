@@ -209,4 +209,34 @@ class ModelTyperCommandTest extends TestCase
             '--model' => Complex::class,
         ])->expectsOutput($expected);
     }
+
+    public function test_command_generates_expected_output_for_camel_case()
+    {
+        Config::set('modeltyper.case', [
+            'columns' => 'camel',
+            'relations' => 'camel',
+        ]);
+
+        $this->assertSame('camel', Config::get('modeltyper.case.columns'));
+
+        $expected = $this->getExpectedContent('complex-model-camel-case.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_expected_output_for_pascal_case()
+    {
+        Config::set('modeltyper.case', [
+            'columns' => 'pascal',
+            'relations' => 'pascal',
+        ]);
+
+        $this->assertSame('pascal', Config::get('modeltyper.case.columns'));
+
+        $expected = $this->getExpectedContent('complex-model-pascal-case.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+        ])->expectsOutput($expected);
+    }
 }

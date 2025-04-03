@@ -18,7 +18,9 @@ class WriteRelationship
      */
     public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
     {
-        $name = Str::snake($relation['name']);
+        $case = Config::get('modeltyper.case.relations', 'snake');
+        $name = app(MatchCase::class)($case, $relation['name']);
+
         $relatedModel = $this->getClassName($relation['related']);
         $optional = $optionalRelation ? '?' : '';
 

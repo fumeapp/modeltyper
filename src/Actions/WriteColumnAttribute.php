@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
@@ -26,7 +27,9 @@ class WriteColumnAttribute
         $enumRef = null;
         $returnType = app(MapReturnType::class);
 
-        $name = Str::snake($attribute['name']);
+        $case = Config::get('modeltyper.case.columns', 'snake');
+        $name = app(MatchCase::class)($case, $attribute['name']);
+
         $type = 'unknown';
 
         if ($noHidden && isset($attribute['hidden']) && $attribute['hidden']) {
