@@ -234,7 +234,7 @@ return [
     |--------------------------------------------------------------------------
     | Options: snake, camel, pascal
     | Defines the case style for model attributes and relationships in the
-    | TypeScript definitions. Fo keeping a consistent naming
+    | TypeScript definitions. For keeping a consistent naming
     | convention throughout the codebase.
     */
     'case' => [
