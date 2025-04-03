@@ -34,4 +34,6 @@ export interface Complex {
   CreatedAt: string | null
   UpdatedAt: string | null
   DeletedAt: string | null
+  // relations
+  ComplexRelationships: ComplexRelationship[]
 }

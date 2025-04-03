@@ -214,6 +214,7 @@ class ModelTyperCommandTest extends TestCase
     {
         Config::set('modeltyper.case', [
             'columns' => 'camel',
+            'relations' => 'camel',
         ]);
 
         $this->assertSame('camel', Config::get('modeltyper.case.columns'));
@@ -228,6 +229,7 @@ class ModelTyperCommandTest extends TestCase
     {
         Config::set('modeltyper.case', [
             'columns' => 'pascal',
+            'relations' => 'pascal',
         ]);
 
         $this->assertSame('pascal', Config::get('modeltyper.case.columns'));
