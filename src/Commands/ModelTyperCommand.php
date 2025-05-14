@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputOption;
 
 #[AsCommand(name: 'model:typer')]
 class ModelTyperCommand extends Command
@@ -39,7 +40,9 @@ class ModelTyperCommand extends Command
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
                             {--fillable-suffix= : Appends to fillables}
-                            {--ignore-config : Ignore options set in config}';
+                            {--ignore-config : Ignore options set in config}
+                            {--no-counts : Disable countable relations}
+                            {--optional-counts : Make countable relations optional}';
 
     /**
      * The console command description.
@@ -54,6 +57,28 @@ class ModelTyperCommand extends Command
     public function __construct(protected Filesystem $files)
     {
         parent::__construct();
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate typescript interface for a specific model'],
+            ['output-file', 'o', InputOption::VALUE_OPTIONAL, 'Output file path'],
+            ['global', 'g', InputOption::VALUE_NONE, 'Output global namespace'],
+            ['json', 'j', InputOption::VALUE_NONE, 'Output json format'],
+            ['use-enums', 'e', InputOption::VALUE_NONE, 'Use typescript enums'],
+            ['plurals', 'p', InputOption::VALUE_NONE, 'Output plural form for models'],
+            ['api-resources', 'a', InputOption::VALUE_NONE, 'Output api.MetApi interfaces'],
+            ['optional-relations', 'r', InputOption::VALUE_NONE, 'Make model relationships optional'],
+            ['no-relations', 'R', InputOption::VALUE_NONE, 'Exclude model relationships'],
+            ['no-counts', 'c', InputOption::VALUE_NONE, 'Disable countable relations'],
+            ['optional-counts', 'C', InputOption::VALUE_NONE, 'Make countable relations optional'],
+            ['no-hidden', 'H', InputOption::VALUE_NONE, 'Exclude hidden model attributes'],
+            ['timestamps-date', 't', InputOption::VALUE_NONE, 'Output timestamps as date object types'],
+            ['optional-nullables', 'n', InputOption::VALUE_NONE, 'Make nullable attributes optional'],
+            ['fillables', 'f', InputOption::VALUE_NONE, 'Output fillable model attributes'],
+            ['fillable-suffix', 's', InputOption::VALUE_OPTIONAL, 'Suffix for fillable model attributes', 'fillable'],
+        ];
     }
 
     /**
@@ -71,6 +96,8 @@ class ModelTyperCommand extends Command
                 apiResources: $this->getConfig('api-resources'),
                 optionalRelations: $this->getConfig('optional-relations'),
                 noRelations: $this->getConfig('no-relations'),
+                noCounts: $this->getConfig('no-counts'),
+                optionalCounts: $this->getConfig('optional-counts'),
                 noHidden: $this->getConfig('no-hidden'),
                 timestampsDate: $this->getConfig('timestamps-date'),
                 optionalNullables: $this->getConfig('optional-nullables'),

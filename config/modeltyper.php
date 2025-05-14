@@ -107,6 +107,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Disable Countable Relations
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, this will prevent relations from being marked as countable
+    | (array types) in the TypeScript definitions. This can be useful when you
+    | want to treat all relations as single instances.
+    */
+    'no-counts' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Make Countable Relations Optional
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, this will make countable relations (array types) optional
+    | in the TypeScript definitions. This allows for more flexibility in
+    | handling models that may or may not have related collections.
+    */
+    'optional-counts' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Make Model Relationships Optional
     |--------------------------------------------------------------------------
     |

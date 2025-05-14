@@ -15,7 +15,7 @@ class Generator
      *
      * @return string
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noCounts = false, bool $optionalCounts = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
     {
         $models = app(GetModels::class)($specificModel);
 
@@ -31,6 +31,8 @@ class Generator
             apiResources: $apiResources,
             optionalRelations: $optionalRelations,
             noRelations: $noRelations,
+            noCounts: $noCounts,
+            optionalCounts: $optionalCounts,
             noHidden: $noHidden,
             timestampsDate: $timestampsDate,
             optionalNullables: $optionalNullables,
@@ -45,12 +47,12 @@ class Generator
      *
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noCounts = false, bool $optionalCounts = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
         if ($json) {
-            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums);
+            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, noCounts: $noCounts, optionalCounts: $optionalCounts);
         }
 
         return app(GenerateCliOutput::class)(
@@ -62,6 +64,8 @@ class Generator
             apiResources: $apiResources,
             optionalRelations: $optionalRelations,
             noRelations: $noRelations,
+            noCounts: $noCounts,
+            optionalCounts: $optionalCounts,
             noHidden: $noHidden,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
