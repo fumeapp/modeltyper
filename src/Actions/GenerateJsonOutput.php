@@ -29,14 +29,14 @@ class GenerateJsonOutput
      * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $useEnums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums, $noCounts, $optionalCounts) {
             $modelDetails = $modelBuilder($model);
 
             if ($modelDetails === null) {
@@ -65,8 +65,8 @@ class GenerateJsonOutput
                     return $property;
                 })->toArray();
 
-            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
-                $relation = $relationWriter(relation: $rel, jsonOutput: true);
+            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name, $noCounts, $optionalCounts) {
+                $relation = $relationWriter(relation: $rel, jsonOutput: true, noCounts: $noCounts, optionalCounts: $optionalCounts);
 
                 return [
                     $relation['type'] => [

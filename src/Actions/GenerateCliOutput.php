@@ -35,7 +35,7 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noCounts = false, bool $optionalCounts = false, bool $noHidden = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -47,7 +47,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noCounts, $optionalCounts, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
             $modelDetails = $modelBuilder($model);
 
@@ -106,8 +106,8 @@ class GenerateCliOutput
 
             if ($relations->isNotEmpty() && ! $noRelations) {
                 $entry .= "{$this->indent}  // relations" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
-                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);
+                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $noCounts, $optionalCounts, $plurals) {
+                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, noCounts: $noCounts, optionalCounts: $optionalCounts, plurals: $plurals);
                 });
             }
 
