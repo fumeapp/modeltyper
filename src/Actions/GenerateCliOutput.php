@@ -49,7 +49,11 @@ class GenerateCliOutput
 
         $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
-            $modelDetails = $modelBuilder($model);
+            $modelDetails = $modelBuilder(
+                modelFile: $model,
+                includedModels: Config::get('modeltyper.included_models', []),
+                excludedModels: Config::get('modeltyper.excluded_models', []),
+            );
 
             if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved

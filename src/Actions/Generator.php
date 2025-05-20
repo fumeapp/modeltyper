@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @throws \FumeApp\ModelTyper\Exceptions\ModelTyperException
@@ -17,7 +18,11 @@ class Generator
      */
     public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
     {
-        $models = app(GetModels::class)($specificModel);
+        $models = app(GetModels::class)(
+            model: $specificModel,
+            includedModels: Config::get('modeltyper.included_models', []),
+            excludedModels: Config::get('modeltyper.excluded_models', [])
+        );
 
         if ($models->isEmpty()) {
             throw new ModelTyperException('No models found.');

@@ -241,4 +241,28 @@ return [
         'columns' => 'snake',
         'relations' => 'snake',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Included Models
+    |--------------------------------------------------------------------------
+    |
+    | The include models list allows you to allowlist certain models from being
+    | generated.
+    */
+    'included_models' => [
+        // Only these models are allowed
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Models
+    |--------------------------------------------------------------------------
+    |
+    | The exclude models list allows you to ignore certain models from
+    | generating TypeScript definitions.
+    */
+    'excluded_models' => [
+        // Models to ignore
+    ],
 ];

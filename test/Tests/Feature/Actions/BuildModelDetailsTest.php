@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Actions;
 
+use App\Models\Complex;
+use App\Models\ComplexRelationship;
 use App\Models\User;
 use FumeApp\ModelTyper\Actions\BuildModelDetails;
 use FumeApp\ModelTyper\Actions\GetModels;
@@ -28,6 +30,26 @@ class BuildModelDetailsTest extends TestCase
         $this->assertArrayHasKey('columns', $result);
         $this->assertArrayHasKey('nonColumns', $result);
         $this->assertArrayHasKey('relations', $result);
+        $this->assertNotEmpty($result['relations']);
+        $this->assertArrayHasKey('interfaces', $result);
+        $this->assertArrayHasKey('imports', $result);
+    }
+
+    public function test_relation_is_excluded()
+    {
+        $models = app(GetModels::class)(Complex::class);
+        $action = app(BuildModelDetails::class);
+
+        $result = $action($models->first(), excludedModels: [ComplexRelationship::class]);
+
+        $this->assertIsArray($result);
+
+        $this->assertArrayHasKey('reflectionModel', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('columns', $result);
+        $this->assertArrayHasKey('nonColumns', $result);
+        $this->assertArrayHasKey('relations', $result);
+        $this->assertEmpty($result['relations']);
         $this->assertArrayHasKey('interfaces', $result);
         $this->assertArrayHasKey('imports', $result);
     }
