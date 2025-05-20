@@ -3,8 +3,8 @@
 namespace Tests\Feature\Actions;
 
 use App\Models\AbstractModel;
-use App\Models\Complex;
 use App\Models\User;
+use App\Modules\Models\Team;
 use FumeApp\ModelTyper\Actions\Generator;
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Facades\Config;
@@ -90,6 +90,6 @@ class GeneratorTest extends TestCase
         $this->expectExceptionMessage('No models found.');
 
         $action = app(Generator::class);
-        $action(Complex::class);
+        $action(Team::class);
     }
 }
