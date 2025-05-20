@@ -5,6 +5,7 @@ namespace FumeApp\ModelTyper\Actions;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -37,7 +38,11 @@ class GenerateJsonOutput
         $enumWriter = app(WriteEnumConst::class);
 
         $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums) {
-            $modelDetails = $modelBuilder($model);
+            $modelDetails = $modelBuilder(
+                modelFile: $model,
+                includedModels: Config::get('modeltyper.included_models', []),
+                excludedModels: Config::get('modeltyper.excluded_models', []),
+            );
 
             if ($modelDetails === null) {
                 // skip iteration if model details could not be resolved
