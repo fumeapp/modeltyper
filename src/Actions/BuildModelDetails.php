@@ -20,7 +20,7 @@ class BuildModelDetails
      *
      * @throws ReflectionException
      */
-    public function __invoke(SplFileInfo $modelFile): ?array
+    public function __invoke(SplFileInfo $modelFile, ?array $includedModels = null, ?array $excludedModels = null): ?array
     {
         $modelDetails = $this->getModelDetails($modelFile);
 
@@ -35,7 +35,13 @@ class BuildModelDetails
         $name = $this->getClassName($modelDetails['class']);
         $columns = collect($modelDetails['attributes'])->filter(fn ($att) => in_array($att['name'], $databaseColumns));
         $nonColumns = collect($modelDetails['attributes'])->filter(fn ($att) => ! in_array($att['name'], $databaseColumns));
-        $relations = collect($modelDetails['relations']);
+        $relations = collect($modelDetails['relations'])
+            ->when($includedModels, function ($relations, $includedModels) {
+                return $relations->filter(fn (array $relation) => in_array($relation['related'], $includedModels));
+            })
+            ->when($excludedModels, function ($relations, $excludedModels) {
+                return $relations->filter(fn (array $relation) => ! in_array($relation['related'], $excludedModels));
+            });
 
         $interfaces = collect($laravelModel->interfaces ?? [])->map(fn ($interface, $key) => [
             'name' => $key,
