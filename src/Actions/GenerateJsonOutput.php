@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace FumeApp\ModelTyper\Actions;
 
 use const JSON_PRETTY_PRINT;
@@ -14,7 +12,7 @@ use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
-final class GenerateJsonOutput
+class GenerateJsonOutput
 {
     use ClassBaseName;
     use ModelRefClass;
@@ -83,7 +81,7 @@ final class GenerateJsonOutput
                 return [
                     $relation['type'] => [
                         'name' => $relation['name'],
-                        'type' => 'export type '.$relation['type'].' = '.'Array<'.$name.'>',
+                        'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . $name . '>',
                     ],
                 ];
             })->toArray();
@@ -100,6 +98,6 @@ final class GenerateJsonOutput
             ];
         })->toArray();
 
-        return json_encode($this->output, JSON_PRETTY_PRINT).PHP_EOL;
+        return json_encode($this->output, JSON_PRETTY_PRINT) . PHP_EOL;
     }
 }

@@ -35,7 +35,7 @@ class WriteRelationshipTest extends TestCase
 
         $this->assertIsArray($result);
 
-        $this->assertEquals(['name' => 'notifications', 'type' => 'DatabaseNotification[]', 'count' => ['name' => 'notifications_count', 'type' => 'number', ], 'exists' => ['name' => 'notifications_exists', 'type' => 'boolean']], $result);
+        $this->assertEquals(['name' => 'notifications', 'type' => 'DatabaseNotification[]', 'count' => ['name' => 'notifications_count', 'type' => 'number'], 'exists' => ['name' => 'notifications_exists', 'type' => 'boolean']], $result);
     }
 
     public function test_action_can_be_indented()
@@ -70,7 +70,8 @@ class WriteRelationshipTest extends TestCase
                 'name' => 'notifications_exists',
                 'type' => 'boolean',
             ],
-        ], $result);    }
+        ], $result);
+    }
 
     public function test_action_can_return_plural_relationships()
     {

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
@@ -13,7 +11,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * @throws ModelTyperException
  */
-final class Generator
+class Generator
 {
     /**
      * Run the command to generate the output.
@@ -58,7 +56,7 @@ final class Generator
      *
      * @throws ReflectionException
      */
-    private function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
