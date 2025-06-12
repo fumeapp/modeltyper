@@ -15,6 +15,8 @@ export interface User {
   role_enum_traditional: Roles
   // relations
   notifications: DatabaseNotification[]
+  notifications_count: number
+  notifications_exists: boolean
 }
 export type UserEditable = Pick<User, 'name' | 'email' | 'password' | 'role_traditional' | 'role_new'>
 

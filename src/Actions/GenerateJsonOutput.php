@@ -1,16 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace FumeApp\ModelTyper\Actions;
+
+use const JSON_PRETTY_PRINT;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
-class GenerateJsonOutput
+final class GenerateJsonOutput
 {
+    use ClassBaseName;
+    use ModelRefClass;
+
     /**
      * @var array<string, array<string, mixed>>
      */
@@ -21,23 +29,22 @@ class GenerateJsonOutput
      */
     protected array $enumReflectors = [];
 
-    use ClassBaseName;
-    use ModelRefClass;
-
     /**
      * Output the command in the CLI as JSON.
      *
-     * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
+     * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
+     *
+     * @throws ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $useEnums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $enumWriter = app(WriteEnumConst::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $mappings, $useEnums, $noCounts, $optionalCounts, $noExists, $optionalExists) {
             $modelDetails = $modelBuilder(
                 modelFile: $model,
                 includedModels: Config::get('modeltyper.included_models', []),
@@ -70,13 +77,13 @@ class GenerateJsonOutput
                     return $property;
                 })->toArray();
 
-            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
-                $relation = $relationWriter(relation: $rel, jsonOutput: true);
+            $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name, $noCounts, $optionalCounts, $noExists, $optionalExists) {
+                $relation = $relationWriter(relation: $rel, jsonOutput: true, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists);
 
                 return [
                     $relation['type'] => [
                         'name' => $relation['name'],
-                        'type' => 'export type ' . $relation['type'] . ' = ' . 'Array<' . $name . '>',
+                        'type' => 'export type '.$relation['type'].' = '.'Array<'.$name.'>',
                     ],
                 ];
             })->toArray();
@@ -93,6 +100,6 @@ class GenerateJsonOutput
             ];
         })->toArray();
 
-        return json_encode($this->output, \JSON_PRETTY_PRINT) . PHP_EOL;
+        return json_encode($this->output, JSON_PRETTY_PRINT).PHP_EOL;
     }
 }

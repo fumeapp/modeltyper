@@ -34,6 +34,8 @@ class ModelTyperCommand extends Command
                             {--no-relations : Do not include relations}
                             {--optional-relations : Make relations optional fields on the model type}
                             {--no-hidden : Do not include hidden model attributes}
+                            {--no-counts : Do not include counts on relations}
+                            {--optional-counts : Make counts on relations optional fields}
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
@@ -72,6 +74,8 @@ class ModelTyperCommand extends Command
                 optionalRelations: $this->getConfig('optional-relations'),
                 noRelations: $this->getConfig('no-relations'),
                 noHidden: $this->getConfig('no-hidden'),
+                noCounts: $this->getConfig('no-counts'),
+                optionalCounts: $this->getConfig('optional-counts'),
                 timestampsDate: $this->getConfig('timestamps-date'),
                 optionalNullables: $this->getConfig('optional-nullables'),
                 fillables: $this->getConfig('fillables'),

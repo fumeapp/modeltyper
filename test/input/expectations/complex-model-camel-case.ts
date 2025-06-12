@@ -36,4 +36,6 @@ export interface Complex {
   deletedAt: string | null
   // relations
   complexRelationships: ComplexRelationship[]
+  complexRelationshipsCount: number
+  complexRelationshipsExists: boolean
 }

@@ -11,7 +11,9 @@
   <a href="https://www.typescriptlang.org/"><img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="92" height="92" /></a>
 </p>
 
-Model Typer is a powerful tool designed for developers working with Laravel and TypeScript. Its primary purpose is to simplify the generation of TypeScript interfaces from Laravel models, enhancing type safety and consistency in your applications.
+Model Typer is a powerful tool designed for developers working with Laravel and TypeScript. Its primary purpose is to
+simplify the generation of TypeScript interfaces from Laravel models, enhancing type safety and consistency in your
+applications.
 
 ## Upgrade Guide
 
@@ -81,9 +83,12 @@ export type Teams = Array<Team>;
 
 ### How does it work?
 
-This command will go through all of your models and make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#interfaces) based on the database columns, mutators, and relationships.
+This command will go through all of your models and
+make [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#interfaces) based on the
+database columns, mutators, and relationships.
 
-You can then pipe the output into your preferred `???.d.ts`, or set the [optional argument](#optional-arguments) `output-file` to generate it
+You can then pipe the output into your preferred `???.d.ts`, or set the [optional argument](#optional-arguments)
+`output-file` to generate it
 
 > [!TIP]
 > To view the current mappings that are being used, use the following command:
@@ -96,7 +101,8 @@ You can then pipe the output into your preferred `???.d.ts`, or set the [optiona
 
 ### Requirements
 
-1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model relationships
+1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model
+   relationships
 
 ```php
 public function providers(): HasMany // <- this
@@ -120,7 +126,6 @@ protected function firstName(): Attribute
 
 - output-file : Echo the definitions into a file
 
-
 ### Additional Options
 
 - --model= : Generate typescript interfaces for a specific model
@@ -131,6 +136,10 @@ protected function firstName(): Attribute
 - --no-relations : Do not include relations
 - --optional-relations : Make relations optional fields on the model type
 - --no-hidden : Do not include hidden model attributes
+- --no-counts : Do not include counts for relationships
+- --optional-counts : Make relationship counts optional fields on the model type
+- --no-exists : Do not include exists for relationships
+- --optional-exists : Make relationship exists optional fields on the model type
 - --timestamps-date : Output timestamps as a Date object type
 - --optional-nullables : Output nullable attributes as optional fields
 - --api-resources : Output api.MetApi interfaces
@@ -228,7 +237,6 @@ Then inside `custom_mappings` add the Laravel type as the key and assign the Typ
 
 You can also add mappings for your [Custom Casts](https://laravel.com/docs/11.x/eloquent-mutators#custom-casts)
 
-
 ```php
 'custom_mappings' => [
     'App\Casts\YourCustomCast' => 'string | null',
@@ -265,6 +273,7 @@ declare global {
 ```bash
 artisan model:typer --plurals
 ```
+
 Exports for example, when a `User` model exists:
 
 ```ts
@@ -316,10 +325,13 @@ artisan model:typer --json
 
 ### Enum Eloquent Attribute Casting
 
-Laravel lets you cast [Enums in your models](https://laravel.com/docs/11.x/eloquent-mutators#enum-casting). This will get detected and bring in your enum class with your comments:
+Laravel lets you cast [Enums in your models](https://laravel.com/docs/11.x/eloquent-mutators#enum-casting). This will
+get detected and bring in your enum class with your comments:
 
 > [!NOTE]
-> ModelTyper uses Object Literals by default instead of TS Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can use `--use-enums` option to use TS Enums instead of Object Literals.
+> ModelTyper uses Object Literals by default instead of TS
+> Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can
+> use `--use-enums` option to use TS Enums instead of Object Literals.
 
 `app/Enums/UserRoleEnum.php`
 

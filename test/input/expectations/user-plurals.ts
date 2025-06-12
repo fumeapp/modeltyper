@@ -15,6 +15,8 @@ export interface User {
   role_enum_traditional: Roles
   // relations
   notifications: DatabaseNotifications
+  notifications_count: number
+  notifications_exists: boolean
 }
 export type Users = User[]
 

@@ -1,22 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
+use ReflectionException;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * @throws \FumeApp\ModelTyper\Exceptions\ModelTyperException
+ * @throws ModelTyperException
  */
-class Generator
+final class Generator
 {
     /**
      * Run the command to generate the output.
      *
-     * @return string
+     * @throws ModelTyperException
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable')
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $models = app(GetModels::class)(
             model: $specificModel,
@@ -32,14 +36,16 @@ class Generator
             models: $models,
             global: $global,
             json: $json,
+            useEnums: $useEnums,
             plurals: $plurals,
             apiResources: $apiResources,
             optionalRelations: $optionalRelations,
             noRelations: $noRelations,
             noHidden: $noHidden,
+            noCounts: $noCounts,
+            optionalCounts: $optionalCounts,
             timestampsDate: $timestampsDate,
             optionalNullables: $optionalNullables,
-            useEnums: $useEnums,
             fillables: $fillables,
             fillableSuffix: $fillableSuffix
         );
@@ -48,14 +54,16 @@ class Generator
     /**
      * Return the command output.
      *
-     * @param  Collection<int, \Symfony\Component\Finder\SplFileInfo>  $models
+     * @param  Collection<int, SplFileInfo>  $models
+     *
+     * @throws ReflectionException
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    private function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
         if ($json) {
-            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums);
+            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists);
         }
 
         return app(GenerateCliOutput::class)(
@@ -68,6 +76,8 @@ class Generator
             optionalRelations: $optionalRelations,
             noRelations: $noRelations,
             noHidden: $noHidden,
+            noCounts: $noCounts,
+            optionalCounts: $optionalCounts,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
             fillableSuffix: $fillableSuffix

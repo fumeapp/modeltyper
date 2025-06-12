@@ -129,6 +129,46 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Exclude Count Attributes from Relationships
+    |--------------------------------------------------------------------------
+    |
+    | Specifies whether to exclude count-related attributes for relationships
+    | from the TypeScript definitions.
+    */
+    'no-counts' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Make Count Attributes Optional
+    |--------------------------------------------------------------------------
+    |
+    | Specifies whether count-related attributes for relationships should be
+    | marked as optional in the TypeScript definitions.
+    */
+    'optional-counts' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exclude Exists Attributes
+    |--------------------------------------------------------------------------
+    |
+    | Determines whether to exclude the `exists` property from model TypeScript
+    | definitions.
+    */
+    'no-exists' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Make Exists Attribute Optional
+    |--------------------------------------------------------------------------
+    |
+    | Determines whether the `exists` property should be optional in the
+    | TypeScript definitions.
+    */
+    'optional-exists' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Output Timestamps as Date Object Types
     |--------------------------------------------------------------------------
     |
@@ -222,7 +262,6 @@ return [
         'singular' => [
             // 'belongsToThrough',
         ],
-
         'plural' => [
             //
         ],
@@ -232,10 +271,11 @@ return [
     |--------------------------------------------------------------------------
     | Case for Model Attributes and Relationships
     |--------------------------------------------------------------------------
-    | Options: snake, camel, pascal
+    |
     | Defines the case style for model attributes and relationships in the
-    | TypeScript definitions. For keeping a consistent naming
-    | convention throughout the codebase.
+    | TypeScript definitions. Choose from: snake, camel, or pascal.
+    |
+    | This helps in maintaining consistent naming conventions across the codebase.
     */
     'case' => [
         'columns' => 'snake',
@@ -248,7 +288,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The include models list allows you to allowlist certain models from being
-    | generated.
+    | generated. Only these models will be considered.
     */
     'included_models' => [
         // Only these models are allowed

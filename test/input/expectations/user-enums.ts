@@ -15,6 +15,8 @@ export interface User {
   role_enum_traditional: RolesEnum
   // relations
   notifications: DatabaseNotification[]
+  notifications_count: number
+  notifications_exists: boolean
 }
 
 export const enum Roles {
