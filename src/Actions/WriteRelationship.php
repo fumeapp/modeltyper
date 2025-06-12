@@ -26,10 +26,10 @@ class WriteRelationship
         $optional = $optionalRelation ? '?' : '';
 
         // Use config if not explicitly provided
-        $noCounts = $noCounts ?? Config::get('modeltyper.no-counts', false);
-        $optionalCounts = $optionalCounts ?? Config::get('modeltyper.optional-counts', false);
-        $noExists = $noExists ?? Config::get('modeltyper.no-exists', false);
-        $optionalExists = $optionalExists ?? Config::get('modeltyper.optional-exists', false);
+        $noCounts = $noCounts ?: Config::get('modeltyper.no-counts', false);
+        $optionalCounts = $optionalCounts ?: Config::get('modeltyper.optional-counts', false);
+        $noExists = $noExists ?: Config::get('modeltyper.no-exists', false);
+        $optionalExists = $optionalExists ?: Config::get('modeltyper.optional-exists', false);
 
         // Determine if this is a countable relation
         $isCountable = in_array($relation['type'], [
