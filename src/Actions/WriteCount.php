@@ -3,7 +3,6 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 
 class WriteCount
 {
