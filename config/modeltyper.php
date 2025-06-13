@@ -168,6 +168,28 @@ return [
     'optional-exists' => false,
 
     /*
+     * --------------------------------------------------------------------------
+     * Exclude Sums Attributes
+     * --------------------------------------------------------------------------
+     *
+     * Determines whether to exclude the sums property from model TypeScript
+     * definitions. Sums are typically used to aggregate values across
+     * relationships.
+     */
+    'no-sums' => false,
+
+    /*
+     * --------------------------------------------------------------------------
+     * Make Sums Attributes Optional
+     * --------------------------------------------------------------------------
+     *
+     * Determines whether the sums property should be optional in the
+     * TypeScript definitions. This allows for more flexibility in handling
+     * models that may not have aggregated values.
+     */
+    'optional-sums' => false,
+
+    /*
     |--------------------------------------------------------------------------
     | Output Timestamps as Date Object Types
     |--------------------------------------------------------------------------

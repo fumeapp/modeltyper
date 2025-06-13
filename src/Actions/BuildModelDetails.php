@@ -4,8 +4,11 @@ namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -16,7 +19,7 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @return array{reflectionModel: \ReflectionClass, name: string, columns: \Illuminate\Support\Collection, nonColumns: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, interfaces: \Illuminate\Support\Collection, imports: \Illuminate\Support\Collection}|null
+     * @return array{reflectionModel: ReflectionClass, name: string, columns: Collection, nonColumns: Collection, relations: Collection, interfaces: Collection, imports: Collection, sums: Collection}|null
      *
      * @throws ReflectionException
      */
@@ -57,6 +60,11 @@ class BuildModelDetails
             ->unique()
             ->values();
 
+        $sums = collect($laravelModel->sums ?? [])->map(fn ($column, $relation) => [
+            'relation' => $relation,
+            'column' => $column,
+        ])->values();
+
         // Override all columns, mutators and relationships with custom interfaces
         $columns = $this->overrideCollectionWithInterfaces($columns, $interfaces);
 
@@ -72,11 +80,12 @@ class BuildModelDetails
             'relations' => $relations,
             'interfaces' => $interfaces,
             'imports' => $imports,
+            'sums' => $sums,
         ];
     }
 
     /**
-     * @return array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>}|null
+     * @return array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>}|null
      */
     private function getModelDetails(SplFileInfo $modelFile): ?array
     {

@@ -7,7 +7,9 @@ use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use ReflectionException;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 #[AsCommand(name: 'model:typer')]
 class ModelTyperCommand extends Command
@@ -36,6 +38,10 @@ class ModelTyperCommand extends Command
                             {--no-hidden : Do not include hidden model attributes}
                             {--no-counts : Do not include counts on relations}
                             {--optional-counts : Make counts on relations optional fields}
+                            {--no-exists : Do not include exists on relations}
+                            {--optional-exists : Make exists on relations optional fields}
+                            {--no-sums : Do not include sums on relations}
+                            {--optional-sums : Make sums on relations optional fields}
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
@@ -60,6 +66,8 @@ class ModelTyperCommand extends Command
 
     /**
      * Execute the console command.
+     *
+     * @throws ReflectionException
      */
     public function handle(Generator $generator): int
     {
@@ -76,6 +84,10 @@ class ModelTyperCommand extends Command
                 noHidden: $this->getConfig('no-hidden'),
                 noCounts: $this->getConfig('no-counts'),
                 optionalCounts: $this->getConfig('optional-counts'),
+                noExists: $this->getConfig('no-exists'),
+                optionalExists: $this->getConfig('optional-exists'),
+                noSums: $this->getConfig('no-sums'),
+                optionalSums: $this->getConfig('optional-sums'),
                 timestampsDate: $this->getConfig('timestamps-date'),
                 optionalNullables: $this->getConfig('optional-nullables'),
                 fillables: $this->getConfig('fillables'),
@@ -89,23 +101,23 @@ class ModelTyperCommand extends Command
                 $path = (string) Config::get('modeltyper.output-file-path', '');
             }
 
-            if (! is_null($path) && strlen($path) > 0) {
+            if (! is_null($path) && mb_strlen($path) > 0) {
                 $this->files->ensureDirectoryExists(dirname($path));
                 $this->files->put($path, $output);
 
                 $this->info('Typescript interfaces generated in ' . $path . ' file');
 
-                return Command::SUCCESS;
+                return CommandAlias::SUCCESS;
             }
 
             $this->line($output);
         } catch (ModelTyperException $exception) {
             $this->error($exception->getMessage());
 
-            return Command::FAILURE;
+            return CommandAlias::FAILURE;
         }
 
-        return Command::SUCCESS;
+        return CommandAlias::SUCCESS;
     }
 
     private function getConfig(string $key): string|bool

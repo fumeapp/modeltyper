@@ -15,7 +15,9 @@ export interface User {
   role_enum_traditional: Roles
   // relations
   notifications: DatabaseNotification[]
+  // counts
   notifications_count: number
+  // exists
   notifications_exists: boolean
 }
 export interface UserResult extends api.MetApiResults { data: User }
