@@ -37,7 +37,7 @@ class WriteExist
             default => "{$name}_exists",
         };
 
-        $shouldAddExists = !$noExists && $isExistable;
+        $shouldAddExists = ! $noExists && $isExistable;
 
         if ($jsonOutput) {
             if ($shouldAddExists) {
@@ -52,6 +52,6 @@ class WriteExist
             return "{$indent}  {$existsName}{$optional}: boolean" . PHP_EOL;
         }
 
-        return "";
+        return '';
     }
 }

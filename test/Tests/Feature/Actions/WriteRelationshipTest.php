@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Actions;
 
+use FumeApp\ModelTyper\Actions\WriteCount;
+use FumeApp\ModelTyper\Actions\WriteExist;
 use FumeApp\ModelTyper\Actions\WriteRelationship;
 use Tests\TestCase;
 
@@ -35,7 +37,10 @@ class WriteRelationshipTest extends TestCase
 
         $this->assertIsArray($result);
 
-        $this->assertEquals(['name' => 'notifications', 'type' => 'DatabaseNotification[]', 'count' => ['name' => 'notifications_count', 'type' => 'number'], 'exists' => ['name' => 'notifications_exists', 'type' => 'boolean']], $result);
+        $this->assertEquals([
+            'name' => 'notifications',
+            'type' => 'DatabaseNotification[]',
+        ], $result);
     }
 
     public function test_action_can_be_indented()
@@ -57,19 +62,11 @@ class WriteRelationshipTest extends TestCase
     public function test_action_can_return_optional_relationships_as_array()
     {
         $action = app(WriteRelationship::class);
-        $result = $action(relation: $this->relation, optionalRelation: true, jsonOutput: true);
+        $result = $action(relation: $this->relation, jsonOutput: true, optionalRelation: true);
 
         $this->assertEquals([
             'name' => 'notifications?',
             'type' => 'DatabaseNotification[]',
-            'count' => [
-                'name' => 'notifications_count',
-                'type' => 'number',
-            ],
-            'exists' => [
-                'name' => 'notifications_exists',
-                'type' => 'boolean',
-            ],
         ], $result);
     }
 
@@ -84,7 +81,7 @@ class WriteRelationshipTest extends TestCase
     // Add newly added count and exists tests
     public function test_action_can_return_count_relationships()
     {
-        $action = app(WriteRelationship::class);
+        $action = app(WriteCount::class);
         $result = $action(relation: $this->relation);
 
         $this->assertStringContainsString('notifications_count: number', $result);
@@ -92,7 +89,7 @@ class WriteRelationshipTest extends TestCase
 
     public function test_action_can_return_exists_relationships()
     {
-        $action = app(WriteRelationship::class);
+        $action = app(WriteExist::class);
         $result = $action(relation: $this->relation);
 
         $this->assertStringContainsString('notifications_exists: boolean', $result);
@@ -100,7 +97,7 @@ class WriteRelationshipTest extends TestCase
 
     public function test_action_can_return_optional_count_relationships()
     {
-        $action = app(WriteRelationship::class);
+        $action = app(WriteCount::class);
         $result = $action(relation: $this->relation, optionalCounts: true);
 
         $this->assertStringContainsString('notifications_count?: number', $result);
@@ -108,37 +105,9 @@ class WriteRelationshipTest extends TestCase
 
     public function test_action_can_return_optional_exists_relationships()
     {
-        $action = app(WriteRelationship::class);
+        $action = app(WriteExist::class);
         $result = $action(relation: $this->relation, optionalExists: true);
 
         $this->assertStringContainsString('notifications_exists?: boolean', $result);
-    }
-
-    public function test_action_can_return_optional_count_and_exists_relationships()
-    {
-        $action = app(WriteRelationship::class);
-        $result = $action(relation: $this->relation, optionalCounts: true, optionalExists: true);
-
-        $this->assertStringContainsString('notifications_count?: number', $result);
-        $this->assertStringContainsString('notifications_exists?: boolean', $result);
-    }
-
-    public function test_action_can_return_optional_count_and_exists_relationships_as_array()
-    {
-        $action = app(WriteRelationship::class);
-        $result = $action(relation: $this->relation, optionalCounts: true, optionalExists: true, jsonOutput: true);
-
-        $this->assertEquals([
-            'name' => 'notifications?',
-            'type' => 'DatabaseNotification[]',
-            'count' => [
-                'name' => 'notifications_count?',
-                'type' => 'number',
-            ],
-            'exists' => [
-                'name' => 'notifications_exists?',
-                'type' => 'boolean',
-            ],
-        ], $result);
     }
 }

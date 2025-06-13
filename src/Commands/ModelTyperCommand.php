@@ -66,6 +66,7 @@ class ModelTyperCommand extends Command
 
     /**
      * Execute the console command.
+     *
      * @throws ReflectionException
      */
     public function handle(Generator $generator): int

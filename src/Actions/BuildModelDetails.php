@@ -80,7 +80,7 @@ class BuildModelDetails
             'relations' => $relations,
             'interfaces' => $interfaces,
             'imports' => $imports,
-            'sums' => $sums
+            'sums' => $sums,
         ];
     }
 

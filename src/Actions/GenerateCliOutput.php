@@ -32,8 +32,9 @@ class GenerateCliOutput
     /**
      * Output the command in the CLI.
      *
-     * @param Collection<int, SplFileInfo> $models
-     * @param array<string, string> $mappings
+     * @param  Collection<int, SplFileInfo>  $models
+     * @param  array<string, string>  $mappings
+     *
      * @throws \ReflectionException
      */
     public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string

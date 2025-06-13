@@ -46,6 +46,6 @@ class WriteCount
             return "{$indent}  {$countName}{$optional}: number" . PHP_EOL;
         }
 
-        return "";
+        return '';
     }
 }

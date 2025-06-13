@@ -13,6 +13,10 @@ export interface User {
   role_new: string
   role_enum: Roles
   role_enum_traditional: Roles
+  // counts
+  notifications_count: number
+  // exists
+  notifications_exists: boolean
 }
 
 const Roles = {

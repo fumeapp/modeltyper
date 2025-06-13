@@ -2,6 +2,8 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use const JSON_PRETTY_PRINT;
+
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Support\Collection;
@@ -9,7 +11,6 @@ use Illuminate\Support\Facades\Config;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
-use const JSON_PRETTY_PRINT;
 
 class GenerateJsonOutput
 {
@@ -29,8 +30,9 @@ class GenerateJsonOutput
     /**
      * Output the command in the CLI as JSON.
      *
-     * @param Collection<int, SplFileInfo> $models
-     * @param array<string, string> $mappings
+     * @param  Collection<int, SplFileInfo>  $models
+     * @param  array<string, string>  $mappings
+     *
      * @throws ReflectionException
      */
     public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false): string
