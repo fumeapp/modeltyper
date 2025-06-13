@@ -61,6 +61,13 @@ export interface User {
     initials: string;
     // relations
     teams: Teams;
+    posts: Posts;
+    // counts
+    teams_count: number;
+    posts_count: number;
+    // exists
+    teams_exists: boolean;
+    posts_exists: boolean;
 }
 export type Users = Array<User>;
 
@@ -77,8 +84,48 @@ export interface Team {
     url: string;
     // relations
     users: Users;
+    // counts
+    users_count: number;
+    // exists
+    users_exists: boolean;
 }
 export type Teams = Array<Team>;
+
+export interface Post {
+    // columns
+    id: number;
+    user_id: number;
+    title: string;
+    content: string;
+    created_at?: Date;
+    updated_at?: Date;
+    // mutators
+    summary: string;
+    // relations
+    user: User;
+    comments: Comments;
+    // counts
+    comments_count: number;
+    // exists
+    comments_exists: boolean;
+    // sums
+    comments_sum_likes: number | null;
+}
+export type Posts = Array<Post>;
+
+export interface Comment {
+    // columns
+    id: number;
+    post_id: number;
+    content: string;
+    created_at?: Date;
+    updated_at?: Date;
+    // mutators
+    summary: string;
+    // relations
+    post: Post;
+}
+export type Comments = Array<Comment>;
 ```
 
 ### How does it work?
