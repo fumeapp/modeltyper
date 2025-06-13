@@ -26,12 +26,7 @@ class WriteCount
             'MorphToMany', 'MorphMany', 'MorphedByMany',
         ]);
 
-        $countName = match ($columnsCase) {
-            'camel' => Str::camel("{$name}Count"),
-            'pascal' => Str::studly("{$name}Count"),
-            'kebab' => Str::kebab("{$name}-count"),
-            default => "{$name}_count",
-        };
+        $countName = app(MatchCase::class)($columnsCase, "$name count");
 
         if ($jsonOutput) {
             if ($isCountable) {

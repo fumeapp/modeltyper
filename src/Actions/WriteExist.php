@@ -22,20 +22,21 @@ class WriteExist
         $columnsCase = Config::get('modeltyper.case.columns', 'snake');
         $name = app(MatchCase::class)($relationCase, $relation['name']);
 
-        $relatedModel = $this->getClassName($relation['related']);
         $optional = $optionalExists ? '?' : '';
 
         $isExistable = in_array($relation['type'], [
-            'BelongsToMany', 'HasMany', 'HasManyThrough',
-            'MorphToMany', 'MorphMany', 'MorphedByMany',
+            'HasOne',
+            'HasMany',
+            'HasOneThrough',
+            'HasManyThrough',
+            'BelongsTo',
+            'BelongsToMany',
+            'MorphOne',
+            'MorphMany',
+            'MorphToMany',
         ]);
 
-        $existsName = match ($columnsCase) {
-            'camel' => Str::camel("{$name}Exists"),
-            'pascal' => Str::studly("{$name}Exists"),
-            'kebab' => Str::kebab("{$name}-exists"),
-            default => "{$name}_exists",
-        };
+        $existsName = app(MatchCase::class)($columnsCase, "{$name} exists");
 
         $shouldAddExists = ! $noExists && $isExistable;
 

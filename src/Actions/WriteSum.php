@@ -12,23 +12,18 @@ class WriteSum
         $relation = $sum['relation'];
         $column = $sum['column'];
 
-        $columnsCase = Config::get('modeltyper.case.columns', 'snake');
-        $optionalSums = $optionalSums ? '?' : '';
+        $case = Config::get('modeltyper.case.columns', 'snake');
+        $optional = $optionalSums ? '?' : '';
 
-        $sumName = match ($columnsCase) {
-            'camel' => Str::camel("{$relation}_sum_{$column}"),
-            'pascal' => Str::studly("{$relation}_sum_{$column}"),
-            'kebab' => Str::kebab("{$relation}_sum_{$column}"),
-            default => "{$relation}_sum_{$column}",
-        };
+        $sumName = app(MatchCase::class)($case, "{$relation} sum {$column}");
 
         if ($jsonOutput) {
             return [
                 'type' => 'number | null',
-                'name' => "{$sumName}{$optionalSums}",
+                'name' => "{$sumName}{$optional}",
             ];
         }
 
-        return "{$indent}  {$sumName}{$optionalSums}: number | null;" . PHP_EOL;
+        return "{$indent}  {$sumName}{$optional}: number | null;" . PHP_EOL;
     }
 }
