@@ -75,7 +75,7 @@ class WriteColumnAttribute
                                     }
                                 } else {
                                     $rt = $accessorMethodReturnType->getName();
-                                    if (is_subclass_of($rt, \Illuminate\Database\Eloquent\Collection::class)) {
+                                    if (is_subclass_of($rt, \Illuminate\Database\Eloquent\Collection::class) && $returnType($rt, $mappings) !== 'unknown') {
                                         $type = $returnType($rt, $mappings);
                                         $enumRef = $this->resolveEnum($rt);
                                     } else {
