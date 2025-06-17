@@ -74,8 +74,14 @@ class WriteColumnAttribute
                                         }
                                     }
                                 } else {
-                                    $type = $this->getClassName($accessorMethodReturnType->getName());
-                                    $enumRef = $this->resolveEnum($accessorMethodReturnType->getName());
+                                    $rt = $accessorMethodReturnType->getName();
+                                    if (is_subclass_of($rt, \Illuminate\Database\Eloquent\Collection::class)) {
+                                        $type = $returnType($rt, $mappings);
+                                        $enumRef = $this->resolveEnum($rt);
+                                    } else {
+                                        $type = $this->getClassName($rt);
+                                        $enumRef = $this->resolveEnum($rt);
+                                    }
                                 }
                             }
                         } else {
