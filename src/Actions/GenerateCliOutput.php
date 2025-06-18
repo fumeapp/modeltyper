@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
 
 class GenerateCliOutput
@@ -36,13 +35,16 @@ class GenerateCliOutput
      * @param  Collection<int, SplFileInfo>  $models
      * @param  array<string, string>  $mappings
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
+        $countWriter = app(WriteCount::class);
+        $existWriter = app(WriteExist::class);
+        $sumWriter = app(WriteSum::class);
 
         if ($global) {
             $namespace = Config::get('modeltyper.global-namespace', 'models');
@@ -50,7 +52,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
             $modelDetails = $modelBuilder(
                 modelFile: $model,
@@ -71,6 +73,7 @@ class GenerateCliOutput
                 'relations' => $relations,
                 'interfaces' => $interfaces,
                 'imports' => $imports,
+                'sums' => $sums,
             ] = $modelDetails;
 
             $this->imports = array_merge($this->imports, $imports->toArray());
@@ -113,8 +116,29 @@ class GenerateCliOutput
 
             if ($relations->isNotEmpty() && ! $noRelations) {
                 $entry .= "{$this->indent}  // relations" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $noCounts, $optionalCounts, $noExists, $optionalExists, $plurals) {
-                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists, plurals: $plurals);
+                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
+                    $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);
+                });
+            }
+
+            if ($relations->isNotEmpty() && ! $noCounts) {
+                $entry .= "{$this->indent}  // counts" . PHP_EOL;
+                $relations->each(function ($rel) use (&$entry, $countWriter, $optionalCounts) {
+                    $entry .= $countWriter(relation: $rel, indent: $this->indent, optionalCounts: $optionalCounts);
+                });
+            }
+
+            if ($relations->isNotEmpty() && ! $noExists) {
+                $entry .= "{$this->indent}  // exists" . PHP_EOL;
+                $relations->each(function ($rel) use (&$entry, $existWriter, $optionalExists) {
+                    $entry .= $existWriter(relation: $rel, indent: $this->indent, optionalExists: $optionalExists);
+                });
+            }
+
+            if ($sums->isNotEmpty() && ! $noSums) {
+                $entry .= "{$this->indent}  // sums" . PHP_EOL;
+                $sums->each(function ($sum) use (&$entry, $sumWriter, $optionalSums) {
+                    $entry .= $sumWriter(sum: $sum, indent: $this->indent, optionalSums: $optionalSums);
                 });
             }
 
@@ -164,6 +188,6 @@ class GenerateCliOutput
             $this->output .= '  }' . PHP_EOL . '}' . PHP_EOL . PHP_EOL;
         }
 
-        return mb_substr($this->output, 0, mb_strrpos($this->output, PHP_EOL));
+        return substr($this->output, 0, strrpos($this->output, PHP_EOL));
     }
 }

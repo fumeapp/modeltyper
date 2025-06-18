@@ -48,6 +48,14 @@
             {
                 "name": "role_enum_traditional",
                 "type": "RolesEnum"
+            },
+            {
+                "name": "notifications_count",
+                "type": "number"
+            },
+            {
+                "name": "notifications_exists",
+                "type": "boolean"
             }
         ]
     },

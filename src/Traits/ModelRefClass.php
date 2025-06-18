@@ -2,6 +2,9 @@
 
 namespace FumeApp\ModelTyper\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use ReflectionClass;
 
 trait ModelRefClass
@@ -9,8 +12,8 @@ trait ModelRefClass
     /**
      * Get the reflection interface.
      *
-     * @param  array{"class": class-string<\Illuminate\Database\Eloquent\Model>, database: string, table: string, policy: class-string|null, attributes: \Illuminate\Support\Collection, relations: \Illuminate\Support\Collection, events: \Illuminate\Support\Collection, observers: \Illuminate\Support\Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<\Illuminate\Database\Eloquent\Model>>, builder: class-string<\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>}  $info
-     * @return \ReflectionClass<\Illuminate\Database\Eloquent\Model>
+     * @param  array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>}  $info
+     * @return ReflectionClass<Model>
      */
     public function getRefInterface(array $info): ReflectionClass
     {

@@ -61,6 +61,13 @@ export interface User {
     initials: string;
     // relations
     teams: Teams;
+    posts: Posts;
+    // counts
+    teams_count: number;
+    posts_count: number;
+    // exists
+    teams_exists: boolean;
+    posts_exists: boolean;
 }
 export type Users = Array<User>;
 
@@ -77,8 +84,48 @@ export interface Team {
     url: string;
     // relations
     users: Users;
+    // counts
+    users_count: number;
+    // exists
+    users_exists: boolean;
 }
 export type Teams = Array<Team>;
+
+export interface Post {
+    // columns
+    id: number;
+    user_id: number;
+    title: string;
+    content: string;
+    created_at?: Date;
+    updated_at?: Date;
+    // mutators
+    summary: string;
+    // relations
+    user: User;
+    comments: Comments;
+    // counts
+    comments_count: number;
+    // exists
+    comments_exists: boolean;
+    // sums
+    comments_sum_likes: number | null;
+}
+export type Posts = Array<Post>;
+
+export interface Comment {
+    // columns
+    id: number;
+    post_id: number;
+    content: string;
+    created_at?: Date;
+    updated_at?: Date;
+    // mutators
+    summary: string;
+    // relations
+    post: Post;
+}
+export type Comments = Array<Comment>;
 ```
 
 ### How does it work?
@@ -140,12 +187,40 @@ protected function firstName(): Attribute
 - --optional-counts : Make relationship counts optional fields on the model type
 - --no-exists : Do not include exists for relationships
 - --optional-exists : Make relationship exists optional fields on the model type
+- --no-sums : Do not include sums for relationships
+- --optional-sums : Make relationship sums optional fields on the model type
 - --timestamps-date : Output timestamps as a Date object type
 - --optional-nullables : Output nullable attributes as optional fields
 - --api-resources : Output api.MetApi interfaces
 - --fillables : Output model fillables
 - --fillable-suffix= : Appends to fillables
 - --ignore-config : Ignore options set in config
+
+
+### Sum Aggregates for Relationships
+
+Model Typer supports generating sum aggregates for Eloquent relationships. If a related model includes a summed value (e.g., the total number of likes on a user’s posts), this sum will be reflected in the generated output.
+
+To enable this, define the sum relationship and target column using the $sums property on your model:
+
+```php
+protected $sums = [
+// Format: 'relationship' => 'column_to_sum'
+'posts' => 'likes',
+];
+```
+
+This will generate a corresponding field in the TypeScript interface:
+
+```ts
+export interface User {
+...
+// Sum of `likes` from related `posts`
+posts_sum_likes: number | null;
+}
+```
+
+This allows you to work with pre-calculated relationship totals directly in your frontend types.
 
 ### Custom Interfaces
 
