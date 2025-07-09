@@ -19,7 +19,7 @@ class Generator
      * @throws ModelTyperException
      * @throws ReflectionException
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $noAverages = false, bool $optionalAverages = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $models = app(GetModels::class)(
             model: $specificModel,
@@ -47,6 +47,8 @@ class Generator
             optionalExists: $optionalExists,
             noSums: $noSums,
             optionalSums: $optionalSums,
+            noAverages: $noAverages,
+            optionalAverages: $optionalAverages,
             timestampsDate: $timestampsDate,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
@@ -61,7 +63,7 @@ class Generator
      *
      * @throws ReflectionException
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $noAverages = false, bool $optionalAverages = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
@@ -85,6 +87,8 @@ class Generator
             optionalExists: $optionalExists,
             noSums: $noSums,
             optionalSums: $optionalSums,
+            noAverages: $noAverages,
+            optionalAverages: $optionalAverages,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
             fillableSuffix: $fillableSuffix
