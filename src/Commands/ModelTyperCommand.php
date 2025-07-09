@@ -42,6 +42,8 @@ class ModelTyperCommand extends Command
                             {--optional-exists : Make exists on relations optional fields}
                             {--no-sums : Do not include sums on relations}
                             {--optional-sums : Make sums on relations optional fields}
+                            {--no-averages : Do not include averages on relations}
+                            {--optional-averages : Make averages on relations optional fields}
                             {--timestamps-date : Output timestamps as a Date object type}
                             {--optional-nullables : Output nullable attributes as optional fields}
                             {--api-resources : Output api.MetApi interfaces}
@@ -88,6 +90,8 @@ class ModelTyperCommand extends Command
                 optionalExists: $this->getConfig('optional-exists'),
                 noSums: $this->getConfig('no-sums'),
                 optionalSums: $this->getConfig('optional-sums'),
+                noAverages: $this->getConfig('no-averages'),
+                optionalAverages: $this->getConfig('optional-averages'),
                 timestampsDate: $this->getConfig('timestamps-date'),
                 optionalNullables: $this->getConfig('optional-nullables'),
                 fillables: $this->getConfig('fillables'),

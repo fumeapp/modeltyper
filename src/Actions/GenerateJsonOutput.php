@@ -35,7 +35,7 @@ class GenerateJsonOutput
      *
      * @throws ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $noAverages = false, bool $optionalAverages = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -44,8 +44,9 @@ class GenerateJsonOutput
         $countWriter = app(WriteCount::class);
         $existWriter = app(WriteExist::class);
         $sumWriter = app(WriteSum::class);
+        $avgWriter = app(WriteAvg::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $mappings, $useEnums, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums): void {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $avgWriter, $mappings, $useEnums, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $noAverages, $optionalAverages): void {
             $modelDetails = $modelBuilder(
                 modelFile: $model,
                 includedModels: Config::get('modeltyper.included_models', []),
@@ -65,6 +66,7 @@ class GenerateJsonOutput
                 'relations' => $relations,
                 'interfaces' => $interfaces,
                 'sums' => $sums,
+                'averages' => $averages,
             ] = $modelDetails;
 
             $this->output['interfaces'][$name] = $columns
@@ -104,6 +106,14 @@ class GenerateJsonOutput
                     $sumConst = $sumWriter(sum: $sum, jsonOutput: true, optionalSums: $optionalSums);
 
                     $this->output['interfaces'][$name][] = $sumConst;
+                });
+            }
+
+            if (! $noAverages) {
+                $averages->each(function ($avg) use ($avgWriter, $name, $optionalAverages) {
+                    $avgConst = $avgWriter(avg: $avg, jsonOutput: true, optionalAverages: $optionalAverages);
+
+                    $this->output['interfaces'][$name][] = $avgConst;
                 });
             }
 

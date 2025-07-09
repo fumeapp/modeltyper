@@ -189,6 +189,8 @@ protected function firstName(): Attribute
 - --optional-exists : Make relationship exists optional fields on the model type
 - --no-sums : Do not include sums for relationships
 - --optional-sums : Make relationship sums optional fields on the model type
+- --no-averages : Do not include averages for relationships
+- --optional-averages : Make relationship averages optional fields on the model type
 - --timestamps-date : Output timestamps as a Date object type
 - --optional-nullables : Output nullable attributes as optional fields
 - --api-resources : Output api.MetApi interfaces
@@ -205,8 +207,21 @@ To enable this, define the sum relationship and target column using the $sums pr
 
 ```php
 protected $sums = [
-// Format: 'relationship' => 'column_to_sum'
-'posts' => 'likes',
+    // Format: 'column_to_sum' => 'relationship_name'
+    'likes' => 'posts',
+];
+```
+
+### Avg Aggregates for Relationships
+Model Typer also supports generating average aggregates for Eloquent relationships. If a related model includes an average value (e.g., the average rating of a user’s posts), this average will be reflected in the generated output.
+To enable this, define the average relationship and target column using the $avgs property on your model:
+
+```php
+protected $averages = [
+    // Format: 'column_to_average' => 'relationship_name'
+    'rating' => 'reviews',
+];
+```
 ];
 ```
 
