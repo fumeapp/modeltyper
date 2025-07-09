@@ -19,7 +19,7 @@ class BuildModelDetails
     /**
      * Build the model details.
      *
-     * @return array{reflectionModel: ReflectionClass, name: string, columns: Collection, nonColumns: Collection, relations: Collection, interfaces: Collection, imports: Collection, sums: Collection}|null
+     * @return array{reflectionModel: ReflectionClass, name: string, columns: Collection, nonColumns: Collection, relations: Collection, interfaces: Collection, imports: Collection, sums: Collection, averages: Collection}|null
      *
      * @throws ReflectionException
      */
@@ -60,7 +60,12 @@ class BuildModelDetails
             ->unique()
             ->values();
 
-        $sums = collect($laravelModel->sums ?? [])->map(fn ($column, $relation) => [
+        $sums = collect($laravelModel->sums ?? [])->map(fn ($relation, $column) => [
+            'relation' => $relation,
+            'column' => $column,
+        ])->values();
+
+        $averages = collect($laravelModel->averages ?? [])->map(fn ($relation, $column) => [
             'relation' => $relation,
             'column' => $column,
         ])->values();
@@ -81,6 +86,7 @@ class BuildModelDetails
             'interfaces' => $interfaces,
             'imports' => $imports,
             'sums' => $sums,
+            'averages' => $averages,
         ];
     }
 

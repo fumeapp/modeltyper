@@ -190,6 +190,28 @@ return [
     'optional-sums' => false,
 
     /*
+     * --------------------------------------------------------------------------
+     * Exclude Averages Attributes
+     * --------------------------------------------------------------------------
+     *
+     * Determines whether to exclude the averages property from model TypeScript
+     * definitions. Averages are typically used to calculate the mean of
+     * values across relationships.
+     */
+    'no-averages' => false,
+
+    /*
+     * --------------------------------------------------------------------------
+     * Make Averages Attributes Optional
+     * --------------------------------------------------------------------------
+     *
+     * Determines whether the averages property should be optional in the
+     * TypeScript definitions. This allows for more flexibility in handling
+     * models that may not have aggregated values.
+     */
+    'optional-averages' => false,
+
+    /*
     |--------------------------------------------------------------------------
     | Output Timestamps as Date Object Types
     |--------------------------------------------------------------------------

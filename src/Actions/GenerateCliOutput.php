@@ -37,14 +37,35 @@ class GenerateCliOutput
      *
      * @throws \ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
-    {
+    public function __invoke(
+        Collection $models,
+        array $mappings,
+        bool $global = false,
+        bool $useEnums = false,
+        bool $plurals = false,
+        bool $apiResources = false,
+        bool $optionalRelations = false,
+        bool $noRelations = false,
+        bool $noHidden = false,
+        bool $noCounts = false,
+        bool $optionalCounts = false,
+        bool $noExists = false,
+        bool $optionalExists = false,
+        bool $noSums = false,
+        bool $optionalSums = false,
+        bool $noAverages = false,
+        bool $optionalAverages = false,
+        bool $optionalNullables = false,
+        bool $fillables = false,
+        string $fillableSuffix = 'Fillable'
+    ): string {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
         $relationWriter = app(WriteRelationship::class);
         $countWriter = app(WriteCount::class);
         $existWriter = app(WriteExist::class);
         $sumWriter = app(WriteSum::class);
+        $avgWriter = app(WriteAvg::class);
 
         if ($global) {
             $namespace = Config::get('modeltyper.global-namespace', 'models');
@@ -52,7 +73,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $avgWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $noAverages, $optionalAverages, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
             $entry = '';
             $modelDetails = $modelBuilder(
                 modelFile: $model,
@@ -74,6 +95,7 @@ class GenerateCliOutput
                 'interfaces' => $interfaces,
                 'imports' => $imports,
                 'sums' => $sums,
+                'averages' => $averages,
             ] = $modelDetails;
 
             $this->imports = array_merge($this->imports, $imports->toArray());
@@ -139,6 +161,13 @@ class GenerateCliOutput
                 $entry .= "{$this->indent}  // sums" . PHP_EOL;
                 $sums->each(function ($sum) use (&$entry, $sumWriter, $optionalSums) {
                     $entry .= $sumWriter(sum: $sum, indent: $this->indent, optionalSums: $optionalSums);
+                });
+            }
+
+            if ($averages->isNotEmpty() && ! $noAverages) {
+                $entry .= "{$this->indent}  // averages" . PHP_EOL;
+                $averages->each(function ($avg) use (&$entry, $avgWriter, $optionalAverages) {
+                    $entry .= $avgWriter(avg: $avg, indent: $this->indent, optionalAverages: $optionalAverages);
                 });
             }
 
