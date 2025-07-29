@@ -239,4 +239,23 @@ class ModelTyperCommandTest extends TestCase
             '--model' => Complex::class,
         ])->expectsOutput($expected);
     }
+
+    public function test_command_generates_types_when_use_types_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-types.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--use-types' => true,
+        ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_types_when_use_types_config_is_enabled()
+    {
+        Config::set('modeltyper.use-types', true);
+
+        $expected = $this->getExpectedContent('user-types-config.ts');
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+        ])->expectsOutput($expected);
+    }
 }

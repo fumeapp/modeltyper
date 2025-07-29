@@ -84,6 +84,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Use TypeScript Types Instead of Interfaces
+    |--------------------------------------------------------------------------
+    |
+    | Determines whether to generate TypeScript type aliases instead of interfaces.
+    | When true, generates "export type" declarations instead of "export interface".
+    | Interfaces are more extensible while types can represent more complex.
+    */
+    'use-types' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Output Plural Form for Models
     |--------------------------------------------------------------------------
     |
