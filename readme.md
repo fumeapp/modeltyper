@@ -46,6 +46,12 @@ You can simply run the following command to generate TypeScript interfaces:
 php artisan model:typer
 ```
 
+Or generate TypeScript types instead:
+
+```bash
+php artisan model:typer --use-types
+```
+
 The output is an accurate, type-safe representation of Laravel models in TypeScript, such as:
 
 ```ts
@@ -146,6 +152,55 @@ You can then pipe the output into your preferred `???.d.ts`, or set the [optiona
 >
 > These mappings can be [extended or overridden](#override-default-mappings--add-new-ones) in the config
 
+### Interfaces vs Types
+
+By default, Model Typer generates TypeScript interfaces, but you can also generate type aliases using the `--use-types` option or by setting `use-types` to `true` in the config file.
+
+#### Interfaces (default)
+
+```ts
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+```
+
+#### Types (with --use-types)
+
+```ts
+export type User = {
+    id: number;
+    name: string;
+    email: string;
+};
+```
+
+**When to use interfaces:**
+
+-   When you need extensibility (other interfaces can extend them)
+-   For object-oriented patterns
+-   When you want declaration merging capabilities
+
+**When to use types:**
+
+-   For more complex type definitions (unions, intersections, etc.)
+-   When you prefer a more functional approach
+-   For better performance in some TypeScript compilation scenarios
+
+You can enable types in several ways:
+
+```bash
+# Via CLI option
+php artisan model:typer --use-types
+
+# Via config file
+# Set 'use-types' => true in config/modeltyper.php
+
+# For a specific model
+php artisan model:typer --model=User --use-types
+```
+
 ### Requirements
 
 1. You must have a [return type](https://www.php.net/manual/en/language.types.declarations.php) for your model
@@ -171,31 +226,31 @@ protected function firstName(): Attribute
 
 ### Optional Arguments
 
-- output-file : Echo the definitions into a file
+-   output-file : Echo the definitions into a file
 
 ### Additional Options
 
-- --model= : Generate typescript interfaces for a specific model
-- --global : Generate typescript interfaces in a global namespace named models
-- --json : Output the result as json
-- --use-enums : Use typescript enums instead of object literals
-- --plurals : Output model plurals
-- --no-relations : Do not include relations
-- --optional-relations : Make relations optional fields on the model type
-- --no-hidden : Do not include hidden model attributes
-- --no-counts : Do not include counts for relationships
-- --optional-counts : Make relationship counts optional fields on the model type
-- --no-exists : Do not include exists for relationships
-- --optional-exists : Make relationship exists optional fields on the model type
-- --no-sums : Do not include sums for relationships
-- --optional-sums : Make relationship sums optional fields on the model type
-- --timestamps-date : Output timestamps as a Date object type
-- --optional-nullables : Output nullable attributes as optional fields
-- --api-resources : Output api.MetApi interfaces
-- --fillables : Output model fillables
-- --fillable-suffix= : Appends to fillables
-- --ignore-config : Ignore options set in config
-
+-   --model= : Generate typescript interfaces for a specific model
+-   --global : Generate typescript interfaces in a global namespace named models
+-   --json : Output the result as json
+-   --use-enums : Use typescript enums instead of object literals
+-   --use-types : Use typescript types instead of interfaces
+-   --plurals : Output model plurals
+-   --no-relations : Do not include relations
+-   --optional-relations : Make relations optional fields on the model type
+-   --no-hidden : Do not include hidden model attributes
+-   --no-counts : Do not include counts for relationships
+-   --optional-counts : Make relationship counts optional fields on the model type
+-   --no-exists : Do not include exists for relationships
+-   --optional-exists : Make relationship exists optional fields on the model type
+-   --no-sums : Do not include sums for relationships
+-   --optional-sums : Make relationship sums optional fields on the model type
+-   --timestamps-date : Output timestamps as a Date object type
+-   --optional-nullables : Output nullable attributes as optional fields
+-   --api-resources : Output api.MetApi interfaces
+-   --fillables : Output model fillables
+-   --fillable-suffix= : Appends to fillables
+-   --ignore-config : Ignore options set in config
 
 ### Sum Aggregates for Relationships
 
@@ -352,10 +407,10 @@ artisan model:typer --plurals
 Exports for example, when a `User` model exists:
 
 ```ts
-export type Users = User[]
+export type Users = User[];
 ```
 
-### Output Api.MetApi* resources
+### Output Api.MetApi\* resources
 
 ```bash
 artisan model:typer --api-resources
@@ -364,10 +419,18 @@ artisan model:typer --api-resources
 Exports:
 
 ```ts
-export interface UserResults extends api.MetApiResults { data: Users }
-export interface UserResult extends api.MetApiResults { data: User }
-export interface UserMetApiData extends api.MetApiData { data: User }
-export interface UserResponse extends api.MetApiResponse { data: UserMetApiData }
+export interface UserResults extends api.MetApiResults {
+    data: Users;
+}
+export interface UserResult extends api.MetApiResults {
+    data: User;
+}
+export interface UserMetApiData extends api.MetApiData {
+    data: User;
+}
+export interface UserResponse extends api.MetApiResponse {
+    data: UserMetApiData;
+}
 ```
 
 ### Enable all output options
