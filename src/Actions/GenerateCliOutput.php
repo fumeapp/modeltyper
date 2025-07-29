@@ -37,7 +37,7 @@ class GenerateCliOutput
      *
      * @throws \ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -52,7 +52,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $useTypes) {
             $entry = '';
             $modelDetails = $modelBuilder(
                 modelFile: $model,
@@ -78,7 +78,9 @@ class GenerateCliOutput
 
             $this->imports = array_merge($this->imports, $imports->toArray());
 
-            $entry .= "{$this->indent}export interface {$name} {" . PHP_EOL;
+            $declarationType = $useTypes ? 'type' : 'interface';
+            $openBrace = $useTypes ? ' = {' : ' {';
+            $entry .= "{$this->indent}export {$declarationType} {$name}{$openBrace}" . PHP_EOL;
 
             if ($columns->isNotEmpty()) {
                 $entry .= "{$this->indent}  // columns" . PHP_EOL;
@@ -149,14 +151,21 @@ class GenerateCliOutput
                 $entry .= "{$this->indent}export type $plural = {$name}[]" . PHP_EOL;
 
                 if ($apiResources) {
-                    $entry .= "{$this->indent}export interface {$name}Results extends api.MetApiResults { data: $plural }" . PHP_EOL;
+                    $apiDeclarationType = $useTypes ? 'type' : 'interface';
+                    $apiOpenBrace = $useTypes ? ' = api.MetApiResults & { data: ' . $plural . ' }' : ' extends api.MetApiResults { data: ' . $plural . ' }';
+                    $entry .= "{$this->indent}export {$apiDeclarationType} {$name}Results{$apiOpenBrace}" . PHP_EOL;
                 }
             }
 
             if ($apiResources) {
-                $entry .= "{$this->indent}export interface {$name}Result extends api.MetApiResults { data: $name }" . PHP_EOL;
-                $entry .= "{$this->indent}export interface {$name}MetApiData extends api.MetApiData { data: $name }" . PHP_EOL;
-                $entry .= "{$this->indent}export interface {$name}Response extends api.MetApiResponse { data: {$name}MetApiData }" . PHP_EOL;
+                $apiDeclarationType = $useTypes ? 'type' : 'interface';
+                $apiResultOpenBrace = $useTypes ? ' = api.MetApiResults & { data: ' . $name . ' }' : ' extends api.MetApiResults { data: ' . $name . ' }';
+                $apiDataOpenBrace = $useTypes ? ' = api.MetApiData & { data: ' . $name . ' }' : ' extends api.MetApiData { data: ' . $name . ' }';
+                $apiResponseOpenBrace = $useTypes ? ' = api.MetApiResponse & { data: ' . $name . 'MetApiData }' : ' extends api.MetApiResponse { data: ' . $name . 'MetApiData }';
+
+                $entry .= "{$this->indent}export {$apiDeclarationType} {$name}Result{$apiResultOpenBrace}" . PHP_EOL;
+                $entry .= "{$this->indent}export {$apiDeclarationType} {$name}MetApiData{$apiDataOpenBrace}" . PHP_EOL;
+                $entry .= "{$this->indent}export {$apiDeclarationType} {$name}Response{$apiResponseOpenBrace}" . PHP_EOL;
             }
 
             if ($fillables) {
