@@ -11,7 +11,7 @@ class TypescriptMappings
      * @var array<string, string>
      */
     public static array $mappings = [
-        'array' => 'string[]',
+        'array' => 'Array<unknown>',
         'bigint' => 'number',
         'bool' => 'boolean',
         'boolean' => 'boolean',
