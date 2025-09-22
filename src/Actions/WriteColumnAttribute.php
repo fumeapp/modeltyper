@@ -79,8 +79,9 @@ class WriteColumnAttribute
                                         $type = $returnType($rt, $mappings);
                                         $enumRef = $this->resolveEnum($rt);
                                     } else {
-                                        $type = $returnType($rt, $mappings) !== 'unknown'
-                                            ? $returnType($rt, $mappings)
+                                        $rtType = $returnType($rt, $mappings);
+                                        $type = $rtType !== 'unknown'
+                                            ? $rtType
                                             : $this->getClassName($rt);
                                         $enumRef = $this->resolveEnum($rt);
                                     }
