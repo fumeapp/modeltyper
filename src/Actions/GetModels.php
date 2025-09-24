@@ -2,6 +2,7 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use Composer\ClassMapGenerator\ClassMapGenerator;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -30,18 +31,20 @@ class GetModels
             $excludedModels = array_map(fn ($excludedModel) => $this->resolveModelFilename($excludedModel), $excludedModels);
         }
 
-        return collect(File::allFiles(app_path()))
+        return collect(File::allFiles(app_path()))->concat(
+            File::allFiles(base_path('vendor/laravel/sanctum/src'))
+        )
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->filter(function (SplFileInfo $file) {
                 $tokens = token_get_all(file_get_contents($file->getRealPath()));
 
                 $isClassOrAbstract = false;
                 foreach ($tokens as $token) {
-                    if ($token[0] == T_CLASS) {
+                    if ($token[0] === T_CLASS) {
                         $isClassOrAbstract = true;
                         break;
                     }
-                    if ($token[0] == T_ABSTRACT) {
+                    if ($token[0] === T_ABSTRACT) {
                         $isClassOrAbstract = true;
                         break;
                     }
@@ -50,11 +53,11 @@ class GetModels
                 return $isClassOrAbstract;
             })
             ->filter(function (SplFileInfo $file) {
-                $class = app()->getNamespace() . str_replace(
-                    ['/', '.php'],
-                    ['\\', ''],
-                    Str::after($file->getPathname(), app_path() . DIRECTORY_SEPARATOR)
-                );
+                $class = ClassMapGenerator::createMap([$file]);
+                if (count($class) !== 1) {
+                    return false;
+                }
+                $class = array_keys($class)[0];
 
                 return class_exists($class) && (new ReflectionClass($class))->isSubclassOf(EloquentModel::class);
             })

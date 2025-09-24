@@ -2,12 +2,12 @@
 
 namespace FumeApp\ModelTyper\Actions;
 
+use Composer\ClassMapGenerator\ClassMapGenerator;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Finder\SplFileInfo;
@@ -89,12 +89,13 @@ class BuildModelDetails
      */
     private function getModelDetails(SplFileInfo $modelFile): ?array
     {
-        $modelFile = Str::of(app()->getNamespace())
-            ->append($modelFile->getRelativePathname())
-            ->replace('.php', '')
-            ->toString();
+        $class = ClassMapGenerator::createMap([$modelFile]);
+        if (count($class) !== 1) {
+            return [];
+        }
+        $class = array_keys($class)[0];
 
-        return app(RunModelInspector::class)($modelFile);
+        return app(RunModelInspector::class)($class);
     }
 
     private function overrideCollectionWithInterfaces(Collection $columns, Collection $interfaces): Collection
