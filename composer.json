@@ -1,5 +1,5 @@
 {
-    "name": "rschaefer/modeltyper",
+    "name": "fumeapp/modeltyper",
     "description": "Generate TypeScript interfaces from Laravel Models",
     "type": "library",
     "license": "MIT",

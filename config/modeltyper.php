@@ -348,6 +348,6 @@ return [
     | (ex. ./vendors/package/with/models)
     */
     'additional_paths' => [
-        // Models to ignore
+        // paths to search
     ],
 ];
