@@ -30,27 +30,27 @@ class GetModelsTest extends TestCase
     {
         $action = app(GetModels::class);
 
-        $foundModels = $action();
+        $foundModels = $action()->sortBy(fn ($file) => $file->getFilename())->values();
 
         $this->assertCount(5, $foundModels);
-        $this->assertStringContainsString('Complex.php', $foundModels[0]->getRelativePathname());
-        $this->assertStringContainsString('ComplexRelationship.php', $foundModels[1]->getRelativePathname());
-        $this->assertStringContainsString('Pivot.php', $foundModels[2]->getRelativePathname());
-        $this->assertStringContainsString('User.php', $foundModels[3]->getRelativePathname());
-        $this->assertStringContainsString('Team.php', $foundModels[4]->getRelativePathname());
+        $this->assertStringContainsString('Complex.php', $foundModels[0]->getBasename());
+        $this->assertStringContainsString('ComplexRelationship.php', $foundModels[1]->getBasename());
+        $this->assertStringContainsString('Pivot.php', $foundModels[2]->getBasename());
+        $this->assertStringContainsString('Team.php', $foundModels[3]->getBasename());
+        $this->assertStringContainsString('User.php', $foundModels[4]->getBasename());
     }
 
     public function test_action_can_find_all_models_in_project_except_excluded_models()
     {
         $action = app(GetModels::class);
 
-        $foundModels = $action(excludedModels: [User::class]);
+        $foundModels = $action(excludedModels: [User::class])->sortBy(fn ($file) => $file->getFilename())->values();
 
         $this->assertCount(4, $foundModels);
-        $this->assertStringContainsString('Complex.php', $foundModels[0]->getRelativePathname());
-        $this->assertStringContainsString('ComplexRelationship.php', $foundModels[1]->getRelativePathname());
-        $this->assertStringContainsString('Pivot.php', $foundModels[2]->getRelativePathname());
-        $this->assertStringContainsString('Team.php', $foundModels[3]->getRelativePathname());
+        $this->assertStringContainsString('Complex.php', $foundModels[0]->getBasename());
+        $this->assertStringContainsString('ComplexRelationship.php', $foundModels[1]->getBasename());
+        $this->assertStringContainsString('Pivot.php', $foundModels[2]->getBasename());
+        $this->assertStringContainsString('Team.php', $foundModels[3]->getBasename());
     }
 
     public function test_action_can_find_all_models_in_project_when_in_included_models()
@@ -60,6 +60,6 @@ class GetModelsTest extends TestCase
         $foundModels = $action(includedModels: [User::class, Team::class], excludedModels: [User::class]);
 
         $this->assertCount(1, $foundModels);
-        $this->assertStringContainsString('Team.php', $foundModels[0]->getRelativePathname());
+        $this->assertStringContainsString('Team.php', $foundModels[0]->getBasename());
     }
 }

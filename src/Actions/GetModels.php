@@ -5,10 +5,9 @@ namespace FumeApp\ModelTyper\Actions;
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 class GetModels
 {
@@ -19,7 +18,7 @@ class GetModels
      * @param  list<string>|null  $excludedModels
      * @return Collection<int, SplFileInfo>
      */
-    public function __invoke(?string $model = null, ?array $includedModels = null, ?array $excludedModels = null): Collection
+    public function __invoke(?string $model = null, ?array $includedModels = null, ?array $excludedModels = null, ?array $additionalPaths = null): Collection
     {
         $modelShortName = $this->resolveModelFilename($model);
 
@@ -31,46 +30,18 @@ class GetModels
             $excludedModels = array_map(fn ($excludedModel) => $this->resolveModelFilename($excludedModel), $excludedModels);
         }
 
-        return collect(File::allFiles(app_path()))->concat(
-            File::allFiles(base_path('vendor/laravel/sanctum/src'))
-        )
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->filter(function (SplFileInfo $file) {
-                $tokens = token_get_all(file_get_contents($file->getRealPath()));
-
-                $isClassOrAbstract = false;
-                foreach ($tokens as $token) {
-                    if ($token[0] === T_CLASS) {
-                        $isClassOrAbstract = true;
-                        break;
-                    }
-                    if ($token[0] === T_ABSTRACT) {
-                        $isClassOrAbstract = true;
-                        break;
-                    }
-                }
-
-                return $isClassOrAbstract;
-            })
-            ->filter(function (SplFileInfo $file) {
-                $class = ClassMapGenerator::createMap([$file]);
-                if (count($class) !== 1) {
-                    return false;
-                }
-                $class = array_keys($class)[0];
-
-                return class_exists($class) && (new ReflectionClass($class))->isSubclassOf(EloquentModel::class);
-            })
-            ->when($includedModels, function ($files, $includedModels) {
-                return $files->filter(fn (SplFileInfo $file) => in_array($file->getBasename('.php'), $includedModels));
-            })
-            ->when($excludedModels, function ($files, $excludedModels) {
-                return $files->filter(fn (SplFileInfo $file) => ! in_array($file->getBasename('.php'), $excludedModels));
-            })
-            ->when($modelShortName, function ($files, $modelShortName) {
-                return $files->filter(fn (SplFileInfo $file) => $file->getBasename('.php') === $modelShortName);
-            })
-            ->values();
+        return collect($additionalPaths)->add(app_path())->map(
+            fn ($file) => collect(ClassMapGenerator::createMap($file))
+        )->collapseWithKeys()
+            ->flip()
+            ->filter(fn ($class) => class_exists($class) && (new ReflectionClass($class))->isSubclassOf(EloquentModel::class))
+            ->map(fn ($fqn) => $this->resolveModelFilename($fqn))
+            ->when($includedModels, fn ($files, $includedModels) => $files->filter(fn (string $class) => in_array($class, $includedModels)))
+            ->when($excludedModels, fn ($files, $excludedModels) => $files->filter(fn (string $class) => ! in_array($class, $excludedModels)))
+            ->when($modelShortName, fn ($files, $modelShortName) => $files->filter(fn (string $class) => str_contains($class, $modelShortName)))
+            ->keys()->map(
+                fn ($file) => new SplFileInfo($file)
+            )->values();
     }
 
     private function resolveModelFilename(?string $model): string|false

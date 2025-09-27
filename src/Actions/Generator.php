@@ -6,7 +6,7 @@ use FumeApp\ModelTyper\Exceptions\ModelTyperException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use ReflectionException;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 /**
  * @throws ModelTyperException
@@ -24,7 +24,8 @@ class Generator
         $models = app(GetModels::class)(
             model: $specificModel,
             includedModels: Config::get('modeltyper.included_models', []),
-            excludedModels: Config::get('modeltyper.excluded_models', [])
+            excludedModels: Config::get('modeltyper.excluded_models', []),
+            additionalPaths: Config::get('modeltyper.additional_paths', [])
         );
 
         if ($models->isEmpty()) {

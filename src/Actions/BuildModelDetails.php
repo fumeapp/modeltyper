@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 class BuildModelDetails
 {
@@ -89,6 +89,9 @@ class BuildModelDetails
      */
     private function getModelDetails(SplFileInfo $modelFile): ?array
     {
+        // the file technically could define more than one class
+        // what ideally should be done here is making getModelDetails return an array of arrays
+        // but since laravel doesn't support it we don't have to
         $class = ClassMapGenerator::createMap([$modelFile]);
         if (count($class) !== 1) {
             return [];

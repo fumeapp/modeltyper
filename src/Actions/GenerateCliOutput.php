@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 class GenerateCliOutput
 {
