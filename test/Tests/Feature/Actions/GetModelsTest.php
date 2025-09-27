@@ -62,4 +62,14 @@ class GetModelsTest extends TestCase
         $this->assertCount(1, $foundModels);
         $this->assertStringContainsString('Team.php', $foundModels[0]->getBasename());
     }
+
+    public function test_action_can_find_additional_paths_model()
+    {
+        $action = app(GetModels::class);
+
+        $foundModels = $action(additionalPaths: [base_path('other')])->map(fn ($file) => $file->getBasename());
+        $this->assertCount(6, $foundModels);
+        $this->assertContains('VendorComplex.php', $foundModels);
+
+    }
 }

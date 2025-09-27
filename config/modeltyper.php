@@ -338,4 +338,16 @@ return [
     'excluded_models' => [
         // Models to ignore
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Additional Paths
+    |--------------------------------------------------------------------------
+    |
+    | Additional Paths allows you to specify paths external to laravel to search for models
+    | (ex. ./vendors/package/with/models)
+    */
+    'additional_paths' => [
+        // Models to ignore
+    ],
 ];

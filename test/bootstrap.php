@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once __DIR__ . '/laravel-skeleton/vendor/autoload.php';
 
 // Configuration based on recommendations from https://docs.phpunit.de/en/11.4/installation.html#configuring-php-for-development
 

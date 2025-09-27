@@ -48,6 +48,7 @@ class ModelTyperCommand extends Command
                             {--api-resources : Output api.MetApi interfaces}
                             {--fillables : Output model fillables}
                             {--fillable-suffix= : Appends to fillables}
+                            {--additional-paths : Additional paths to search for models} 
                             {--ignore-config : Ignore options set in config}';
 
     /**
