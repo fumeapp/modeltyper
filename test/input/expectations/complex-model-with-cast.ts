@@ -25,6 +25,7 @@ export interface Complex {
   small_integer: number
   string: string
   casted_uppercase_string: string
+  string_with_mutator_and_no_accessor: string
   text: string
   time: string
   timestamp: string

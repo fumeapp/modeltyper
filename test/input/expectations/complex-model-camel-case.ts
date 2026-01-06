@@ -25,6 +25,7 @@ export interface Complex {
   smallInteger: number
   string: string
   castedUppercaseString: unknown
+  stringWithMutatorAndNoAccessor: string
   text: string
   time: string
   timestamp: string
