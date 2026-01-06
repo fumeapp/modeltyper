@@ -24,4 +24,11 @@ class Complex extends Model
     {
         return $this->hasMany(ComplexRelationship::class);
     }
+
+    protected function stringWithMutatorAndNoAccessor(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value): string => strtolower($value),
+        );
+    }
 }
