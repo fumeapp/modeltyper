@@ -72,6 +72,10 @@ class WriteColumnAttribute
                                                 $attribute['nullable'] = true;
                                             }
                                         }
+                                    } else {
+                                        if ($attribute['type'] !== null) {
+                                            $type = $returnType($attribute['type'], $mappings);
+                                        }
                                     }
                                 } else {
                                     $rt = $accessorMethodReturnType->getName();
