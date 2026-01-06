@@ -38,7 +38,7 @@ class GetModels
             ->map(fn ($fqn) => $this->resolveModelFilename($fqn))
             ->when($includedModels, fn ($files, $includedModels) => $files->filter(fn (string $class) => in_array($class, $includedModels)))
             ->when($excludedModels, fn ($files, $excludedModels) => $files->filter(fn (string $class) => ! in_array($class, $excludedModels)))
-            ->when($modelShortName, fn ($files, $modelShortName) => $files->filter(fn (string $class) => $class === $modelShortName))
+            ->when($modelShortName !== false, fn ($files) => $files->filter(fn (string $class) => $class === $modelShortName))
             ->keys()->map(
                 fn ($file) => new SplFileInfo($file)
             )->values();

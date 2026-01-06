@@ -94,7 +94,7 @@ class BuildModelDetails
         // but since laravel doesn't support it we don't have to
         $class = ClassMapGenerator::createMap([$modelFile]);
         if (count($class) !== 1) {
-            return [];
+            return null;
         }
         $class = array_keys($class)[0];
 
