@@ -23,7 +23,6 @@ class WriteRelationship
 
         $relatedModel = $this->getClassName($relation['related']);
 
-        // Check if the relation is nullable (either from the return type or from config)
         $isNullable = $relation['nullable'] ?? false;
         $optional = $optionalRelation ? '?' : '';
 
@@ -33,7 +32,6 @@ class WriteRelationship
             default => $relatedModel,
         };
 
-        // Add | null to the type if it's nullable
         if ($isNullable) {
             $relationType .= ' | null';
         }

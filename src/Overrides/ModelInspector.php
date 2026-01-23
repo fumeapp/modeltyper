@@ -84,7 +84,7 @@ class ModelInspector extends EloquentModelInspector
     /**
      * Check if a method's return type is nullable.
      */
-    public function isReturnTypeNullable(ReflectionMethod $method): bool
+    protected function isReturnTypeNullable(ReflectionMethod $method): bool
     {
         $returnType = $method->getReturnType();
 
