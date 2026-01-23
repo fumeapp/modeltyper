@@ -25,7 +25,7 @@ class WriteRelationship
 
         // Check if the relation is nullable (either from the return type or from config)
         $isNullable = $relation['nullable'] ?? false;
-        $optional = ($optionalRelation || $isNullable) ? '?' : '';
+        $optional = $optionalRelation ? '?' : '';
 
         $relationType = match ($relation['type']) {
             'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel).'[]'),
@@ -33,8 +33,8 @@ class WriteRelationship
             default => $relatedModel,
         };
 
-        // Add | null to the type if it's nullable and not already optional
-        if ($isNullable && ! $optional) {
+        // Add | null to the type if it's nullable
+        if ($isNullable) {
             $relationType .= ' | null';
         }
 
