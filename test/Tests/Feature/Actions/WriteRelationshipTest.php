@@ -173,6 +173,51 @@ class WriteRelationshipTest extends TestCase
         $action = app(WriteRelationship::class);
         $result = $action(relation: $nullableRelation);
 
-        $this->assertStringContainsString('tags: Tag[] | null', $result);
+    }
+
+    public function test_action_can_return_morph_to_union_type_relationships()
+    {
+        $morphToRelation = [
+            'name' => 'model',
+            'type' => 'MorphTo',
+            'related' => 'User|Complex',
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $morphToRelation);
+
+        $this->assertStringContainsString('model: User|Complex', $result);
+    }
+
+    public function test_action_can_return_morph_to_union_type_relationships_as_array()
+    {
+        $morphToRelation = [
+            'name' => 'model',
+            'type' => 'MorphTo',
+            'related' => 'User|Complex',
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $morphToRelation, jsonOutput: true);
+
+        $this->assertEquals([
+            'name' => 'model',
+            'type' => 'User|Complex',
+        ], $result);
+    }
+
+    public function test_action_can_return_nullable_morph_to_union_type_relationships()
+    {
+        $morphToRelation = [
+            'name' => 'model',
+            'type' => 'MorphTo',
+            'related' => 'User|Complex',
+            'nullable' => true,
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $morphToRelation);
+
+        $this->assertStringContainsString('model: User|Complex | null', $result);
     }
 }

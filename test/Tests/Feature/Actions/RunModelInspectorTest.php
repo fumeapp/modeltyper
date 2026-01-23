@@ -45,4 +45,20 @@ class RunModelInspectorTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function test_action_can_extract_morph_to_union_types()
+    {
+        $result = app(RunModelInspector::class)('App\Models\MorphRelation');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('relations', $result);
+
+        $relations = $result['relations'];
+        $this->assertCount(1, $relations);
+
+        $modelRelation = $relations->first();
+        $this->assertEquals('model', $modelRelation['name']);
+        $this->assertEquals('MorphTo', $modelRelation['type']);
+        $this->assertEquals('User|Complex', $modelRelation['related']);
+    }
 }

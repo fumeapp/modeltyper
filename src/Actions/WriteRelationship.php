@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
@@ -21,16 +22,21 @@ class WriteRelationship
         $case = Config::get('modeltyper.case.relations', 'snake');
         $name = app(MatchCase::class)($case, $relation['name']);
 
-        $relatedModel = $this->getClassName($relation['related']);
-
         $isNullable = $relation['nullable'] ?? false;
         $optional = $optionalRelation ? '?' : '';
 
-        $relationType = match ($relation['type']) {
-            'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel).'[]'),
-            'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
-            default => $relatedModel,
-        };
+        // For MorphTo relations with union types, use the related string directly
+        if ($relation['type'] === 'MorphTo' && str_contains($relation['related'], '|')) {
+            $relationType = $relation['related'];
+        } else {
+            $relatedModel = $this->getClassName($relation['related']);
+
+            $relationType = match ($relation['type']) {
+                'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel).'[]'),
+                'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
+                default => $relatedModel,
+            };
+        }
 
         if ($isNullable) {
             $relationType .= ' | null';

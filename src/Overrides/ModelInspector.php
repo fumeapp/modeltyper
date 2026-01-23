@@ -4,6 +4,7 @@ namespace FumeApp\ModelTyper\Overrides;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\ModelInspector as EloquentModelInspector;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -70,15 +71,70 @@ class ModelInspector extends EloquentModelInspector
                 // Check if the return type is nullable
                 $nullable = $this->isReturnTypeNullable($method);
 
+                $relationType = Str::afterLast(get_class($relation), '\\');
+                $related = get_class($relation->getRelated());
+
+                // For MorphTo relations, extract the union types from the return type
+                if ($relation instanceof MorphTo) {
+                    $related = $this->extractMorphToRelatedModels($method);
+                }
+
                 return [
                     'name' => $method->getName(),
-                    'type' => Str::afterLast(get_class($relation), '\\'),
-                    'related' => get_class($relation->getRelated()),
+                    'type' => $relationType,
+                    'related' => $related,
                     'nullable' => $nullable,
                 ];
             })
             ->filter()
             ->values();
+    }
+
+    /**
+     * Extract related models from a MorphTo relation's return type.
+     *
+     * @return string
+     */
+    protected function extractMorphToRelatedModels(ReflectionMethod $method): string
+    {
+        $returnType = $method->getReturnType();
+
+        if (! $returnType instanceof ReflectionUnionType) {
+            return get_class($this->getRelatedModelFromMorphTo($method));
+        }
+
+        $types = [];
+        foreach ($returnType->getTypes() as $type) {
+            $typeName = $type->getName();
+            // Skip the MorphTo type itself
+            if ($typeName === 'Illuminate\Database\Eloquent\Relations\MorphTo') {
+                continue;
+            }
+            $types[] = Str::afterLast($typeName, '\\');
+        }
+
+        return implode('|', $types);
+    }
+
+    /**
+     * Get the related model from a MorphTo relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    protected function getRelatedModelFromMorphTo(ReflectionMethod $method): ?\Illuminate\Database\Eloquent\Model
+    {
+        try {
+            $model = $method->getDeclaringClass()->newInstance();
+            $relation = $method->invoke($model);
+            
+            if ($relation instanceof MorphTo) {
+                return $relation->getRelated();
+            }
+        } catch (\Exception $e) {
+            // Return null if we can't instantiate the model
+        }
+
+        return null;
     }
 
     /**
