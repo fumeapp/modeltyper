@@ -13,7 +13,7 @@ class WriteRelationship
     /**
      * Write the relationship to the output.
      *
-     * @param  array{name: string, type: string, related:string}  $relation
+     * @param  array{name: string, type: string, related:string, nullable?: bool}  $relation
      * @return array{type: string, name: string}|string
      */
     public function __invoke(array $relation, string $indent = '', bool $jsonOutput = false, bool $optionalRelation = false, bool $plurals = false): array|string
@@ -22,13 +22,19 @@ class WriteRelationship
         $name = app(MatchCase::class)($case, $relation['name']);
 
         $relatedModel = $this->getClassName($relation['related']);
+
+        $isNullable = $relation['nullable'] ?? false;
         $optional = $optionalRelation ? '?' : '';
 
         $relationType = match ($relation['type']) {
-            'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel) . '[]'),
+            'BelongsToMany', 'HasMany', 'HasManyThrough', 'MorphToMany', 'MorphMany', 'MorphedByMany' => $plurals === true ? Str::plural($relatedModel) : (Str::singular($relatedModel).'[]'),
             'BelongsTo', 'HasOne', 'HasOneThrough', 'MorphOne', 'MorphTo' => Str::singular($relatedModel),
             default => $relatedModel,
         };
+
+        if ($isNullable) {
+            $relationType .= ' | null';
+        }
 
         if (in_array($relation['type'], Config::get('modeltyper.custom_relationships.singular', []))) {
             $relationType = Str::singular($relation['type']);
@@ -45,6 +51,6 @@ class WriteRelationship
             ];
         }
 
-        return "{$indent}  {$name}{$optional}: {$relationType}" . PHP_EOL;
+        return "{$indent}  {$name}{$optional}: {$relationType}".PHP_EOL;
     }
 }

@@ -110,4 +110,69 @@ class WriteRelationshipTest extends TestCase
 
         $this->assertStringContainsString('notifications_exists?: boolean', $result);
     }
+
+    public function test_action_can_return_nullable_relationships()
+    {
+        $nullableRelation = [
+            'name' => 'listing',
+            'type' => 'BelongsTo',
+            'related' => 'App\Models\Listing',
+            'nullable' => true,
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $nullableRelation);
+
+        $this->assertStringContainsString('listing: Listing | null', $result);
+    }
+
+    public function test_action_can_return_nullable_relationships_as_array()
+    {
+        $nullableRelation = [
+            'name' => 'listing',
+            'type' => 'BelongsTo',
+            'related' => 'App\Models\Listing',
+            'nullable' => true,
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $nullableRelation, jsonOutput: true);
+
+        $this->assertEquals([
+            'name' => 'listing',
+            'type' => 'Listing | null',
+        ], $result);
+    }
+
+    public function test_action_can_return_non_nullable_relationships()
+    {
+        $nonNullableRelation = [
+            'name' => 'user',
+            'type' => 'BelongsTo',
+            'related' => 'App\Models\User',
+            'nullable' => false,
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $nonNullableRelation);
+
+        $this->assertStringContainsString('user: User', $result);
+        $this->assertStringNotContainsString('user?: User', $result);
+        $this->assertStringNotContainsString('user: User | null', $result);
+    }
+
+    public function test_action_can_return_nullable_plural_relationships()
+    {
+        $nullableRelation = [
+            'name' => 'tags',
+            'type' => 'BelongsToMany',
+            'related' => 'App\Models\Tag',
+            'nullable' => true,
+        ];
+
+        $action = app(WriteRelationship::class);
+        $result = $action(relation: $nullableRelation);
+
+        $this->assertStringContainsString('tags: Tag[] | null', $result);
+    }
 }
