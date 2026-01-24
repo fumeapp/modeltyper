@@ -173,6 +173,7 @@ class WriteRelationshipTest extends TestCase
         $action = app(WriteRelationship::class);
         $result = $action(relation: $nullableRelation);
 
+        $this->assertStringContainsString('tags: Tag[] | null', $result);
     }
 
     public function test_action_can_return_morph_to_union_type_relationships()
