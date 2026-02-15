@@ -82,4 +82,28 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Roles::ADMIN;
     }
+
+    /**
+     * Get the user's score as a union type using Laravel's Attribute accessor.
+     */
+    protected function score(): Attribute
+    {
+        return Attribute::get(fn (): float|int => 42);
+    }
+
+    /**
+     * Get the user's score as a nullable union type using Laravel's Attribute accessor.
+     */
+    protected function scoreNullable(): Attribute
+    {
+        return Attribute::get(fn (): float|int|null => null);
+    }
+
+    /**
+     * Get the user's role as a union type with an enum using Laravel's Attribute accessor.
+     */
+    protected function roleOrString(): Attribute
+    {
+        return Attribute::get(fn (): Roles|string => 'admin');
+    }
 }
