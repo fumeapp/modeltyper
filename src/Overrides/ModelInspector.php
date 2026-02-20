@@ -59,7 +59,7 @@ class ModelInspector extends EloquentModelInspector
                 }
 
                 return (new \Illuminate\Support\Collection($this->relationMethods))
-                    ->contains(fn ($relationMethod) => str_contains($code, '$this->'.$relationMethod.'('));
+                    ->contains(fn ($relationMethod) => str_contains($code, '$this->' . $relationMethod . '('));
             })
             ->map(function (ReflectionMethod $method) use ($model) {
                 $relation = $method->invoke($model);
@@ -92,8 +92,6 @@ class ModelInspector extends EloquentModelInspector
 
     /**
      * Extract related models from a MorphTo relation's return type.
-     *
-     * @return string
      */
     protected function extractMorphToRelatedModels(ReflectionMethod $method): string
     {
@@ -118,15 +116,13 @@ class ModelInspector extends EloquentModelInspector
 
     /**
      * Get the related model from a MorphTo relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
      */
     protected function getRelatedModelFromMorphTo(ReflectionMethod $method): ?\Illuminate\Database\Eloquent\Model
     {
         try {
             $model = $method->getDeclaringClass()->newInstance();
             $relation = $method->invoke($model);
-            
+
             if ($relation instanceof MorphTo) {
                 return $relation->getRelated();
             }
