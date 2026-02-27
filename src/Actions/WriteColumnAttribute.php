@@ -80,6 +80,7 @@ class WriteColumnAttribute
                                                 if ($unionType instanceof ReflectionNamedType) {
                                                     if ($unionType->getName() === 'null') {
                                                         $isNullable = true;
+
                                                         continue;
                                                     }
 
