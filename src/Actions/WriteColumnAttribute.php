@@ -9,6 +9,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionNamedType;
+use ReflectionUnionType;
 
 class WriteColumnAttribute
 {
@@ -69,6 +70,39 @@ class WriteColumnAttribute
                                             }
 
                                             if ($rt->allowsNull()) {
+                                                $attribute['nullable'] = true;
+                                            }
+                                        } elseif (! is_null($rt) && $rt instanceof ReflectionUnionType) {
+                                            $types = [];
+                                            $isNullable = false;
+
+                                            foreach ($rt->getTypes() as $unionType) {
+                                                if ($unionType instanceof ReflectionNamedType) {
+                                                    if ($unionType->getName() === 'null') {
+                                                        $isNullable = true;
+                                                        continue;
+                                                    }
+
+                                                    $mapped = $returnType($unionType->getName(), $mappings);
+
+                                                    // Check for enum types
+                                                    $ref = $this->resolveEnum($unionType->getName());
+                                                    if ($ref) {
+                                                        $mapped = $this->getClassName($unionType->getName());
+                                                        $enumRef = $ref;
+                                                    }
+
+                                                    if ($mapped !== 'unknown' && ! in_array($mapped, $types)) {
+                                                        $types[] = $mapped;
+                                                    }
+                                                }
+                                            }
+
+                                            if (! empty($types)) {
+                                                $type = implode(' | ', $types);
+                                            }
+
+                                            if ($isNullable) {
                                                 $attribute['nullable'] = true;
                                             }
                                         }

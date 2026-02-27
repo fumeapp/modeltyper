@@ -50,6 +50,18 @@
                 "type": "RolesEnum"
             },
             {
+                "name": "score",
+                "type": "number"
+            },
+            {
+                "name": "score_nullable",
+                "type": "number | null"
+            },
+            {
+                "name": "role_or_string",
+                "type": "Roles | stringEnum"
+            },
+            {
                 "name": "notifications_count",
                 "type": "number"
             },
@@ -68,6 +80,12 @@
         }
     ],
     "enums": [
+        {
+            "Roles": {
+                "name": "Roles",
+                "type": "export const enum Roles {\n  \/** Can do anything *\/\n  ADMIN = 'admin',\n  \/** Standard readonly *\/\n  USER = 'user',\n  \/** Value that needs string escaping *\/\n  USERCLASS = 'App\\\\Models\\\\User',\n}\n\nexport type RolesEnum = `${Roles}`\n\n"
+            }
+        },
         {
             "Roles": {
                 "name": "Roles",

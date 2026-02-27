@@ -13,6 +13,9 @@ export interface User {
   role_new: string
   role_enum: RolesEnum
   role_enum_traditional: RolesEnum
+  score: number
+  score_nullable: number | null
+  role_or_string: Roles | stringEnum
   // relations
   notifications: DatabaseNotification[]
   // counts
