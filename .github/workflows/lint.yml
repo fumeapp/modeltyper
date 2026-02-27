@@ -22,7 +22,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
-          tools: pint
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: highest
 
       - name: Run Pint
         run: ./vendor/bin/pint --test
