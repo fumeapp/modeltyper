@@ -29,4 +29,4 @@ jobs:
                   dependency-versions: highest
 
             - name: Run Pint
-              run: ./vendor/bin/pint --diff=master --test
+              run: ./vendor/bin/pint --test
