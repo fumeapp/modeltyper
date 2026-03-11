@@ -3,9 +3,12 @@
 namespace FumeApp\ModelTyper\Overrides;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelInspector as EloquentModelInspector;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionMethod;
@@ -31,22 +34,22 @@ class ModelInspector extends EloquentModelInspector
     /**
      * Get the relations from the given model.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return \Illuminate\Support\Collection
+     * @param  Model  $model
+     * @return Collection
      */
     protected function getRelations($model)
     {
-        return (new \Illuminate\Support\Collection(get_class_methods($model)))
+        return (new Collection(get_class_methods($model)))
             ->map(fn ($method) => new ReflectionMethod($model, $method))
             ->reject(
                 fn (ReflectionMethod $method) => $method->isStatic()
                     || $method->isAbstract()
-                    || $method->getDeclaringClass()->getName() === \Illuminate\Database\Eloquent\Model::class
+                    || $method->getDeclaringClass()->getName() === Model::class
                     || $method->getNumberOfParameters() > 0
             )
             ->filter(function (ReflectionMethod $method) {
                 if ($method->getReturnType() instanceof ReflectionNamedType
-                    && is_subclass_of($method->getReturnType()->getName(), \Illuminate\Database\Eloquent\Relations\Relation::class)) {
+                    && is_subclass_of($method->getReturnType()->getName(), Relation::class)) {
                     return true;
                 }
 
@@ -58,13 +61,13 @@ class ModelInspector extends EloquentModelInspector
                     $file->next();
                 }
 
-                return (new \Illuminate\Support\Collection($this->relationMethods))
+                return (new Collection($this->relationMethods))
                     ->contains(fn ($relationMethod) => str_contains($code, '$this->' . $relationMethod . '('));
             })
             ->map(function (ReflectionMethod $method) use ($model) {
                 $relation = $method->invoke($model);
 
-                if (! $relation instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
+                if (! $relation instanceof Relation) {
                     return null;
                 }
 
@@ -117,7 +120,7 @@ class ModelInspector extends EloquentModelInspector
     /**
      * Get the related model from a MorphTo relation.
      */
-    protected function getRelatedModelFromMorphTo(ReflectionMethod $method): ?\Illuminate\Database\Eloquent\Model
+    protected function getRelatedModelFromMorphTo(ReflectionMethod $method): ?Model
     {
         try {
             $model = $method->getDeclaringClass()->newInstance();

@@ -3,6 +3,7 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
@@ -15,7 +16,7 @@ class DetermineAccessorType
      *
      * @see https://laravel.com/docs/9.x/eloquent-mutators#defining-an-accessor
      *
-     * @param  \ReflectionClass<\Illuminate\Database\Eloquent\Model>  $reflectionModel
+     * @param  ReflectionClass<Model>  $reflectionModel
      *
      * @throws Exception
      */
