@@ -1,38 +1,31 @@
 name: PHPUnit Tests
-
 on:
   push:
   pull_request:
   schedule:
-    - cron: '0 0 * * 0'
-
+    - cron: "0 0 * * 0"
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
-        laravel: ['11.*', '12.*']
+        os: [ubuntu-latest]
+        php: ["8.2", "8.3", "8.4", "8.5"]
+        laravel: ["11.*", "12.*"]
         stability: [highest, lowest]
-
     name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }} stability
-
     steps:
       - name: 🔨 Checkout code
         uses: actions/checkout@v6
-
       - name: 🔨 Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-
       - name: 🔨 Install composer dependencies
         uses: ramsey/composer-install@v3
         with:
           dependency-versions: ${{ matrix.stability }}
-
       - name: 🧪 Run Unit Tests
         run: composer test
