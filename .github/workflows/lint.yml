@@ -1,8 +1,8 @@
-name: Check Code Style
+name: Check Code Style On Pull Request
 
 on:
-    push:
     pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
         paths:
             - "**.php"
             - pint.json
@@ -19,6 +19,9 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: 8.4
+                  extensions: json, dom, curl, libxml, mbstring
+                  coverage: none
+                  tools: pint
 
             - name: Install composer dependencies
               uses: ramsey/composer-install@v3
@@ -26,4 +29,4 @@ jobs:
                   dependency-versions: highest
 
             - name: Run Pint
-              run: ./vendor/bin/pint --test
+              run: ./vendor/bin/pint --diff=main --test
