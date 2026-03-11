@@ -8,6 +8,10 @@
         "declare_strict_types": false
     },
     "exclude": [
-        "test/input"
+        "test/input",
+        "test/laravel-skeleton/app/Enums/*"
+    ],
+    "notPath": [
+        "test/laravel-skeleton/app/Enums/Roles.php"
     ]
 }

@@ -3,6 +3,8 @@
 namespace FumeApp\ModelTyper\Actions;
 
 use FumeApp\ModelTyper\Traits\ClassBaseName;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -18,7 +20,7 @@ class WriteColumnAttribute
     /**
      * Get model columns and attributes to the output.
      *
-     * @param  \ReflectionClass<\Illuminate\Database\Eloquent\Model>  $reflectionModel
+     * @param  ReflectionClass<Model>  $reflectionModel
      * @param  array{name: string, type?: string|null, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool}  $attribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
@@ -80,6 +82,7 @@ class WriteColumnAttribute
                                                 if ($unionType instanceof ReflectionNamedType) {
                                                     if ($unionType->getName() === 'null') {
                                                         $isNullable = true;
+
                                                         continue;
                                                     }
 
@@ -113,7 +116,7 @@ class WriteColumnAttribute
                                     }
                                 } else {
                                     $rt = $accessorMethodReturnType->getName();
-                                    if (is_subclass_of($rt, \Illuminate\Database\Eloquent\Collection::class) && $returnType($rt, $mappings) !== 'unknown') {
+                                    if (is_subclass_of($rt, Collection::class) && $returnType($rt, $mappings) !== 'unknown') {
                                         $type = $returnType($rt, $mappings);
                                         $enumRef = $this->resolveEnum($rt);
                                     } else {

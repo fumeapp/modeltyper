@@ -11,7 +11,7 @@ class MapReturnType
      *
      * @param  array<string, string>  $mappings
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public function __invoke(string $returnType, array $mappings): string
     {
