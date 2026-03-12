@@ -1,7 +1,8 @@
-name: PHPStan
+name: PHPStan Tests
 
 on:
   push:
+  pull_request:
     paths:
       - '**.php'
       - phpstan.neon.dist
@@ -16,7 +17,8 @@ jobs:
         php: ['8.2', '8.3', '8.3', '8.4']
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

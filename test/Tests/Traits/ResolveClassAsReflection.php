@@ -2,6 +2,7 @@
 
 namespace Tests\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use ReflectionClass;
 
 trait ResolveClassAsReflection
@@ -9,8 +10,8 @@ trait ResolveClassAsReflection
     /**
      * Resolve a class as a ReflectionClass.
      *
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
-     * @return \ReflectionClass<\Illuminate\Database\Eloquent\Model>
+     * @param  class-string<Model>  $model
+     * @return ReflectionClass<Model>
      */
     public function resolveClassAsReflection(string $model): ReflectionClass
     {
