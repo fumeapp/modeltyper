@@ -41,7 +41,7 @@ class RunModelInspector
                 'observers' => $result['observers'],
                 'collection' => $result['collection'],
                 'builder' => $result['builder'],
-                'resource' => $result['resource'],
+                'resource' => $result['resource'] ?? null,
             ];
         } catch (BindingResolutionException $th) {
             return null;
