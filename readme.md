@@ -518,3 +518,172 @@ export interface User {
 
 > [!NOTE]
 > Notice how the comments are found and parsed - they must follow the specified format
+
+### Multi-Tenancy Support
+
+ModelTyper works seamlessly with multi-tenant Laravel applications using packages like [stancl/tenancy](https://tenancyforlaravel.com/). Since ModelTyper reads the database connection directly from your models, you just need to ensure your tenant models specify the correct connection.
+
+#### How it works with Tenancy
+
+When using a multi-tenancy package, your tenant-specific models typically specify a database connection (e.g., `tenant`) that points to the tenant's database:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    // This model uses the tenant database connection
+    protected $connection = 'tenant';
+}
+```
+
+ModelTyper automatically detects this connection and queries the correct database schema when generating TypeScript definitions.
+
+#### Setup with stancl/tenancy
+
+1. **Install stancl/tenancy** following the [official documentation](https://tenancyforlaravel.com/docs/v3/installation/)
+
+2. **Configure your tenant models** to use the tenant connection:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Product extends Model
+{
+    protected $connection = 'tenant';
+
+    // ... rest of your model code
+}
+```
+
+3. **Generate TypeScript definitions within a tenant context**:
+
+You need to initialize a tenant context before running the `model:typer` command. You can do this in several ways:
+
+**Option A: Using Tinker (recommended for development)**
+
+```bash
+php artisan tinker
+
+# Inside Tinker
+$tenant = \App\Models\Tenant::first();
+tenancy()->initialize($tenant);
+\Artisan::call('model:typer', ['output-file' => './resources/js/types/models.d.ts']);
+exit
+```
+
+**Option B: Create a custom Artisan command**
+
+Create a command that initializes tenancy and then generates the types:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Tenant;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
+
+class GenerateTenantTypes extends Command
+{
+    protected $signature = 'tenant:generate-types {tenant_id?}';
+    protected $description = 'Generate TypeScript types for tenant models';
+
+    public function handle()
+    {
+        $tenantId = $this->argument('tenant_id') ?? Tenant::first()?->id;
+        
+        if (!$tenantId) {
+            $this->error('No tenant found. Please specify a tenant_id or create a tenant first.');
+            return Command::FAILURE;
+        }
+
+        $tenant = Tenant::find($tenantId);
+        
+        if (!$tenant) {
+            $this->error("Tenant with ID {$tenantId} not found.");
+            return Command::FAILURE;
+        }
+
+        tenancy()->initialize($tenant);
+        
+        $this->info("Generating types for tenant: {$tenant->id}");
+        
+        Artisan::call('model:typer', [
+            'output-file' => './resources/js/types/models.d.ts'
+        ]);
+        
+        $this->info('TypeScript definitions generated successfully!');
+        
+        return Command::SUCCESS;
+    }
+}
+```
+
+Then run:
+
+```bash
+php artisan tenant:generate-types
+# Or specify a specific tenant
+php artisan tenant:generate-types 1
+```
+
+**Option C: Using the tenancy:run command**
+
+If you have stancl/tenancy v3.x, you can use the built-in `tenancy:run` command:
+
+```bash
+php artisan tenancy:run model:typer -- ./resources/js/types/models.d.ts
+```
+
+This will run the command for all tenants. To run for a specific tenant:
+
+```bash
+php artisan tenancy:run model:typer --tenant=1 -- ./resources/js/types/models.d.ts
+```
+
+#### Mixed Central and Tenant Models
+
+If your application has both central (non-tenant) and tenant models, ModelTyper will generate types for all of them. The package queries each model's configured connection, so:
+
+- Central models (without `$connection` or with `$connection = 'mysql'`) will use the central database
+- Tenant models (with `$connection = 'tenant'`) will use the tenant database
+
+Example setup:
+
+```php
+// Central model - uses default connection
+class User extends Model
+{
+    // Manages all users across tenants
+}
+
+// Tenant model - uses tenant connection
+class Product extends Model
+{
+    protected $connection = 'tenant';
+    // Each tenant has their own products
+}
+```
+
+When you run ModelTyper in a tenant context, it will generate accurate TypeScript definitions for both model types.
+
+#### Important Notes
+
+> [!IMPORTANT]
+> - Always ensure a tenant is initialized before running ModelTyper for tenant models
+> - The tenant database must be migrated and accessible
+> - If you get "table not found" errors, verify that the tenant database exists and migrations have been run
+> - For CI/CD pipelines, consider generating types during deployment after tenant databases are set up
+
+> [!TIP]
+> You can exclude tenant or central models using the `excluded_models` configuration option if you want to generate types for only one group of models
