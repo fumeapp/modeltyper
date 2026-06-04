@@ -160,7 +160,7 @@ class WriteColumnAttribute
             $type .= ' | null';
         }
 
-        if ((isset($attribute['hidden']) && $attribute['hidden']) || ($optionalNullables && $attribute['nullable'])) {
+        if ((isset($attribute['hidden']) && $attribute['hidden']) || ($optionalNullables && $attribute['nullable']) || (isset($attribute['optional']) && $attribute['optional'])) {
             $name = "{$name}?";
         }
 
