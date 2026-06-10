@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\UpperCast;
+use App\Enums\Roles;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,6 +17,7 @@ class Complex extends Model
         'jsonb' => 'json',
         'year' => 'int',
         'casted_uppercase_string' => UpperCast::class,
+        'enum_with_mutator_and_no_accessor' => Roles::class,
         'immutableDateTime' => 'immutable_date',
         'immutableDate' => 'immutable_datetime',
         'immutableCustomDateTime' => 'immutable_custom_datetime',
@@ -30,6 +32,13 @@ class Complex extends Model
     {
         return Attribute::make(
             set: fn (string $value): string => strtolower($value),
+        );
+    }
+
+    protected function enumWithMutatorAndNoAccessor(): Attribute
+    {
+        return Attribute::make(
+            set: fn (Roles|string $value): string => $value instanceof Roles ? $value->value : $value,
         );
     }
 }

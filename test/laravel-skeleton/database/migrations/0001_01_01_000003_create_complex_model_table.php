@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('string');
             $table->string('casted_uppercase_string');
             $table->string('string_with_mutator_and_no_accessor');
+            $table->string('enum_with_mutator_and_no_accessor');
             $table->text('text');
             $table->time('time');
             $table->timestamp('timestamp');
