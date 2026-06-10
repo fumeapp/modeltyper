@@ -26,7 +26,7 @@ class WriteEnumConst
         }
 
         $cases = collect($reflection->getConstants())
-            ->filter(fn ($case) => $case instanceof \UnitEnum);
+            ->filter(fn ($case) => $case instanceof \BackedEnum);
 
         if ($cases->isNotEmpty()) {
             if ($useEnums) {
