@@ -15,6 +15,11 @@ enum Roles: string
     case USER = 'user';
     case USERCLASS = User::class;
 
+    public const NON_ADMIN_ROLES = [
+        self::USER,
+        self::USERCLASS,
+    ];
+
     public static function fromValue(string $value): self
     {
         return match ($value) {
