@@ -7,7 +7,7 @@
 [![PHP Version Require](https://poser.pugx.org/fumeapp/modeltyper/require/php)](https://packagist.org/packages/fumeapp/modeltyper)
 
 <p align="center">
-  <a href="https://laravel.com"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Laravel.svg/1200px-Laravel.svg.png" width="92" height="92" /></a>
+  <a href="https://laravel.com"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Laravel.svg/960px-Laravel.svg.png" width="92" height="92" /></a>
   <a href="https://www.typescriptlang.org/"><img src="https://miro.medium.com/max/816/1*mn6bOs7s6Qbao15PMNRyOA.png" width="92" height="92" /></a>
 </p>
 
@@ -178,15 +178,15 @@ export type User = {
 
 **When to use interfaces:**
 
--   When you need extensibility (other interfaces can extend them)
--   For object-oriented patterns
--   When you want declaration merging capabilities
+- When you need extensibility (other interfaces can extend them)
+- For object-oriented patterns
+- When you want declaration merging capabilities
 
 **When to use types:**
 
--   For more complex type definitions (unions, intersections, etc.)
--   When you prefer a more functional approach
--   For better performance in some TypeScript compilation scenarios
+- For more complex type definitions (unions, intersections, etc.)
+- When you prefer a more functional approach
+- For better performance in some TypeScript compilation scenarios
 
 You can enable types in several ways:
 
@@ -226,31 +226,31 @@ protected function firstName(): Attribute
 
 ### Optional Arguments
 
--   output-file : Echo the definitions into a file
+- output-file : Echo the definitions into a file
 
 ### Additional Options
 
--   --model= : Generate typescript interfaces for a specific model
--   --global : Generate typescript interfaces in a global namespace named models
--   --json : Output the result as json
--   --use-enums : Use typescript enums instead of object literals
--   --use-types : Use typescript types instead of interfaces
--   --plurals : Output model plurals
--   --no-relations : Do not include relations
--   --optional-relations : Make relations optional fields on the model type
--   --no-hidden : Do not include hidden model attributes
--   --no-counts : Do not include counts for relationships
--   --optional-counts : Make relationship counts optional fields on the model type
--   --no-exists : Do not include exists for relationships
--   --optional-exists : Make relationship exists optional fields on the model type
--   --no-sums : Do not include sums for relationships
--   --optional-sums : Make relationship sums optional fields on the model type
--   --timestamps-date : Output timestamps as a Date object type
--   --optional-nullables : Output nullable attributes as optional fields
--   --api-resources : Output api.MetApi interfaces
--   --fillables : Output model fillables
--   --fillable-suffix= : Appends to fillables
--   --ignore-config : Ignore options set in config
+- --model= : Generate typescript interfaces for a specific model
+- --global : Generate typescript interfaces in a global namespace named models
+- --json : Output the result as json
+- --use-enums : Use typescript enums instead of object literals
+- --use-types : Use typescript types instead of interfaces
+- --plurals : Output model plurals
+- --no-relations : Do not include relations
+- --optional-relations : Make relations optional fields on the model type
+- --no-hidden : Do not include hidden model attributes
+- --no-counts : Do not include counts for relationships
+- --optional-counts : Make relationship counts optional fields on the model type
+- --no-exists : Do not include exists for relationships
+- --optional-exists : Make relationship exists optional fields on the model type
+- --no-sums : Do not include sums for relationships
+- --optional-sums : Make relationship sums optional fields on the model type
+- --timestamps-date : Output timestamps as a Date object type
+- --optional-nullables : Output nullable attributes as optional fields
+- --api-resources : Output api.MetApi interfaces
+- --fillables : Output model fillables
+- --fillable-suffix= : Appends to fillables
+- --ignore-config : Ignore options set in config
 
 ### Sum Aggregates for Relationships
 
