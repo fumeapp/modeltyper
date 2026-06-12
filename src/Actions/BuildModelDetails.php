@@ -5,13 +5,14 @@ namespace FumeApp\ModelTyper\Actions;
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use FumeApp\ModelTyper\Traits\ClassBaseName;
 use FumeApp\ModelTyper\Traits\ModelRefClass;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionException;
 use SplFileInfo;
 
+/**
+ * @phpstan-import-type ModelInspectorResult from RunModelInspector
+ */
 class BuildModelDetails
 {
     use ClassBaseName, ModelRefClass;
@@ -50,6 +51,7 @@ class BuildModelDetails
             'name' => $key,
             'type' => $interface['type'] ?? 'unknown',
             'nullable' => $interface['nullable'] ?? false,
+            'optional' => $interface['optional'] ?? false,
             'import' => $interface['import'] ?? null,
             'forceType' => true,
         ]);
@@ -85,7 +87,7 @@ class BuildModelDetails
     }
 
     /**
-     * @return array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>}|null
+     * @return ModelInspectorResult|null
      */
     private function getModelDetails(SplFileInfo $modelFile): ?array
     {
