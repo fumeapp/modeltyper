@@ -51,6 +51,7 @@ class BuildModelDetails
             'name' => $key,
             'type' => $interface['type'] ?? 'unknown',
             'nullable' => $interface['nullable'] ?? false,
+            'optional' => $interface['optional'] ?? false,
             'import' => $interface['import'] ?? null,
             'forceType' => true,
         ]);
