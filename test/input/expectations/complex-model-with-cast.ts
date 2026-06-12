@@ -26,6 +26,7 @@ export interface Complex {
   string: string
   casted_uppercase_string: string
   string_with_mutator_and_no_accessor: string
+  enum_with_mutator_and_no_accessor: Roles
   text: string
   time: string
   timestamp: string
@@ -42,3 +43,14 @@ export interface Complex {
   // exists
   complex_relationships_exists: boolean
 }
+
+const Roles = {
+  /** Can do anything */
+  ADMIN: 'admin',
+  /** Standard readonly */
+  USER: 'user',
+  /** Value that needs string escaping */
+  USERCLASS: 'App\\Models\\User',
+} as const;
+
+export type Roles = typeof Roles[keyof typeof Roles]

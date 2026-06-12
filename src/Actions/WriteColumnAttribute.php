@@ -110,7 +110,28 @@ class WriteColumnAttribute
                                             }
                                         }
                                     } else {
-                                        if ($attribute['type'] !== null) {
+                                        // No get callback: reads go through the model's cast,
+                                        // so fall back to it before the database column type
+                                        $cast = $reflectionModel->newInstance()->getCasts()[$attribute['name']] ?? null;
+
+                                        if (! is_null($cast)) {
+                                            if (Str::contains($cast, '\\')) {
+                                                $castReflection = new ReflectionClass($cast);
+
+                                                if ($castReflection->isEnum()) {
+                                                    $type = $this->getClassName($cast);
+                                                    $enumRef = $castReflection;
+                                                }
+                                            } else {
+                                                $cleanStr = Str::of($cast)->before(':')->lower()->toString();
+
+                                                if (isset($mappings[$cleanStr])) {
+                                                    $type = $returnType($cleanStr, $mappings);
+                                                }
+                                            }
+                                        }
+
+                                        if ($type === 'unknown' && $attribute['type'] !== null) {
                                             $type = $returnType($attribute['type'], $mappings);
                                         }
                                     }

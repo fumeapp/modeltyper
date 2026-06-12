@@ -25,7 +25,8 @@ class WriteEnumConst
             $comments = array_map(fn ($match) => trim(str_replace('@property', '', $match)), $matches[0]);
         }
 
-        $cases = collect($reflection->getConstants());
+        $cases = collect($reflection->getConstants())
+            ->filter(fn ($case) => $case instanceof \BackedEnum);
 
         if ($cases->isNotEmpty()) {
             if ($useEnums) {
