@@ -15,6 +15,28 @@ Model Typer is a powerful tool designed for developers working with Laravel and 
 simplify the generation of TypeScript interfaces from Laravel models, enhancing type safety and consistency in your
 applications.
 
+## Why Model Typer over Laravel Wayfinder?
+
+Laravel's first-party [Wayfinder](https://github.com/laravel/wayfinder) package is adding Eloquent model TypeScript
+support on its `dev-next` branch. Model Typer has been doing this in production for years. A few things worth knowing
+before switching:
+
+- **It's already stable.** Model Typer is versioned and running in production across a lot of apps. Wayfinder's model
+  support is still in beta with an explicit note that _"the API is subject (and likely) to change prior to the v1.0.0
+  release."_
+
+- **No dev dependencies.** Getting Wayfinder's model support requires `composer require laravel/wayfinder:dev-next`,
+  which locks you to an untagged, moving branch instead of a proper release.
+
+- **Models are the whole point.** Wayfinder is primarily a route and controller typing tool. Model support is being
+  added on top of that. Model Typer was built specifically for this use case from the start.
+
+- **More output options.** Model Typer generates columns, accessors, relationships, counts, exists, sums, and custom
+  mappings with a lot of configuration options. Wayfinder's model output is still fairly basic by comparison.
+
+Once Wayfinder hits a stable v1.0.0 with solid model support it will be worth a proper look. Until then, Model Typer
+is the practical choice.
+
 ## Upgrade Guide
 
 Please read the upgrade guide [here](https://github.com/fumeapp/modeltyper/UPGRADE.md)
