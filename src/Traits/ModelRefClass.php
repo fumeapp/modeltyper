@@ -2,17 +2,19 @@
 
 namespace FumeApp\ModelTyper\Traits;
 
-use Illuminate\Database\Eloquent\Builder;
+use FumeApp\ModelTyper\Actions\RunModelInspector;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use ReflectionClass;
 
+/**
+ * @phpstan-import-type ModelInspectorResult from RunModelInspector
+ */
 trait ModelRefClass
 {
     /**
      * Get the reflection interface.
      *
-     * @param  array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>}  $info
+     * @param  ModelInspectorResult  $info
      * @return ReflectionClass<Model>
      */
     public function getRefInterface(array $info): ReflectionClass

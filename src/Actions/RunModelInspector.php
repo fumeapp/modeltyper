@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
+/**
+ * @phpstan-type ModelInspectorResult array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>, resource: JsonResource|null}
+ */
 class RunModelInspector
 {
     public function __construct(protected ?Application $app = null)
@@ -23,7 +26,7 @@ class RunModelInspector
      * @see https://github.com/laravel/framework/blob/13.x/src/Illuminate\Database\Eloquent\ModelInspector.php
      *
      * @param  class-string<Model>  $model
-     * @return array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>, resource: JsonResource|null}|null
+     * @return ModelInspectorResult|null
      */
     public function __invoke(string $model): ?array
     {
