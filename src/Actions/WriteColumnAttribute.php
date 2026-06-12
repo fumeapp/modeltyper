@@ -21,7 +21,7 @@ class WriteColumnAttribute
      * Get model columns and attributes to the output.
      *
      * @param  ReflectionClass<Model>  $reflectionModel
-     * @param  array{name: string, type?: string|null, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool}  $attribute
+     * @param  array{name: string, type?: string|null, increments: bool, nullable: bool, default: mixed, unique: bool, fillable: bool, hidden?: bool, appended: mixed, cast?: string|null, forceType?: bool, optional?: bool}  $attribute
      * @param  array<string, string>  $mappings
      * @return array{array{name: string, type: string}, ReflectionClass|null}|array{string, ReflectionClass|null}|array{null, null}
      */
