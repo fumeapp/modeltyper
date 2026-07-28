@@ -176,6 +176,33 @@ class WriteRelationshipTest extends TestCase
         $this->assertStringContainsString('tags: Tag[] | null', $result);
     }
 
+    public function test_plural_class_name_is_not_singularized_in_array_relation(): void
+    {
+        $relation = [
+            'name' => 'customer_tests',
+            'type' => 'HasMany',
+            'related' => 'App\Models\CustomerTests',
+        ];
+
+        $result = app(WriteRelationship::class)($relation);
+
+        $this->assertStringContainsString('customer_tests: CustomerTests[]', $result);
+        $this->assertStringNotContainsString('CustomerTest[]', $result);
+    }
+
+    public function test_plural_class_name_is_not_singularized_in_singular_relation(): void
+    {
+        $relation = [
+            'name' => 'primary_address',
+            'type' => 'BelongsTo',
+            'related' => 'App\Models\UserAddresses',
+        ];
+
+        $result = app(WriteRelationship::class)($relation);
+
+        $this->assertStringContainsString('primary_address: UserAddresses', $result);
+    }
+
     public function test_action_can_return_morph_to_union_type_relationships()
     {
         $morphToRelation = [
