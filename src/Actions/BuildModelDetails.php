@@ -85,7 +85,7 @@ class BuildModelDetails
     }
 
     /**
-     * @return array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>}|null
+     * @return array{"class": class-string<Model>, database: string, table: string, policy: class-string|null, attributes: Collection, relations: Collection, events: Collection, observers: Collection, collection: class-string<\Illuminate\Database\Eloquent\Collection<Model>>, builder: class-string<Builder<Model>>, resource: \Illuminate\Http\Resources\Json\JsonResource|null}|null
      */
     private function getModelDetails(SplFileInfo $modelFile): ?array
     {
