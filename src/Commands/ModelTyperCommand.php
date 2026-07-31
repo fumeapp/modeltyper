@@ -32,6 +32,7 @@ class ModelTyperCommand extends Command
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--use-enums : Use typescript enums instead of object literals}
+                            {--plain-enums : Emit a plain typescript enum instead of a const enum when --use-enums is set, so values are readable at runtime}
                             {--use-types : Use typescript types instead of interfaces}
                             {--plurals : Output model plurals}
                             {--no-relations : Do not include relations}
@@ -79,6 +80,7 @@ class ModelTyperCommand extends Command
                 global: $this->getConfig('global'),
                 json: $this->getConfig('json'),
                 useEnums: $this->getConfig('use-enums'),
+                plainEnums: $this->getConfig('plain-enums'),
                 useTypes: $this->getConfig('use-types'),
                 plurals: $this->getConfig('plurals'),
                 apiResources: $this->getConfig('api-resources'),
