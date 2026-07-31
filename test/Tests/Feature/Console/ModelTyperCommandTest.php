@@ -104,6 +104,17 @@ class ModelTyperCommandTest extends TestCase
         ])->expectsOutput($expected);
     }
 
+    public function test_command_generates_plain_enums_when_option_is_enabled()
+    {
+        $expected = $this->getExpectedContent('user-plain-enums.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => User::class,
+            '--use-enums' => true,
+            '--plain-enums' => true,
+        ])->expectsOutput($expected);
+    }
+
     public function test_command_generates_plurals_when_option_is_enabled()
     {
         $expected = $this->getExpectedContent('user-plurals.ts');
