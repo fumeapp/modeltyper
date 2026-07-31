@@ -19,7 +19,7 @@ class Generator
      * @throws ModelTyperException
      * @throws ReflectionException
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $models = app(GetModels::class)(
             model: $specificModel,
@@ -37,6 +37,7 @@ class Generator
             global: $global,
             json: $json,
             useEnums: $useEnums,
+            plainEnums: $plainEnums,
             useTypes: $useTypes,
             plurals: $plurals,
             apiResources: $apiResources,
@@ -63,12 +64,12 @@ class Generator
      *
      * @throws ReflectionException
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
         if ($json) {
-            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists, noSums: $noSums, optionalSums: $optionalSums);
+            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, plainEnums: $plainEnums, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists, noSums: $noSums, optionalSums: $optionalSums);
         }
 
         return app(GenerateCliOutput::class)(
@@ -76,6 +77,7 @@ class Generator
             mappings: $mappings,
             global: $global,
             useEnums: $useEnums,
+            plainEnums: $plainEnums,
             useTypes: $useTypes,
             plurals: $plurals,
             apiResources: $apiResources,
