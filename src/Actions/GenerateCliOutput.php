@@ -37,7 +37,7 @@ class GenerateCliOutput
      *
      * @throws \ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -181,8 +181,8 @@ class GenerateCliOutput
 
         collect($this->enumReflectors)
             ->unique(fn (ReflectionClass $reflector) => $reflector->getName())
-            ->each(function (ReflectionClass $reflector) use ($useEnums) {
-                $this->output .= app(WriteEnumConst::class)($reflector, $this->indent, false, $useEnums);
+            ->each(function (ReflectionClass $reflector) use ($useEnums, $plainEnums) {
+                $this->output .= app(WriteEnumConst::class)($reflector, $this->indent, false, $useEnums, $plainEnums);
             });
 
         collect($this->imports)

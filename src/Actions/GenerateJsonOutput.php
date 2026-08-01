@@ -35,7 +35,7 @@ class GenerateJsonOutput
      *
      * @throws ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $plainEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -119,8 +119,8 @@ class GenerateJsonOutput
             })->toArray();
         });
 
-        $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter, $useEnums) {
-            $enumConst = $enumWriter(reflection: $enum, jsonOutput: true, useEnums: $useEnums);
+        $this->output['enums'] = collect($this->enumReflectors)->map(function ($enum) use ($enumWriter, $useEnums, $plainEnums) {
+            $enumConst = $enumWriter(reflection: $enum, jsonOutput: true, useEnums: $useEnums, plainEnums: $plainEnums);
 
             return [
                 $enumConst['name'] => [

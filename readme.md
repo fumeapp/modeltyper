@@ -256,6 +256,7 @@ protected function firstName(): Attribute
 - --global : Generate typescript interfaces in a global namespace named models
 - --json : Output the result as json
 - --use-enums : Use typescript enums instead of object literals
+- --plain-enums : Emit a plain enum instead of a const enum when --use-enums is set, so values are readable at runtime
 - --use-types : Use typescript types instead of interfaces
 - --plurals : Output model plurals
 - --no-relations : Do not include relations
@@ -492,6 +493,10 @@ get detected and bring in your enum class with your comments:
 > ModelTyper uses Object Literals by default instead of TS
 > Enums [for opinionated reasons](https://maxheiber.medium.com/alternatives-to-typescript-enums-50e4c16600b1). But you can
 > use `--use-enums` option to use TS Enums instead of Object Literals.
+>
+> With `--use-enums`, ModelTyper emits `const enum` by default. Its members are inlined by the TypeScript compiler, so
+> they aren't readable at runtime (e.g. `Object.values(...)` won't work). Add `--plain-enums` alongside `--use-enums`
+> to emit a plain `enum` instead, which produces a real object you can read from at runtime.
 
 `app/Enums/UserRoleEnum.php`
 
