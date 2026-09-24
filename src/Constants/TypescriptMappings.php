@@ -46,6 +46,8 @@ class TypescriptMappings
         'smallint' => 'number',
         'tinyint' => 'boolean',
         'time' => 'string',
+        'uniqueidentifier' => 'string',
+        'uuid' => 'string',
         'varchar' => 'string',
         'year' => 'number',
     ];
