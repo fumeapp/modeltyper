@@ -3,6 +3,7 @@
 namespace Tests\Feature\Actions;
 
 use ErrorException;
+use FumeApp\ModelTyper\Actions\GetMappings;
 use FumeApp\ModelTyper\Actions\MapReturnType;
 use Tests\TestCase;
 
@@ -44,5 +45,15 @@ class MapReturnTypeTest extends TestCase
 
         $action = app(MapReturnType::class);
         $this->assertIsString($action('', []));
+    }
+
+    public function test_action_maps_native_uuid_column_types_to_string()
+    {
+        $action = app(MapReturnType::class);
+        $mappings = app(GetMappings::class)();
+
+        $this->assertEquals('string', $action('uuid', $mappings));
+        $this->assertEquals('string | null', $action('?uuid', $mappings));
+        $this->assertEquals('string', $action('uniqueidentifier', $mappings));
     }
 }
