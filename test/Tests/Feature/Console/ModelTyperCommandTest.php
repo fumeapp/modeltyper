@@ -64,6 +64,41 @@ class ModelTyperCommandTest extends TestCase
         $this->assertArrayHasKey('Team', $output['interfaces']);
     }
 
+    public function test_command_combines_ignored_models_with_configured_exclusions()
+    {
+        Config::set('modeltyper.excluded_models', [User::class]);
+
+        $this->assertSame(0, Artisan::call(ModelTyperCommand::class, [
+            '--ignore-models' => 'Complex',
+        ]));
+
+        $output = Artisan::output();
+
+        $this->assertStringNotContainsString('export interface User', $output);
+        $this->assertStringNotContainsString('export interface Complex {', $output);
+        $this->assertStringContainsString('export interface Team', $output);
+    }
+
+    public function test_command_ignores_fully_qualified_related_model()
+    {
+        $this->assertSame(0, Artisan::call(ModelTyperCommand::class, [
+            '--model' => Complex::class,
+            '--ignore-models' => ' App\\Models\\ComplexRelationship ',
+        ]));
+
+        $this->assertStringNotContainsString('complex_relationships:', Artisan::output());
+    }
+
+    public function test_command_ignores_empty_entries_in_models_list()
+    {
+        $this->assertSame(0, Artisan::call(ModelTyperCommand::class, [
+            '--ignore-models' => ' , ',
+        ]));
+
+        $this->assertStringContainsString('export interface User', Artisan::output());
+        $this->assertStringContainsString('export interface Complex {', Artisan::output());
+    }
+
     public function test_command_generates_expected_output_for_user_model_when_output_file_argument_is_set()
     {
         $expected = $this->getExpectedContent('user.ts');
