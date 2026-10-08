@@ -6,6 +6,7 @@ use App\Models\Complex;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 use Tests\Traits\GeneratesOutput;
@@ -33,6 +34,34 @@ class ModelTyperCommandTest extends TestCase
         $this->artisan(ModelTyperCommand::class, [
             '--model' => User::class,
         ])->expectsOutput($expected);
+    }
+
+    public function test_command_ignores_comma_separated_models()
+    {
+        $this->assertSame(0, Artisan::call(ModelTyperCommand::class, [
+            '--ignore-models' => ' User, Complex ',
+        ]));
+
+        $output = Artisan::output();
+
+        $this->assertStringContainsString('export interface Team', $output);
+        $this->assertStringNotContainsString('export interface User', $output);
+        $this->assertStringNotContainsString('export interface Complex {', $output);
+    }
+
+    public function test_command_ignores_comma_separated_models_in_json_output()
+    {
+        $this->assertSame(0, Artisan::call(ModelTyperCommand::class, [
+            '--ignore-models' => 'User,Complex',
+            '--json' => true,
+        ]));
+
+        $output = json_decode(Artisan::output(), true);
+
+        $this->assertIsArray($output);
+        $this->assertArrayNotHasKey('User', $output['interfaces']);
+        $this->assertArrayNotHasKey('Complex', $output['interfaces']);
+        $this->assertArrayHasKey('Team', $output['interfaces']);
     }
 
     public function test_command_generates_expected_output_for_user_model_when_output_file_argument_is_set()

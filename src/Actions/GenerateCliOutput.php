@@ -37,7 +37,7 @@ class GenerateCliOutput
      *
      * @throws \ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(Collection $models, array $mappings, bool $global = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', ?array $excludedModels = null): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -52,12 +52,12 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $useTypes) {
+        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $useTypes, $excludedModels) {
             $entry = '';
             $modelDetails = $modelBuilder(
                 modelFile: $model,
                 includedModels: Config::get('modeltyper.included_models', []),
-                excludedModels: Config::get('modeltyper.excluded_models', []),
+                excludedModels: $excludedModels ?? Config::get('modeltyper.excluded_models', []),
             );
 
             if ($modelDetails === null) {
