@@ -253,6 +253,7 @@ protected function firstName(): Attribute
 ### Additional Options
 
 - --model= : Generate typescript interfaces for a specific model
+- --ignore-models= : Comma-separated list of models to ignore (for example, `--ignore-models=User,Post`)
 - --global : Generate typescript interfaces in a global namespace named models
 - --json : Output the result as json
 - --use-enums : Use typescript enums instead of object literals

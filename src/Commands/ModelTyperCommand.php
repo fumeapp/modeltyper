@@ -29,6 +29,7 @@ class ModelTyperCommand extends Command
     protected $signature = 'model:typer
                             {output-file? : Echo the definitions into a file}
                             {--model= : Generate typescript interfaces for a specific model}
+                            {--ignore-models= : Comma-separated list of models to ignore}
                             {--global : Generate typescript interfaces in a global namespace named models}
                             {--json : Output the result as json}
                             {--use-enums : Use typescript enums instead of object literals}
@@ -77,6 +78,7 @@ class ModelTyperCommand extends Command
         try {
             $output = $generator(
                 specificModel: $this->option('model'),
+                excludedModels: array_filter(array_map('trim', explode(',', (string) $this->option('ignore-models')))),
                 global: $this->getConfig('global'),
                 json: $this->getConfig('json'),
                 useEnums: $this->getConfig('use-enums'),

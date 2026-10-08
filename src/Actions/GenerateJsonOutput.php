@@ -35,7 +35,7 @@ class GenerateJsonOutput
      *
      * @throws ReflectionException
      */
-    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $plainEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false): string
+    public function __invoke(Collection $models, array $mappings, bool $useEnums = false, bool $plainEnums = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, ?array $excludedModels = null): string
     {
         $modelBuilder = app(BuildModelDetails::class);
         $colAttrWriter = app(WriteColumnAttribute::class);
@@ -45,11 +45,11 @@ class GenerateJsonOutput
         $existWriter = app(WriteExist::class);
         $sumWriter = app(WriteSum::class);
 
-        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $mappings, $useEnums, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums): void {
+        $models->each(function (SplFileInfo $model) use ($modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $mappings, $useEnums, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $excludedModels): void {
             $modelDetails = $modelBuilder(
                 modelFile: $model,
                 includedModels: Config::get('modeltyper.included_models', []),
-                excludedModels: Config::get('modeltyper.excluded_models', []),
+                excludedModels: $excludedModels ?? Config::get('modeltyper.excluded_models', []),
             );
 
             if ($modelDetails === null) {

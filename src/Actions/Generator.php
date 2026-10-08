@@ -19,12 +19,14 @@ class Generator
      * @throws ModelTyperException
      * @throws ReflectionException
      */
-    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    public function __invoke(?string $specificModel = null, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', ?array $excludedModels = null): string
     {
+        $excludedModels = array_merge(Config::get('modeltyper.excluded_models', []), $excludedModels ?? []);
+
         $models = app(GetModels::class)(
             model: $specificModel,
             includedModels: Config::get('modeltyper.included_models', []),
-            excludedModels: Config::get('modeltyper.excluded_models', []),
+            excludedModels: $excludedModels,
             additionalPaths: Config::get('modeltyper.additional_paths', [])
         );
 
@@ -34,6 +36,7 @@ class Generator
 
         return $this->display(
             models: $models,
+            excludedModels: $excludedModels,
             global: $global,
             json: $json,
             useEnums: $useEnums,
@@ -64,12 +67,12 @@ class Generator
      *
      * @throws ReflectionException
      */
-    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable'): string
+    protected function display(Collection $models, bool $global = false, bool $json = false, bool $useEnums = false, bool $plainEnums = false, bool $useTypes = false, bool $plurals = false, bool $apiResources = false, bool $optionalRelations = false, bool $noRelations = false, bool $noHidden = false, bool $noCounts = false, bool $optionalCounts = false, bool $noExists = false, bool $optionalExists = false, bool $noSums = false, bool $optionalSums = false, bool $timestampsDate = false, bool $optionalNullables = false, bool $fillables = false, string $fillableSuffix = 'Fillable', ?array $excludedModels = null): string
     {
         $mappings = app(GetMappings::class)(setTimestampsToDate: $timestampsDate);
 
         if ($json) {
-            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, plainEnums: $plainEnums, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists, noSums: $noSums, optionalSums: $optionalSums);
+            return app(GenerateJsonOutput::class)(models: $models, mappings: $mappings, useEnums: $useEnums, plainEnums: $plainEnums, noCounts: $noCounts, optionalCounts: $optionalCounts, noExists: $noExists, optionalExists: $optionalExists, noSums: $noSums, optionalSums: $optionalSums, excludedModels: $excludedModels);
         }
 
         return app(GenerateCliOutput::class)(
@@ -92,7 +95,8 @@ class Generator
             optionalSums: $optionalSums,
             optionalNullables: $optionalNullables,
             fillables: $fillables,
-            fillableSuffix: $fillableSuffix
+            fillableSuffix: $fillableSuffix,
+            excludedModels: $excludedModels
         );
     }
 }
