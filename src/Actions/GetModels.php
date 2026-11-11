@@ -42,8 +42,8 @@ class GetModels
             )
             ->map(fn (string $path): array => ClassMapGenerator::createMap($path))
             ->collapseWithKeys()
+            ->filter(fn ($_, $class): bool => class_exists($class) && (new ReflectionClass($class))->isSubclassOf(Model::class))
             ->flip()
-            ->filter(fn (string $class): bool => class_exists($class) && (new ReflectionClass($class))->isSubclassOf(Model::class))
             ->map(fn (string $fqn): string => $this->resolveModelFilename($fqn))
             ->when(
                 $includedModels,
