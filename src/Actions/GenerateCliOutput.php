@@ -45,6 +45,7 @@ class GenerateCliOutput
         $countWriter = app(WriteCount::class);
         $existWriter = app(WriteExist::class);
         $sumWriter = app(WriteSum::class);
+        $fillableWriter = app(WriteFillable::class);
 
         if ($global) {
             $namespace = Config::get('modeltyper.global-namespace', 'models');
@@ -52,7 +53,7 @@ class GenerateCliOutput
             $this->indent = '    ';
         }
 
-        $models->each(function (SplFileInfo $model) use ($mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $useTypes) {
+        $models->each(function (SplFileInfo $model) use ($fillableWriter, $mappings, $modelBuilder, $colAttrWriter, $relationWriter, $countWriter, $existWriter, $sumWriter, $plurals, $apiResources, $optionalRelations, $noRelations, $noHidden, $noCounts, $optionalCounts, $noExists, $optionalExists, $noSums, $optionalSums, $optionalNullables, $fillables, $fillableSuffix, $useEnums, $useTypes) {
             $entry = '';
             $modelDetails = $modelBuilder(
                 modelFile: $model,
@@ -169,9 +170,7 @@ class GenerateCliOutput
             }
 
             if ($fillables) {
-                $fillableAttributes = $reflectionModel->newInstanceWithoutConstructor()->getFillable();
-                $fillablesUnion = implode(' | ', array_map(fn ($fillableAttribute) => "'$fillableAttribute'", $fillableAttributes));
-                $entry .= "{$this->indent}export type {$name}{$fillableSuffix} = Pick<$name, $fillablesUnion>" . PHP_EOL;
+                $entry .= $fillableWriter($reflectionModel, $name, $fillableSuffix, $this->indent, $noHidden);
             }
 
             $entry .= PHP_EOL;
