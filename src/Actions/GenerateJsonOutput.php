@@ -107,6 +107,7 @@ class GenerateJsonOutput
                 });
             }
 
+
             $this->output['relations'] = $relations->map(function ($rel) use ($relationWriter, $name) {
                 $relation = $relationWriter(relation: $rel, jsonOutput: true);
 

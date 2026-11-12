@@ -3,6 +3,7 @@
 namespace Tests\Feature\Console;
 
 use App\Models\Complex;
+use App\Models\HiddenRelation;
 use App\Models\User;
 use FumeApp\ModelTyper\Commands\ModelTyperCommand;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -133,6 +134,18 @@ class ModelTyperCommandTest extends TestCase
             '--model' => User::class,
             '--no-relations' => true,
         ])->expectsOutput($expected);
+    }
+
+    public function test_command_generates_hides_hidden_relations_when_no_hidden_is_enabled()
+    {
+        $expected = $this->getExpectedContent('hidden-relations.ts');
+
+        $this->artisan(ModelTyperCommand::class, [
+            '--model' => HiddenRelation::class,
+            '--no-relations' => false,
+            '--no-hidden' => true,
+        ])
+            ->expectsOutput($expected);
     }
 
     public function test_command_generates_optional_relations_when_option_is_enabled()

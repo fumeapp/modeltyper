@@ -116,30 +116,50 @@ class GenerateCliOutput
                 });
             }
 
+            $hiddenAttributes = $noHidden ? $reflectionModel->newInstanceWithoutConstructor()->getHidden() : [];
+            $check_hidden = fn ($name) => $noHidden ? array_search($name, $hiddenAttributes) !== false : false;
+
             if ($relations->isNotEmpty() && ! $noRelations) {
                 $entry .= "{$this->indent}  // relations" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $relationWriter, $optionalRelations, $plurals) {
+
+                $relations->each(function ($rel) use ($check_hidden, &$entry, $relationWriter, $optionalRelations, $plurals) {
+                    if ($check_hidden($rel['name'])) {
+                        return;
+                    }
+
                     $entry .= $relationWriter(relation: $rel, indent: $this->indent, optionalRelation: $optionalRelations, plurals: $plurals);
                 });
             }
 
             if ($relations->isNotEmpty() && ! $noCounts) {
                 $entry .= "{$this->indent}  // counts" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $countWriter, $optionalCounts) {
+                $relations->each(function ($rel) use ($check_hidden, &$entry, $countWriter, $optionalCounts) {
+                    if ($check_hidden($rel['name'])) {
+                        return;
+                    }
+
                     $entry .= $countWriter(relation: $rel, indent: $this->indent, optionalCounts: $optionalCounts);
                 });
             }
 
             if ($relations->isNotEmpty() && ! $noExists) {
                 $entry .= "{$this->indent}  // exists" . PHP_EOL;
-                $relations->each(function ($rel) use (&$entry, $existWriter, $optionalExists) {
+                $relations->each(function ($rel) use ($check_hidden, &$entry, $existWriter, $optionalExists) {
+                    if ($check_hidden($rel['name'])) {
+                        return;
+                    }
+
                     $entry .= $existWriter(relation: $rel, indent: $this->indent, optionalExists: $optionalExists);
                 });
             }
 
             if ($sums->isNotEmpty() && ! $noSums) {
                 $entry .= "{$this->indent}  // sums" . PHP_EOL;
-                $sums->each(function ($sum) use (&$entry, $sumWriter, $optionalSums) {
+                $sums->each(function ($sum) use ($check_hidden, &$entry, $sumWriter, $optionalSums) {
+                    if ($check_hidden($sum['name'])) {
+                        return;
+                    }
+
                     $entry .= $sumWriter(sum: $sum, indent: $this->indent, optionalSums: $optionalSums);
                 });
             }
